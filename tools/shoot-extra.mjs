@@ -1,0 +1,20 @@
+// usage: node tools/shoot-extra.mjs <port> <outDir>  — comparable shots that work on both the original and the redesigned build
+import { launch, loadSeeded, shot, go, sleep, ensureServer } from './harness.mjs';
+const [port = '5173', out] = process.argv.slice(2);
+await ensureServer(+port);
+const { browser, page, logs } = await launch({ width: 1920, height: 1080 });
+await loadSeeded(page, +port);
+await go(page, 'forge', { select: 's1' }); await sleep(2200); await shot(page, out, '07b-forge-nimbus');
+await go(page, 'forge', { select: 's11' }); await sleep(2200); await shot(page, out, '07c-forge-prismedge');
+await go(page, 'open', { select: 'hatchling' }); await sleep(2000); await shot(page, out, '02-open-hatchling');
+await go(page, 'open', { select: 'forge' }); await sleep(2000); await shot(page, out, '02b-open-forge-crate');
+await go(page, 'vault'); await sleep(1800);
+await page.evaluate(() => { const c = [...document.querySelectorAll('.card, .plate')].find(p => /Prismedge/.test(p.getAttribute('aria-label'))); c && c.click(); }); await sleep(2600); await shot(page, out, '05b-inspect-prismedge');
+await page.keyboard.press('Escape'); await sleep(500);
+await page.evaluate(() => { const c = [...document.querySelectorAll('.card, .plate')].find(p => /Heart of Eternity/.test(p.getAttribute('aria-label'))); c && c.click(); }); await sleep(2600); await shot(page, out, '05c-inspect-heart');
+await page.keyboard.press('Escape'); await sleep(400);
+await page.evaluate(() => { const c = [...document.querySelectorAll('.card, .plate')].find(p => /Leviathan/.test(p.getAttribute('aria-label'))); c && c.click(); }); await sleep(2600); await shot(page, out, '05d-inspect-leviathan');
+await page.keyboard.press('Escape'); await sleep(400);
+await page.evaluate(() => { const c = [...document.querySelectorAll('.card, .plate')].find(p => /Whisper Jar, Epic, Unstable|Whisper Jar/.test(p.getAttribute('aria-label'))); c && c.click(); }); await sleep(2600); await shot(page, out, '05e-inspect-whisperjar');
+logs.filter(l => !/404/.test(l)).slice(0, 8).forEach(l => console.log(l));
+await browser.close();

@@ -1,0 +1,241 @@
+{
+ "passed": 39,
+ "failed": 0,
+ "results": [
+  {
+   "group": "migration",
+   "name": "v1 save loads and is migrated in place (version 2)",
+   "ok": true,
+   "detail": "{\"backup\":\"aethervault.save.v1.backup-p3\",\"migrated\":25}"
+  },
+  {
+   "group": "migration",
+   "name": "collection count unchanged",
+   "ok": true,
+   "detail": "25 → 25"
+  },
+  {
+   "group": "migration",
+   "name": "every identity field, history and investment is unchanged",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "migration",
+   "name": "every specimen has deterministic stats equal to a fresh computation",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "migration",
+   "name": "backup of the raw v1 save was written once and matches its size",
+   "ok": true,
+   "detail": "14531 vs 14531"
+  },
+  {
+   "group": "migration",
+   "name": "wallet untouched",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "migration",
+   "name": "stats identical after another reload; migration does not run twice",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "catalog",
+   "name": "all 40 base collectibles have a 3D model",
+   "ok": true,
+   "detail": "3D 40/40 missing "
+  },
+  {
+   "group": "catalog",
+   "name": "every base model produces a cached thumbnail",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "vault",
+   "name": "Vault renders cached thumbnails (no live 3D views for the grid)",
+   "ok": true,
+   "detail": "{\"imgs\":35,\"pending\":0,\"views\":0}"
+  },
+  {
+   "group": "inspect",
+   "name": "weapon shows its category stat set (7 incl. Critical Power, Energy Capacity, Upgrade Potential)",
+   "ok": true,
+   "detail": "Power,Speed,Precision,Stability,Critical Power,Energy Capacity,Upgrade Potential"
+  },
+  {
+   "group": "inspect",
+   "name": "stage uses the category stage name and the transformation tree lists both branches",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "inspect",
+   "name": "a stat row explains what feeds it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "inspect",
+   "name": "next-upgrade growth preview appears with increases",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "inspect",
+   "name": "comparison mode adds a second column",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "inspect",
+   "name": "branch preview shows a not-applied banner and does not change the specimen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "forge",
+   "name": "Forge shows category stage names, per-stat rows, before/after pair and the newly unlocked detail",
+   "ok": true,
+   "detail": "{\"lamps\":[\"Forged\",\"Tempered\",\"Awakened\",\"Exalted\",\"Signature\"],\"rows\":6,\"ba\":2,\"unlock\":true}"
+  },
+  {
+   "group": "forge",
+   "name": "live 3D preview of the next stage is shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "forge",
+   "name": "upgrade charges exactly the stated cost",
+   "ok": true,
+   "detail": "29/145"
+  },
+  {
+   "group": "forge",
+   "name": "stats increased, stage advanced, history and ledger record the change",
+   "ok": true,
+   "detail": "Tempered → Awakened (stage 3). Mounted blade fins. (Power +7, Speed +5, Precision +5, Stability +7, Critical Power +5, Energy Capacity +3)"
+  },
+  {
+   "group": "transform",
+   "name": "pet evolution branch previews both paths in the Forge",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "transform",
+   "name": "a pet branch (Monsoon Choir vs Stillwater Oracle) can be compared before choosing",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "transform",
+   "name": "branch selection asks for confirmation and states the cost and the stat change",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "transform",
+   "name": "machine transformation applied: form set, cost charged once, history + ledger recorded",
+   "ok": true,
+   "detail": "Overclocking: became Unbound Colossus. (Output +8, Stability -5, Overdrive +14)"
+  },
+  {
+   "group": "transform",
+   "name": "overdrive branch raised Overdrive and lowered nothing but its stated trade-off",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "transform",
+   "name": "previous appearance stays selectable (Without … / earlier stage)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "transform",
+   "name": "choosing an earlier look changes the displayed model but not progress",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "transform",
+   "name": "relic awakening applied",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "transform",
+   "name": "oddity manifestation applied",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "transform",
+   "name": "branch re-binding costs essence in Standard Mode and keeps the former branch as an appearance",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "transform",
+   "name": "single final forms apply (Heart Unsealed)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "locked specimens ask before an upgrade changes them",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "locked specimens still refuse dismantling",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "quality",
+   "name": "3D Off falls back to SVG art in the Forge without errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "quality",
+   "name": "Low, Medium, High render the transformed machine (frame rate recorded)",
+   "ok": true,
+   "detail": "{\"low\":145,\"medium\":145,\"high\":145,\"off\":145}"
+  },
+  {
+   "group": "quality",
+   "name": "reduced motion: the stage renders on demand and the transformed model still draws",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "quality",
+   "name": "leaving the Forge disposes its live view (no hidden live 3D)",
+   "ok": true,
+   "detail": "{\"quality\":\"medium\",\"fpsLimit\":0,\"views\":0,\"queue\":0,\"thumbs\":72,\"geoCache\":37,\"memory\":{\"geometries\":33,\"textures\":8},\"programs\":1,\"render\":{\"calls\":440,\"triangles\":83410},\"frames\":217,\"totalMs\":275.3,\"frameMs\":1.13,\"worstMs\":10.36,\"caches\":{\"patterns\":1,\"wear\":1},\"canvas\":[1280,1024],\"loop\":{\"running\":false,\"wakes\":9,\"sleeps\":9}}"
+  },
+  {
+   "group": "rings",
+   "name": "Leviathan inspected after Phase Three (see leviathan-final.png; no floating rarity rings)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "errors",
+   "name": "no page errors or console errors across the whole run",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "logs": []
+}

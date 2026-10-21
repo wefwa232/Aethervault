@@ -1,0 +1,11 @@
+{
+ "date": "2026-10-20T18:54:48.618Z",
+ "results": [
+  {
+   "group": "buttons",
+   "name": "clicked 161 visible controls across 7 screens without a page error",
+   "ok": true,
+   "detail": "new errors: "
+  }
+ ]
+}

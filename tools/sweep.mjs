@@ -1,0 +1,21 @@
+// usage: node tools/sweep.mjs <outDir> [width height]  — screenshots every screen from a seeded save and prints console problems
+import { launch, loadSeeded, shot, go, sleep, ensureServer } from './harness.mjs';
+const [out, w = '1920', h = '1080'] = process.argv.slice(2);
+await ensureServer();
+const { browser, page, logs } = await launch({ width: +w, height: +h });
+await loadSeeded(page, 5173);
+const S = async (n, fn) => { try { if (fn) await fn(); await sleep(1700); await shot(page, out, n); } catch (e) { console.log('FAIL', n, e.message); } };
+await S('01-home', () => go(page, 'home'));
+await S('02-open-forge', () => go(page, 'open', { select: 'forge' }));
+await S('03-open-vault', () => go(page, 'open', { select: 'vault' }));
+await S('04-open-egg', () => go(page, 'open', { select: 'hatchling' }));
+await S('05-vault', () => go(page, 'vault'));
+await S('06-codex', async () => { await go(page, 'vault'); await page.evaluate(() => document.querySelector('[data-view=codex]').click()); });
+await S('07-pets', () => go(page, 'pets'));
+await S('08-forge', () => go(page, 'forge'));
+await S('09-store', () => go(page, 'store'));
+await S('10-store-bundles', async () => { await page.evaluate(() => document.querySelector('[data-tab=bundles]').click()); });
+await S('11-settings', () => go(page, 'settings'));
+console.log(JSON.stringify(await page.evaluate(() => AV.stage.stats())));
+logs.filter(l => !/404/.test(l)).slice(0, 20).forEach(l => console.log(l));
+await browser.close();

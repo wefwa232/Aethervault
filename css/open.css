@@ -1,0 +1,24 @@
+/* AETHERVAULT — Open Hall (containment hall). */
+.hallway { display: grid; grid-template-columns: 250px minmax(0, 1fr) 232px; height: 100%; min-height: 620px; }
+.ix { border-width: 0 1px 0 0; padding: 1rem .9rem; overflow-y: auto; --fill: rgba(18, 17, 15, .92); }
+.ix-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 1px; }
+.ix-row { position: relative; width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: .55rem; padding: .62rem .5rem; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--hair-2); color: var(--ivory-2); transition: background .12s, color .12s; }
+.ix-row:hover { background: var(--ink-2); color: var(--ivory); } .ix-row .ix-n { color: var(--ivory-3); font-size: .78rem; }
+.ix-t { display: grid; line-height: 1.2; min-width: 0; } .ix-t b { font: 600 1rem var(--f-head); } .ix-t small { font: 600 .66rem var(--f-label); letter-spacing: .1em; text-transform: uppercase; color: var(--ivory-3); }
+.ix-row.active { background: linear-gradient(90deg, #2a2418, var(--ink-1)); color: var(--ivory); } .ix-row.active::before { content: ""; position: absolute; left: -.9rem; top: 0; bottom: 0; width: 4px; background: var(--brass-hi); } .ix-row.active .ix-n { color: var(--brass-hi); }
+.plinth-stage { height: 100%; min-height: 600px; background: radial-gradient(60% 55% at 50% 56%, color-mix(in srgb, var(--t1) 12%, transparent), transparent 70%), linear-gradient(180deg, rgba(10, 11, 12, .5), rgba(9, 9, 9, .82)); }
+.ps-light { position: absolute; left: 50%; top: 0; width: 58%; height: 76%; transform: translateX(-50%); background: radial-gradient(50% 90% at 50% 0, rgba(235, 244, 250, .1), transparent 75%); pointer-events: none; }
+.ps-view { position: absolute; left: 0; right: 0; top: 0; bottom: 84px; }
+.ps-title { position: absolute; left: 26px; top: 22px; max-width: min(380px, 40%); z-index: 3; display: grid; gap: .35rem; }
+.ps-title h2 { font-size: clamp(2rem, 3.2vw, 3rem); } .ps-title p { font-size: .92rem; max-width: 40ch; }
+.ps-facts { display: flex; flex-wrap: wrap; margin-top: .3rem; }
+.ps-controls { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 4; display: flex; align-items: center; gap: 1.1rem; padding: .6rem .9rem; --fill: rgba(14, 13, 11, .96); width: max-content; max-width: calc(100% - 32px); flex-wrap: wrap; justify-content: center; }
+.ps-controls .btn.major { min-height: 46px; padding: .6em 1.5em; font-size: 1.05rem; }
+.ps-total { display: flex; align-items: center; gap: .7rem; padding: 0 .4rem; } .ps-total .cost { font-size: 1.15rem; }
+.odds-rail { border-width: 0 0 0 1px; padding: 1rem .9rem; display: grid; gap: .8rem; align-content: start; overflow-y: auto; --fill: rgba(18, 17, 15, .92); }
+.odds-ladder { display: grid; } .orow { display: flex; justify-content: space-between; align-items: center; padding: .3rem 0; border-bottom: 1px dotted var(--hair); font-size: .82rem; } .orow b { font-size: .8rem; color: var(--ivory-2); }
+.odds-rail .pity { display: grid; grid-template-columns: 1fr auto; gap: .25rem .6rem; align-items: baseline; } .odds-rail .gauge { grid-column: 1 / -1; } .odds-rail .tiny { grid-column: 1 / -1; }
+.prefs { border-top: 1px solid var(--hair-2); padding-top: .7rem; } .prefs summary { cursor: pointer; list-style: none; } .prefs summary::-webkit-details-marker { display: none; } .prefs[open] summary { margin-bottom: .6rem; } .prefs .toggle { margin-bottom: .6rem; } .prefs .seg { width: 100%; } .prefs .seg button { flex: 1; justify-content: center; padding-inline: .3rem; }
+.odds-list { display: grid; gap: .6rem; margin: 1rem 0; } .odds-row { padding: .55rem .8rem; background: var(--ink-0); border-left: 3px solid var(--rc); } .odds-h { display: flex; justify-content: space-between; margin-bottom: .3rem; } .odds-items { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .5rem; } .oi { font-size: .76rem; padding: .08rem .5rem; border: 1px solid var(--hair); } .oi em { color: var(--ivory-3); font-style: normal; } .var-odds { display: flex; flex-wrap: wrap; gap: .35rem; }
+@media (max-width: 1180px) { .hallway { grid-template-columns: 220px minmax(0, 1fr); } .odds-rail { grid-column: 1 / -1; border-width: 1px 0 0; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } .odds-rail > h3 { grid-column: 1 / -1; } }
+@media (max-width: 860px) { .hallway { grid-template-columns: minmax(0, 1fr); } .ix { border-width: 0 0 1px; } .ix-list { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } .plinth-stage { min-height: 560px; } .ps-title { position: relative; left: 0; top: 0; padding: 14px 16px 0; max-width: none; } .ps-view { top: 120px; } }

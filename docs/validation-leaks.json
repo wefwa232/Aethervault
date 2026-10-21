@@ -1,0 +1,41 @@
+{
+ "date": "2026-10-20T18:50:03.854Z",
+ "results": [
+  {
+   "group": "leaks",
+   "name": "live 3D views return to ≤1 after 28 openings",
+   "ok": false,
+   "detail": "views=undefined"
+  },
+  {
+   "group": "leaks",
+   "name": "GPU geometries stable over openings 12→28 (±15%)",
+   "ok": true,
+   "detail": "55 → 54"
+  },
+  {
+   "group": "leaks",
+   "name": "GPU textures stable over openings 12→28 (±15%)",
+   "ok": true,
+   "detail": "28 → 30"
+  },
+  {
+   "group": "leaks",
+   "name": "shader programs bounded (<40)",
+   "ok": true,
+   "detail": "programs=10"
+  },
+  {
+   "group": "leaks",
+   "name": "inspect open/close ×24 leaves no live views beyond baseline",
+   "ok": false,
+   "detail": "undefined → undefined"
+  },
+  {
+   "group": "leaks",
+   "name": "inspect ×24: geometries/textures within +25 of baseline",
+   "ok": true,
+   "detail": "geo 39→39, tex 28→28"
+  }
+ ]
+}

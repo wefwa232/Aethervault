@@ -1,0 +1,113 @@
+{
+ "date": "2026-10-20T18:47:47.314Z",
+ "results": [
+  {
+   "group": "protect",
+   "name": "favorite protects a specimen (UI)",
+   "ok": true,
+   "detail": "Favorited"
+  },
+  {
+   "group": "protect",
+   "name": "dismantle of a favorited specimen shows a refusal, no confirm modal",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "favorited specimen still exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "engine skips protected specimens even when asked",
+   "ok": true,
+   "detail": "{\"skipped\":1,\"count\":0,\"still\":true}"
+  },
+  {
+   "group": "protect",
+   "name": "lock protects a specimen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "select-all dismantle opens a confirmation that mentions protected items",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "after dismantling everything selected, locked specimen and companion remain",
+   "ok": true,
+   "detail": "{\"locked\":true,\"comp\":true,\"left\":2}"
+  },
+  {
+   "group": "protect",
+   "name": "dismantling granted essence and updated stats",
+   "ok": true,
+   "detail": "dismantled=23"
+  },
+  {
+   "group": "upgrade",
+   "name": "Upgrade via the console raises the stage",
+   "ok": true,
+   "detail": "level=1"
+  },
+  {
+   "group": "upgrade",
+   "name": "forge lamp ladder advanced",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "forge renders a live 3D chamber",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "next-stage preview shows a preview tag",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "repeated upgrades reach the Signature stage (4)",
+   "ok": true,
+   "detail": "level=4"
+  },
+  {
+   "group": "upgrade",
+   "name": "no Upgrade button at the cap",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "no page errors during upgrading",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "audio",
+   "name": "volume sliders write settings (master .31, music 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "audio",
+   "name": "test-sound button runs without error and an AudioContext exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "audio",
+   "name": "toggle persists to settings",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

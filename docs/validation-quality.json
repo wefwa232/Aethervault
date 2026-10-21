@@ -1,0 +1,35 @@
+{
+ "date": "2026-10-20T18:59:13.951Z",
+ "results": [
+  {
+   "group": "quality",
+   "name": "quality=high: 3D canvas renders",
+   "ok": true,
+   "detail": "cpu≈11.27ms/frame, rAF≈95fps"
+  },
+  {
+   "group": "quality",
+   "name": "quality=medium: 3D canvas renders",
+   "ok": true,
+   "detail": "cpu≈0.65ms/frame, rAF≈288fps"
+  },
+  {
+   "group": "quality",
+   "name": "quality=low: 3D canvas renders",
+   "ok": true,
+   "detail": "cpu≈0.55ms/frame, rAF≈432fps"
+  },
+  {
+   "group": "quality",
+   "name": "quality=off: 2D fallback renders SVG, no canvas",
+   "ok": true,
+   "detail": "cpu≈0ms/frame, rAF≈576fps"
+  },
+  {
+   "group": "quality",
+   "name": "no page errors across quality changes",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

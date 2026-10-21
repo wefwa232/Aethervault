@@ -1,0 +1,205 @@
+{
+ "browser": "Chrome/155.0.8059.85",
+ "quality": {
+  "low": {
+   "fps": 135.5,
+   "stats": {
+    "quality": "low",
+    "fpsLimit": 0,
+    "views": 1,
+    "queue": 0,
+    "thumbs": 12,
+    "geoCache": 47,
+    "memory": {
+     "geometries": 63,
+     "textures": 16
+    },
+    "programs": 11,
+    "render": {
+     "calls": 36,
+     "triangles": 39022
+    },
+    "frames": 119,
+    "totalMs": 88.7,
+    "frameMs": 0.52,
+    "worstMs": 15.66,
+    "caches": {
+     "patterns": 7,
+     "wear": 3
+    },
+    "canvas": [
+     1152,
+     1024
+    ],
+    "loop": {
+     "running": true,
+     "wakes": 2,
+     "sleeps": 1
+    }
+   }
+  },
+  "medium": {
+   "fps": 141.5,
+   "stats": {
+    "quality": "medium",
+    "fpsLimit": 0,
+    "views": 1,
+    "queue": 0,
+    "thumbs": 9,
+    "geoCache": 21,
+    "memory": {
+     "geometries": 35,
+     "textures": 8
+    },
+    "programs": 20,
+    "render": {
+     "calls": 49,
+     "triangles": 62756
+    },
+    "frames": 190,
+    "totalMs": 137.7,
+    "frameMs": 0.47,
+    "worstMs": 13.07,
+    "caches": {
+     "patterns": 2,
+     "wear": 0
+    },
+    "canvas": [
+     1152,
+     1024
+    ],
+    "loop": {
+     "running": true,
+     "wakes": 2,
+     "sleeps": 1
+    }
+   }
+  },
+  "high": {
+   "fps": 129.5,
+   "stats": {
+    "quality": "high",
+    "fpsLimit": 0,
+    "views": 1,
+    "queue": 0,
+    "thumbs": 13,
+    "geoCache": 37,
+    "memory": {
+     "geometries": 53,
+     "textures": 13
+    },
+    "programs": 13,
+    "render": {
+     "calls": 58,
+     "triangles": 71276
+    },
+    "frames": 239,
+    "totalMs": 132.7,
+    "frameMs": 0.44,
+    "worstMs": 5.67,
+    "caches": {
+     "patterns": 3,
+     "wear": 2
+    },
+    "canvas": [
+     1152,
+     1024
+    ],
+    "loop": {
+     "running": true,
+     "wakes": 1,
+     "sleeps": 0
+    }
+   }
+  }
+ },
+ "cost": {
+  "leviathan L4": {
+   "withRings": 306,
+   "noRings": 302
+  },
+  "heart L2": {
+   "withRings": 64,
+   "noRings": 44
+  },
+  "stormsovereign L4": {
+   "withRings": 144,
+   "noRings": 142
+  },
+  "whisperjar L4": {
+   "withRings": 110,
+   "noRings": 104
+  }
+ },
+ "forge": {
+  "stats": {
+   "quality": "medium",
+   "fpsLimit": 0,
+   "views": 1,
+   "queue": 0,
+   "thumbs": 31,
+   "geoCache": 61,
+   "memory": {
+    "geometries": 108,
+    "textures": 23
+   },
+   "programs": 15,
+   "render": {
+    "calls": 80,
+    "triangles": 15390
+   },
+   "frames": 364,
+   "totalMs": 269.8,
+   "frameMs": 0.53,
+   "worstMs": 26.19,
+   "caches": {
+    "patterns": 10,
+    "wear": 6
+   },
+   "canvas": [
+    1280,
+    1024
+   ],
+   "loop": {
+    "running": true,
+    "wakes": 1,
+    "sleeps": 0
+   }
+  }
+ },
+ "reduced": {
+  "quality": "medium",
+  "fpsLimit": 0,
+  "views": 1,
+  "queue": 0,
+  "thumbs": 31,
+  "geoCache": 61,
+  "memory": {
+   "geometries": 76,
+   "textures": 22
+  },
+  "programs": 13,
+  "render": {
+   "calls": 56,
+   "triangles": 71268
+  },
+  "frames": 450,
+  "totalMs": 328.1,
+  "frameMs": 0.46,
+  "worstMs": 17.02,
+  "caches": {
+   "patterns": 10,
+   "wear": 6
+  },
+  "canvas": [
+   1280,
+   1024
+  ],
+  "loop": {
+   "running": false,
+   "wakes": 1,
+   "sleeps": 1
+  }
+ },
+ "errors": []
+}

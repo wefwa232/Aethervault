@@ -1,0 +1,7 @@
+{
+  "name": "aethervault-devtools",
+  "private": true,
+  "description": "Developer-only tooling (screenshots, validation). The game itself has no build step and no runtime dependencies beyond the vendored Three.js.",
+  "type": "module",
+  "devDependencies": { "puppeteer-core": "^23.0.0" }
+}

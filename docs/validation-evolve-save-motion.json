@@ -1,0 +1,101 @@
+{
+ "date": "2026-10-20T18:48:29.550Z",
+ "results": [
+  {
+   "group": "evolve",
+   "name": "[tempestral] both branches are offered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] evolution preview swaps the live model",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] cinematic is shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] specimen became tempestral, stage reset, serial kept",
+   "ok": true,
+   "detail": "{\"base\":\"tempestral\",\"level\":0,\"serial\":421}"
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] both branches are offered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] evolution preview swaps the live model",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] cinematic is shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] specimen became pluvia, stage reset, serial kept",
+   "ok": true,
+   "detail": "{\"base\":\"pluvia\",\"level\":0,\"serial\":421}"
+  },
+  {
+   "group": "evolve",
+   "name": "Tempestral evolves into Storm Sovereign (engine)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "motion",
+   "name": "reduced motion: idle 3D view does not render continuously",
+   "ok": true,
+   "detail": "frames in 2.5s: 0"
+  },
+  {
+   "group": "motion",
+   "name": "reduced motion: body flagged, ambient canvas hidden",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "motion",
+   "name": "reduced motion: dragging still rotates and redraws",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "motion",
+   "name": "motion restored: 3D animates again",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "save",
+   "name": "favorite, nickname and 3D quality survive a reload",
+   "ok": true,
+   "detail": "{\"fav\":true,\"nick\":\"Cirrus\",\"q\":\"low\",\"n\":25,\"shown\":\"Cirrus\"}"
+  },
+  {
+   "group": "save",
+   "name": "home shows the saved companion nickname",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "save",
+   "name": "specimen count unchanged after reload",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

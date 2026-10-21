@@ -1,0 +1,42 @@
+PASS  [boot] cold start shows every status line in order and ends in Home  — Waking archive systems… | Verifying local specimen ledger… | Restoring curator profile… | Calibrating containment renderer… | Indexing active specimens… | Opening archive gateway…
+PASS  [boot] cold start lands in the 4–6 s window (presentation floor + real work)  — 5019 ms wall; floor 3800 ms; real work 645 ms
+PASS  [boot] all six stages did real work and none degraded  — awaken:7ms ledger:8ms curator:13ms renderer:164ms index:63ms gateway:390ms
+PASS  [boot] Home is mounted and the overlay is gone
+PASS  [boot] startup makes no request outside the local server (no real network)
+PASS  [boot] warm start is shorter and is flagged warm  — 3240 ms (cold 5019)
+PASS  [boot] warm start reuses cached thumbnails (IndexedDB)  — Home chamber ready · 6 thumbnails from cache, 0 drawn
+PASS  [boot] “Fast startup” shortens a warm start further  — 2264 ms
+PASS  [boot] reduced motion: no CSS animation runs on the loading screen  — 0 animated elements
+PASS  [boot] skip control is dev-only and works
+PASS  [boot] startup does not create an AudioContext before a user gesture
+PASS  [boot] no page errors during startup scenarios
+PASS  [fallback] WebGL unavailable → startup completes in 2D, no error screen  — WebGL unavailable — continuing in 2D
+PASS  [fallback] renderer stage is marked as a fallback, others ok
+PASS  [fallback] Vault renders 2D art for every card
+PASS  [fallback] no page errors in 2D fallback (the browser own WebGL warning is expected)
+PASS  [error] corrupt ledger shows a clear error state with Retry and Start-fresh  — Retry / Start a fresh archive
+PASS  [error] the damaged save is preserved under a backup key
+PASS  [error] “Start a fresh archive” continues into onboarding
+PASS  [save] old save keeps specimens, wallet, profile, companion and chosen quality  — {"n":25,"credits":24000,"name":"Archivist Vale","companion":"s1","fps":"auto","q":"high","v":1,"boot":"25 specimens · schema v1"}
+PASS  [save] new settings default in without a schema bump
+PASS  [content] all 13 new models + pack + capsule build, animate, react and dispose across 5 stages × variants × conditions
+PASS  [content] worst synchronous build (after the first model) under 80 ms  — oracletablet 47.1, emberkit 41.2, impossiblecube 40.5 | first-use pattern/wear texture generation (existing system, cached afterwards) up to 403 ms
+PASS  [content] GPU geometries/textures after ~95 builds + disposals stay bounded (shared cache only)  — +-9 geometries, +0 textures
+PASS  [content] Home runs a new companion (Emberkit) in 3D
+PASS  [content] Vault shows cached 3D thumbnails for the new models  — 31 thumbnails ready
+PASS  [content] Inspect opens a live 3D view for every new model  — 19 tried; no 3D: 
+PASS  [content] Pets / lineage lists the new families and their evolutions
+PASS  [content] Forge shows the Mossback → Grovewarden evolution path in 3D  — {"ok":true,"evo":true}
+PASS  [content] pack ritual runs in 3D with real clicks and reaches the reveal  — 3d=true reveal=true
+PASS  [content] capsule ritual runs in 3D with real clicks and reaches the reveal  — 3d=true reveal=true
+PASS  [content] no page errors while exercising the new content
+PASS  [fps] FPS limit 30 renders ≈30 fps  — 29.9 fps
+PASS  [fps] FPS limit 60 renders ≈60 fps (or the display rate if lower)  — 59.9 fps
+PASS  [fps] Uncapped follows the display refresh rate  — 144.2 fps
+PASS  [fps] Auto: Low preset ≈30 fps, Medium ≈60 fps  — low 30.3, medium 60
+PASS  [fps] Vault (grid of cached thumbnails): stage loop asleep, no per-frame callbacks  — {"perSec":0,"loop":{"running":false,"wakes":2,"sleeps":2},"fx":{"running":true,"rafOn":false,"timer":true,"parts":0,"rings":0}}
+PASS  [fps] Reduced motion at Home: renders only on demand (no continuous frames, loops asleep)  — {"perSec":0,"frames":0,"running":false,"fx":{"running":true,"rafOn":false,"timer":false,"parts":0,"rings":0}}
+PASS  [fps] 3D Off: only the 15 fps ambient timer remains (no rAF loop)  — {"perSec":0,"fx":{"running":true,"rafOn":false,"timer":true,"parts":0,"rings":0}}
+PASS  [fps] no page errors
+
+40/40 checks passed

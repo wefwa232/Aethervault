@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Aethervault — 3D gallery (dev)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../css/aether.css">
+<style>
+body{overflow:auto;background:#0b0a09;color:#ece3cf;font:14px "IBM Plex Sans",system-ui,sans-serif;margin:0}
+#bar{display:flex;gap:.6rem;flex-wrap:wrap;padding:.6rem 1rem;background:#12110f;border-bottom:1px solid #3b362d;position:sticky;top:0;z-index:5;align-items:center}
+select,input{background:#1a1815;color:#ece3cf;border:1px solid #3b362d;padding:.3rem .5rem}
+#wrap{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:1rem;padding:1rem}
+#big{height:78vh;position:relative;background:radial-gradient(60% 60% at 50% 45%,#2a2520,#0e0d0b);border:1px solid #3b362d}
+#side{display:grid;gap:1rem;align-content:start}
+#svgBox{height:260px;border:1px solid #3b362d;background:#1a1815;display:grid;place-items:center}
+#svgBox .art{width:240px;height:240px}
+#thumbs{display:flex;gap:6px;flex-wrap:wrap}
+#thumbs .art{width:96px;height:96px;background:#1a1815;border:1px solid #3b362d}
+#info{white-space:pre;font:12px "IBM Plex Mono",monospace;color:#b5ab92}
+</style></head><body>
+<div id="bar"></div>
+<div id="wrap"><div id="big"></div><div id="side"><div id="svgBox"></div><div id="thumbs"></div><div id="info"></div></div></div>
+<script src="../vendor/three.min.js"></script>
+<script src="../js/util.js"></script><script src="../js/data.js"></script><script src="../js/progress.js"></script><script src="../js/stats.js"></script><script src="../js/state.js"></script><script src="../js/specimen.js"></script><script src="../js/art.js"></script>
+<script src="../js/stage3d/lib.js"></script><script src="../js/stage3d/core.js"></script><script src="../js/stage3d/kit.js"></script><script src="../js/stage3d/forms.js"></script>
+<script src="../js/stage3d/models-containers.js"></script><script src="../js/stage3d/models-crate-vault.js"></script><script src="../js/stage3d/models-containers2.js"></script><script src="../js/stage3d/models-creatures.js"></script><script src="../js/stage3d/models-pets2.js"></script><script src="../js/stage3d/models-gear2.js"></script><script src="../js/stage3d/models-relic2.js"></script><script src="../js/stage3d/models-machine2.js"></script><script src="../js/stage3d/models-oddity2.js"></script>
+<script src="../js/stage3d/models-gear3.js"></script><script src="../js/stage3d/models-relic3.js"></script><script src="../js/stage3d/models-machine3.js"></script><script src="../js/stage3d/models-oddity3.js"></script><script src="../js/stage3d/models-pets.js"></script><script src="../js/stage3d/models-sword.js"></script><script src="../js/stage3d/models-relic.js"></script><script src="../js/stage3d/models-machine.js"></script><script src="../js/stage3d/models-oddity.js"></script>
+<script>
+(function(){
+const AV=window.AV,D=AV.data,U=AV.util; AV.state.load(); const P=new URLSearchParams(location.search);
+AV.state.get().settings.quality3d=P.get('q')||'high'; AV.state.get().settings.reducedMotion=P.get('rm')==='1';
+document.body.classList.add('gallery');
+const keys=Object.keys(AV.stage.models); const bar=document.getElementById('bar');
+const sel=(id,opts,val)=>`<label>${id} <select id="${id}">${opts.map(o=>`<option ${o==val?'selected':''}>${o}</option>`).join('')}</select></label>`;
+bar.innerHTML=sel('model',keys,P.get('base')||keys[0])+sel('variant',D.VARIANTS.map(v=>v.id),P.get('variant')||'none')+sel('pattern',D.PATTERNS.map(v=>v.id),P.get('pattern')||'plain')+sel('cond',[0,1,2,3,4],P.get('cond')||0)+sel('level',[0,1,2,3,4],P.get('level')||0)+sel('pot',[20,60,90],P.get('pot')||60)+sel('pal',[0,1,2,3,4,5],P.get('pal')||0)+sel('form',['none'].concat(Object.keys(AV.progress.FORMS)),P.get('form')||'none')+`<label>serial <input id="serial" size="5" value="${P.get('serial')||421}"></label><label>seed <input id="seed" size="6" value="${P.get('seed')||12345}"></label><button id="shot">rebuild</button>`;
+let view=null; const big=document.getElementById('big');
+function spec(){ const g=id=>document.getElementById(id).value; const m=g('model');
+  if(m.startsWith('container:')){ const k=m.split(':')[1]; const th={egg:['#ff9ad1','#ffd36b'],crate:['#ff8a3d','#ffd36b'],vault:['#ff4fa8','#ffc247']}[k]; return {container:k,theme:th,name:'Container',plateTitle:k.toUpperCase(),plateSub:'—',seed:+g('seed')}; }
+  return {base:m,variant:g('variant'),pattern:g('pattern'),seed:+g('seed'),palette:+g('pal'),condition:+g('cond'),level:+g('level'),potential:+g('pot'),serial:+g('serial'),size:1,aura:'none',form:g('form')==='none'?null:g('form')}; }
+function build(){ if(view) view.dispose(); view=AV.stage.view(big,{mode:'inspect',zoom:true,layer:0,label:'gallery'}); const s=spec(); window.GAL.view=view; const ok=view.setSpec(s); if(!ok) big.insertAdjacentHTML('beforeend','<p style="position:absolute;left:1rem;top:1rem">no model</p>');
+  const sb=document.getElementById('svgBox'); sb.innerHTML=s.base?AV.art.render(s):AV.art.container(s.container==='egg'?'egg':s.container,s.theme);
+  document.getElementById('thumbs').innerHTML=''; if(s.base){ const th=document.getElementById('thumbs'); [0,1,2,3,4].forEach(l=>{ const sp=Object.assign({},s,{level:l}); th.insertAdjacentHTML('beforeend',`<div class="art art-t3 is-pending" data-t3="${AV.stage.encode(sp)}" title="stage ${l}"></div>`); }); AV.stage.hydrate(th); }
+  document.getElementById('info').textContent=JSON.stringify(AV.stage.stats(),null,1); }
+window.GAL={build,spec,get view(){return view},set view(v){}};
+bar.addEventListener('change',build); document.getElementById('shot').onclick=build;
+if(P.has('compare')){ document.getElementById('wrap').style.display='none'; const g=document.createElement('div'); g.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px;background:#0b0a09'; document.body.appendChild(g);
+  const items=[['container:egg','Hatchling Egg'],['container:crate','Forge Crate'],['container:vault','Mythic Vault'],['nimbit','Nimbit'],['nimbus','Nimbus'],['tempestral','Tempestral'],['pluvia','Pluvia'],['stormsovereign','Storm Sovereign'],['rustblade','Rustblade'],['prismedge','Prismedge'],['heartofeternity','Heart of Eternity'],['leviathan','Leviathan Engine'],['whisperjar','Whisper Jar'],['emberkit','Emberkit'],['pyrodrake','Pyrodrake'],['mossback','Mossback'],['grovewarden','Grovewarden'],['ionbow','Ionbow'],['gravehammer','Gravehammer'],['oracletablet','Oracle Tablet'],['moonstone','Moonstone'],['pocketdrone','Pocket Drone'],['scraprover','Scrap Rover'],['impossiblecube','Impossible Cube'],['missingtexture','Missing Texture'],['backwardsclock','Backwards Clock']];
+  const th={egg:['#ff9ad1','#ffd36b'],crate:['#ff8a3d','#ffd36b'],vault:['#ff4fa8','#ffc247']};
+  items.forEach(([b,n])=>{ const isC=b.startsWith('container:'); const k=isC?b.split(':')[1]:b; const sp=isC?null:{base:b,variant:'none',pattern:'plain',seed:12345,palette:0,condition:0,level:0,potential:60,serial:421,size:1,aura:'none'};
+    const svg=isC?AV.art.container(k,th[k]):AV.art.render(sp,{no3d:true}); const t3=isC?AV.stage.encodeC(k,th[k]):AV.stage.encode(sp);
+    const cell=document.createElement('div'); cell.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#12110f;border:1px solid #3b362d;padding:4px'; cell.innerHTML='<div style="height:230px;background:radial-gradient(70% 60% at 50% 45%,#221e18,#0c0b09);position:relative;display:grid;place-items:center"><div style="width:84%;height:84%">'+svg+'</div><small style="position:absolute;left:6px;top:4px;color:#7c7461;font:11px monospace">SVG (v0.1)</small></div><div style="height:230px;background:radial-gradient(70% 60% at 50% 45%,#221e18,#0c0b09);position:relative"><div class="art art-t3 is-pending" style="width:100%;height:100%" data-t3="'+t3+'"></div><small style="position:absolute;left:6px;top:4px;color:#d7b46e;font:11px monospace">3D</small></div><div style="grid-column:1/-1;text-align:center;font:600 13px sans-serif;color:#ece3cf;padding:3px 0">'+n+'</div>'; g.appendChild(cell); });
+  AV.stage.boot(); setTimeout(()=>AV.stage.hydrate(g),500); return; }
+if(P.has('sheet')){ document.getElementById('wrap').style.display='none'; const sz=+(P.get('size')||320); const g=document.createElement('div'); g.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax('+sz+'px,1fr));gap:8px;padding:8px'; document.body.appendChild(g);
+  P.get('sheet').split(',').forEach(it=>{ const [b,v='none',c='0',l='0',p='plain',pot='60',fm='']=it.split(':'); const sp={base:b,variant:v,pattern:p,seed:12345,palette:0,condition:+c,level:+l,potential:+pot,serial:421,size:1,aura:'none',form:fm||null}; const cell=document.createElement('div'); cell.style.cssText='position:relative;background:radial-gradient(60% 60% at 50% 45%,#2a2520,#0e0d0b);border:1px solid #3b362d;height:'+sz+'px'; cell.innerHTML='<div class="art art-t3 is-pending" style="width:100%;height:100%" data-t3="'+AV.stage.encode(sp)+'"></div><small style="position:absolute;left:6px;top:4px;color:#b5ab92;font:11px monospace">'+it+'</small>'; g.appendChild(cell); }); AV.stage.boot(); setTimeout(()=>AV.stage.hydrate(g),400); return; }
+AV.stage.boot(); setTimeout(build,300); setInterval(()=>{document.getElementById('info').textContent=JSON.stringify(AV.stage.stats(),null,1)},1500);
+})();
+</script></body></html>
+<style>.t3img{width:100%;height:100%;object-fit:contain;display:block}.art-t3.is-pending .art-svg{opacity:0}</style>

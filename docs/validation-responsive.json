@@ -1,0 +1,29 @@
+{
+ "date": "2026-10-20T18:56:54.349Z",
+ "results": [
+  {
+   "group": "responsive",
+   "name": "desktop 1920×1080: no horizontal overflow on any screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "responsive",
+   "name": "laptop 1366×768: no horizontal overflow on any screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "responsive",
+   "name": "tablet 820×1180: no horizontal overflow on any screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "responsive",
+   "name": "phone 390×844: no horizontal overflow on any screen",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+off {"startup":{"workOnlyColdMs":922,"stages":"awaken:6 ledger:5 curator:11 renderer:4 index:6 gateway:21","domContentLoadedMs":39,"loadEventMs":39,"fallback2D":false,"presentedColdMs":5334,"presentedWarmMs":3206,"warmWorkMs":64},"homeIdle":{"frames":863,"avgFps":143.9,"avgMs":6.95,"p95Ms":7,"p99Ms":7.1,"worstMs":7.1,"over33":0,"over50":0,"rafCallsPerSec":144},"homeInteract":{"frames":575,"avgFps":143.9,"avgMs":6.95,"p95Ms":7,"p99Ms":7.1,"worstMs":7.1,"over33":0,"over50":0,"rafCallsPerSec":144},"inspect":{"avg":0.8,"max":2.3,"geoBefore":null,"geoAfter":null,"texBefore":null,"texAfter":null,"heapBefore":4.7,"heapAfter":4.6}}
+low {"startup":{"workOnlyColdMs":1573,"stages":"awaken:2 ledger:7 curator:11 renderer:285 index:47 gateway:353","domContentLoadedMs":40,"loadEventMs":40,"fallback2D":false,"presentedColdMs":5349,"presentedWarmMs":3230,"warmWorkMs":301},"homeIdle":{"frames":852,"avgFps":142.1,"avgMs":7.04,"p95Ms":7,"p99Ms":7.1,"worstMs":62.5,"over33":1,"over50":1,"rafCallsPerSec":194},"homeInteract":{"frames":575,"avgFps":143.9,"avgMs":6.95,"p95Ms":7,"p99Ms":7,"worstMs":7.1,"over33":0,"over50":0,"rafCallsPerSec":257},"inspect":{"avg":13.2,"max":19.7,"geoBefore":95,"geoAfter":95,"texBefore":25,"texAfter":25,"heapBefore":12.2,"heapAfter":9.1}}
+file:///G:/User/Documents/CLAUDE/havingfun/tools/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Frame.js:181
+                        ? new Error(`${response.errorText} at ${url}`)
+                          ^
+
+Error: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:5173/index.html?fastboot=1
+    at navigate (file:///G:/User/Documents/CLAUDE/havingfun/tools/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Frame.js:181:27)
+    at async Deferred.race (file:///G:/User/Documents/CLAUDE/havingfun/tools/node_modules/puppeteer-core/lib/esm/puppeteer/util/Deferred.js:33:20)
+    at async CdpFrame.goto (file:///G:/User/Documents/CLAUDE/havingfun/tools/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Frame.js:147:25)
+    at async CdpPage.goto (file:///G:/User/Documents/CLAUDE/havingfun/tools/node_modules/puppeteer-core/lib/esm/puppeteer/api/Page.js:570:20)
+    at async file:///G:/User/Documents/CLAUDE/havingfun/tools/perf.mjs:37:3
+
+Node.js v24.14.0

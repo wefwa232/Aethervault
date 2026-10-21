@@ -1,0 +1,359 @@
+{
+ "date": "2026-10-21T14:48:51.716Z",
+ "results": [
+  {
+   "group": "boot",
+   "name": "fresh load shows onboarding modal",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "no page errors on boot",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "WebGL stage is supported & renderer created",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "onboarding starts the first-egg ritual (3D view mounted)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "egg ritual completes into a reveal",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "profile saved (name, mode, onboarded, starter pet, companion)",
+   "ok": true,
+   "detail": "{\"name\":\"Tester\",\"mode\":\"unlimited\",\"onboarded\":true,\"count\":1,\"comp\":true}"
+  },
+  {
+   "group": "buttons",
+   "name": "clicked 167 visible controls across 7 screens without a page error",
+   "ok": false,
+   "detail": "new errors: [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959"
+  },
+  {
+   "group": "modes",
+   "name": "Unlimited shows ∞ balances",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Unlimited opens a container with 0 credits",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Unlimited spends nothing",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Standard refuses an unaffordable opening (250 credits vs 100)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Standard deducts the price",
+   "ok": true,
+   "detail": "{\"ok\":true,\"credits\":750}"
+  },
+  {
+   "group": "protect",
+   "name": "favorite protects a specimen (UI)",
+   "ok": true,
+   "detail": "Favorited"
+  },
+  {
+   "group": "protect",
+   "name": "dismantle of a favorited specimen shows a refusal, no confirm modal",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "favorited specimen still exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "engine skips protected specimens even when asked",
+   "ok": true,
+   "detail": "{\"skipped\":1,\"count\":0,\"still\":true}"
+  },
+  {
+   "group": "protect",
+   "name": "lock protects a specimen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "select-all dismantle opens a confirmation that mentions protected items",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "after dismantling everything selected, locked specimen and companion remain",
+   "ok": true,
+   "detail": "{\"locked\":true,\"comp\":true,\"left\":2}"
+  },
+  {
+   "group": "protect",
+   "name": "dismantling granted essence and updated stats",
+   "ok": true,
+   "detail": "dismantled=23"
+  },
+  {
+   "group": "upgrade",
+   "name": "Upgrade via the console raises the stage",
+   "ok": true,
+   "detail": "level=1"
+  },
+  {
+   "group": "upgrade",
+   "name": "forge lamp ladder advanced",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "forge renders a live 3D chamber",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "next-stage preview shows a preview tag",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "repeated upgrades reach the Signature stage (4)",
+   "ok": true,
+   "detail": "level=4"
+  },
+  {
+   "group": "upgrade",
+   "name": "no Upgrade button at the cap",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "no page errors during upgrading",
+   "ok": false,
+   "detail": "[pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959"
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] both branches are offered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] evolution preview swaps the live model",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] cinematic is shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] specimen became tempestral, stage reset, serial kept",
+   "ok": true,
+   "detail": "{\"base\":\"tempestral\",\"level\":0,\"serial\":421}"
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] both branches are offered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] evolution preview swaps the live model",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] cinematic is shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] specimen became pluvia, stage reset, serial kept",
+   "ok": true,
+   "detail": "{\"base\":\"pluvia\",\"level\":0,\"serial\":421}"
+  },
+  {
+   "group": "evolve",
+   "name": "Tempestral evolves into Storm Sovereign (engine)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "common (rustblade) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "rare (nimbus) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "epic (tempestral) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "mythic (prismedge) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "legendary (stormsovereign) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "transcendent (heartofeternity) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "anomaly (missingtexture) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "uncommon (pebblor, SVG fallback) reveal reaches ready",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container wanderer (pack) ritual on 3D → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container hatchling (egg) ritual on 3D → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container capsule (capsule) ritual on 3D → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container forge (crate) ritual on 3D → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container starlit (egg) ritual on 3D → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container reliquary (chest) ritual on SVG → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container vault (vault) ritual on 3D → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "no page errors across reveals",
+   "ok": false,
+   "detail": "[pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959 | [pageerror] Cannot read properties of undefined (reading 'isReady')\nhttp://127.0.0.1:5173/vendor/three.min.js:7:438959"
+  },
+  {
+   "group": "leaks",
+   "name": "live 3D views return to ≤1 after 28 openings",
+   "ok": true,
+   "detail": "views=1"
+  },
+  {
+   "group": "leaks",
+   "name": "GPU geometries stable over openings 12→28 (±15%)",
+   "ok": true,
+   "detail": "65 → 64"
+  },
+  {
+   "group": "leaks",
+   "name": "GPU textures stable over openings 12→28 (±15%)",
+   "ok": true,
+   "detail": "25 → 30"
+  },
+  {
+   "group": "leaks",
+   "name": "shader programs bounded (<40)",
+   "ok": true,
+   "detail": "programs=10"
+  },
+  {
+   "group": "leaks",
+   "name": "inspect open/close ×24 leaves no live views beyond baseline",
+   "ok": true,
+   "detail": "0 → 0"
+  },
+  {
+   "group": "leaks",
+   "name": "inspect ×24: geometries/textures within +25 of baseline",
+   "ok": true,
+   "detail": "geo 45→45, tex 28→28"
+  },
+  {
+   "group": "suite",
+   "name": "unexpected exception",
+   "ok": false,
+   "detail": "Attempted to use detached Frame 'DC8364E9874EF489D44A11D6369F7314'.\nError: Attempted to use detached Frame 'DC8364E9874EF489D44A11D6369F7314'. |     at CdpFrame.<anonymous> (file:///G:/User/Documents/CLAUDE/havingfun/tools/node_modules/puppeteer-core/lib/esm/puppeteer/util/decorators.js:99:23) |     at CdpPage.evaluate (file:///G:/User/Documents/CLAUDE/havingfun/tools/node_modules/puppeteer-core/lib/esm/puppeteer/api/Page.js:808:43)"
+  }
+ ]
+}

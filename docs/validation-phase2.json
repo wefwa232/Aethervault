@@ -1,0 +1,247 @@
+{
+ "when": "2026-10-21T16:22:12.976Z",
+ "passed": 40,
+ "total": 40,
+ "results": [
+  {
+   "group": "boot",
+   "name": "cold start shows every status line in order and ends in Home",
+   "ok": true,
+   "detail": "Waking archive systems… | Verifying local specimen ledger… | Restoring curator profile… | Calibrating containment renderer… | Indexing active specimens… | Opening archive gateway…"
+  },
+  {
+   "group": "boot",
+   "name": "cold start lands in the 4–6 s window (presentation floor + real work)",
+   "ok": true,
+   "detail": "5068 ms wall; floor 3800 ms; real work 605 ms"
+  },
+  {
+   "group": "boot",
+   "name": "all six stages did real work and none degraded",
+   "ok": true,
+   "detail": "awaken:8ms ledger:3ms curator:13ms renderer:163ms index:67ms gateway:351ms"
+  },
+  {
+   "group": "boot",
+   "name": "Home is mounted and the overlay is gone",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "startup makes no request outside the local server (no real network)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "warm start is shorter and is flagged warm",
+   "ok": true,
+   "detail": "3360 ms (cold 5068)"
+  },
+  {
+   "group": "boot",
+   "name": "warm start reuses cached thumbnails (IndexedDB)",
+   "ok": true,
+   "detail": "Home chamber ready · 8 thumbnails from cache, 0 drawn"
+  },
+  {
+   "group": "boot",
+   "name": "“Fast startup” shortens a warm start further",
+   "ok": true,
+   "detail": "2414 ms"
+  },
+  {
+   "group": "boot",
+   "name": "reduced motion: no CSS animation runs on the loading screen",
+   "ok": true,
+   "detail": "0 animated elements"
+  },
+  {
+   "group": "boot",
+   "name": "skip control is dev-only and works",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "startup does not create an AudioContext before a user gesture",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "no page errors during startup scenarios",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "fallback",
+   "name": "WebGL unavailable → startup completes in 2D, no error screen",
+   "ok": true,
+   "detail": "WebGL unavailable — continuing in 2D"
+  },
+  {
+   "group": "fallback",
+   "name": "renderer stage is marked as a fallback, others ok",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "fallback",
+   "name": "Vault renders 2D art for every card",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "fallback",
+   "name": "no page errors in 2D fallback (the browser own WebGL warning is expected)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "error",
+   "name": "corrupt ledger shows a clear error state with Retry and Start-fresh",
+   "ok": true,
+   "detail": "Retry / Start a fresh archive"
+  },
+  {
+   "group": "error",
+   "name": "the damaged save is preserved under a backup key",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "error",
+   "name": "“Start a fresh archive” continues into onboarding",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "save",
+   "name": "old save keeps specimens, wallet, profile, companion and chosen quality",
+   "ok": true,
+   "detail": "{\"n\":25,\"credits\":24000,\"name\":\"Archivist Vale\",\"companion\":\"s1\",\"fps\":\"auto\",\"q\":\"high\",\"v\":2,\"boot\":\"25 specimens · schema v2\"}"
+  },
+  {
+   "group": "save",
+   "name": "new settings default in without a schema bump",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "content",
+   "name": "all 13 new models + pack + capsule build, animate, react and dispose across 5 stages × variants × conditions",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "content",
+   "name": "worst synchronous build (after the first model) under 80 ms",
+   "ok": true,
+   "detail": "oracletablet 48.3, grovewarden 34.3, ionbow 32.8 | first-use pattern/wear texture generation (existing system, cached afterwards) up to 336 ms"
+  },
+  {
+   "group": "content",
+   "name": "GPU geometries/textures after ~95 builds + disposals stay bounded (shared cache only)",
+   "ok": true,
+   "detail": "+-59 geometries, +0 textures"
+  },
+  {
+   "group": "content",
+   "name": "Home runs a new companion (Emberkit) in 3D",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "content",
+   "name": "Vault shows cached 3D thumbnails for the new models",
+   "ok": true,
+   "detail": "38 thumbnails ready"
+  },
+  {
+   "group": "content",
+   "name": "Inspect opens a live 3D view for every new model",
+   "ok": true,
+   "detail": "19 tried; no 3D: "
+  },
+  {
+   "group": "content",
+   "name": "Pets / lineage lists the new families and their evolutions",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "content",
+   "name": "Forge shows the Mossback → Grovewarden evolution path in 3D",
+   "ok": true,
+   "detail": "{\"ok\":true,\"evo\":true}"
+  },
+  {
+   "group": "content",
+   "name": "pack ritual runs in 3D with real clicks and reaches the reveal",
+   "ok": true,
+   "detail": "3d=true reveal=true"
+  },
+  {
+   "group": "content",
+   "name": "capsule ritual runs in 3D with real clicks and reaches the reveal",
+   "ok": true,
+   "detail": "3d=true reveal=true"
+  },
+  {
+   "group": "content",
+   "name": "no page errors while exercising the new content",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "fps",
+   "name": "FPS limit 30 renders ≈30 fps",
+   "ok": true,
+   "detail": "30 fps"
+  },
+  {
+   "group": "fps",
+   "name": "FPS limit 60 renders ≈60 fps (or the display rate if lower)",
+   "ok": true,
+   "detail": "60.3 fps"
+  },
+  {
+   "group": "fps",
+   "name": "Uncapped follows the display refresh rate",
+   "ok": true,
+   "detail": "143.9 fps"
+  },
+  {
+   "group": "fps",
+   "name": "Auto: Low preset ≈30 fps, Medium ≈60 fps",
+   "ok": true,
+   "detail": "low 30, medium 60"
+  },
+  {
+   "group": "fps",
+   "name": "Vault (grid of cached thumbnails): stage loop asleep, no per-frame callbacks",
+   "ok": true,
+   "detail": "{\"perSec\":0,\"loop\":{\"running\":false,\"wakes\":2,\"sleeps\":2},\"fx\":{\"running\":true,\"rafOn\":false,\"timer\":true,\"parts\":0,\"rings\":0}}"
+  },
+  {
+   "group": "fps",
+   "name": "Reduced motion at Home: renders only on demand (no continuous frames, loops asleep)",
+   "ok": true,
+   "detail": "{\"perSec\":0,\"frames\":0,\"running\":false,\"fx\":{\"running\":true,\"rafOn\":false,\"timer\":false,\"parts\":0,\"rings\":0}}"
+  },
+  {
+   "group": "fps",
+   "name": "3D Off: only the 15 fps ambient timer remains (no rAF loop)",
+   "ok": true,
+   "detail": "{\"perSec\":0,\"fx\":{\"running\":true,\"rafOn\":false,\"timer\":true,\"parts\":0,\"rings\":0}}"
+  },
+  {
+   "group": "fps",
+   "name": "no page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

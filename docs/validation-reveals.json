@@ -1,0 +1,101 @@
+{
+ "date": "2026-10-20T18:49:27.760Z",
+ "results": [
+  {
+   "group": "reveals",
+   "name": "common (rustblade) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "rare (nimbus) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "epic (tempestral) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "mythic (prismedge) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "legendary (stormsovereign) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "transcendent (heartofeternity) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=true flat=false"
+  },
+  {
+   "group": "reveals",
+   "name": "anomaly (missingtexture) reveal reaches the ready state",
+   "ok": true,
+   "detail": "3D view=false flat=true"
+  },
+  {
+   "group": "reveals",
+   "name": "uncommon (pebblor, SVG fallback) reveal reaches ready",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container wanderer (pack) ritual on SVG → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container hatchling (egg) ritual on 3D → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container capsule (capsule) ritual on SVG → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container forge (crate) ritual on 3D → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container starlit (egg) ritual on 3D → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container reliquary (chest) ritual on SVG → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "container vault (vault) ritual on 3D → reveal → summary completes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "reveals",
+   "name": "no page errors across reveals",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

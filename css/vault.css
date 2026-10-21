@@ -1,0 +1,36 @@
+/* AETHERVAULT — The Vault (catalogue) + Codex. */
+.catalogue { display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100%; align-items: start; }
+.filters { position: sticky; top: 0; height: calc(100vh - var(--top-h)); overflow-y: auto; padding: 1rem .95rem 1.4rem; border-width: 0 1px 0 0; --fill: rgba(18, 17, 15, .94); align-self: start; }
+.filters .sect { margin-top: 1.1rem; } .filters .sect:first-child { margin-top: 0; }
+.divs, .rlad { display: grid; }
+.div-row, .rl-row { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: .55rem; padding: .42rem .45rem; background: none; border: 0; border-bottom: 1px solid var(--hair-2); text-align: left; color: var(--ivory-2); font: 500 .88rem var(--f-head); transition: background .12s, color .12s; }
+.div-row .ico { width: 16px; height: 16px; color: var(--ivory-3); } .div-row b, .rl-row b { font-size: .75rem; color: var(--ivory-3); font-weight: 400; }
+.div-row:hover, .rl-row:hover { background: var(--ink-2); color: var(--ivory); } .div-row.on { background: linear-gradient(90deg, #2a2418, transparent); color: var(--brass-hi); box-shadow: inset 3px 0 var(--brass-hi); } .div-row.on .ico { color: var(--brass-hi); }
+.rl-row { grid-template-columns: 30px minmax(0, 1fr) auto; } .rl-row.on { background: color-mix(in srgb, var(--rc) 10%, var(--ink-1)); color: var(--ivory); box-shadow: inset 3px 0 var(--rc); } .rl-row:not(.on) .rk { opacity: .55; }
+.selects { display: grid; gap: .4rem; } .selects select { width: 100%; }
+.kswitch { display: grid; margin-top: .6rem; }
+.ks { display: grid; grid-template-columns: 18px 1fr 26px; align-items: center; gap: .55rem; padding: .45rem .45rem; background: none; border: 0; border-bottom: 1px solid var(--hair-2); color: var(--ivory-2); text-align: left; font: 500 .88rem var(--f-head); }
+.ks .ico { width: 15px; height: 15px; } .ks i { position: relative; width: 26px; height: 12px; background: var(--ink-0); border: 1px solid var(--hair); } .ks i::after { content: ""; position: absolute; left: 1px; top: 1px; width: 8px; height: 8px; background: var(--ivory-3); transition: transform .15s, background .15s; } .ks.on i { border-color: var(--brass); } .ks.on i::after { transform: translateX(14px); background: var(--brass-hi); } .ks.on { color: var(--ivory); }
+.f-actions { display: grid; gap: .45rem; margin-top: 1rem; } .f-actions .btn { width: 100%; } .f-actions .seg { width: 100%; } .f-actions .seg button { flex: 1; justify-content: center; }
+.shelf { padding: 1.1rem 1.4rem 1.6rem; min-width: 0; }
+.shelf-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; } .shelf-head h1 { font-size: clamp(2.2rem, 3.4vw, 3.2rem); margin: .1rem 0 .15rem; }
+.grid-tray { padding: 14px; min-height: 320px; }
+.plategrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--cw), 1fr)); gap: 12px; } .plategrid.md { --cw: 176px; } .plategrid.sm { --cw: 128px; }
+.plategrid .cell { position: relative; animation: cellIn .3s cubic-bezier(.2, .9, .3, 1) both; animation-delay: calc(var(--i) * 18ms); }
+@keyframes cellIn { from { opacity: 0; transform: translateY(10px); } }
+.cell .card-quick { position: absolute; left: 50%; bottom: 62px; transform: translate(-50%, 6px); display: flex; gap: 4px; opacity: 0; transition: opacity .15s, transform .15s; z-index: 8; }
+.cell:hover .card-quick, .cell:focus-within .card-quick { opacity: 1; transform: translate(-50%, 0); }
+.card-quick button { width: 28px; height: 28px; display: grid; place-items: center; background: rgba(11, 10, 9, .92); border: 1px solid var(--hair); color: var(--ivory-2); transition: background .12s, color .12s; } .card-quick button:hover { color: var(--ivory); background: var(--ink-3); } .card-quick button.on[data-q=fav] { color: #e68aa6; border-color: #7a4455; } .card-quick button.on[data-q=lock] { color: var(--brass-hi); border-color: var(--brass-lo); } .card-quick .ico { width: 14px; height: 14px; }
+@media (hover: none) { .cell .card-quick { opacity: 1; transform: translate(-50%, 0); } }
+.more { display: grid; place-items: center; padding: 1rem; }
+.selbar { position: sticky; bottom: 12px; z-index: 7; display: flex; gap: .55rem; align-items: center; flex-wrap: wrap; justify-content: center; padding: .6rem 1rem; margin-top: 12px; --edge: var(--brass-lo); --fill: #14120e; } .selbar b { font-size: 1.2rem; color: var(--brass-hi); }
+/* codex */
+.codex-sec { margin-bottom: 1.6rem; } .cx-head { display: grid; grid-template-columns: auto auto minmax(80px, 260px); align-items: center; gap: 1rem; margin-bottom: .7rem; } .cx-head h2 { font-size: 1.7rem; }
+.codex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 8px; padding: 10px; }
+.cx { position: relative; display: grid; grid-template-rows: 1fr auto auto; gap: .2rem; padding: 10px 8px 8px; text-align: center; background: var(--ink-1); border: 1px solid var(--hair-2); transition: background .12s, border-color .12s, transform .12s; min-height: 160px; }
+.cx:hover { background: var(--ink-2); border-color: var(--hair); transform: translateY(-2px); } .cx .plate-bar { right: 0; }
+.cx-art { display: block; width: 84px; height: 84px; margin: 0 auto; } .cx b { font: 600 .84rem var(--f-head); } .cx small { display: flex; justify-content: center; align-items: center; gap: .5rem; color: var(--ivory-3); font: 600 .66rem var(--f-label); letter-spacing: .08em; text-transform: uppercase; }
+.cx .own { color: var(--brass-hi); font-size: .72rem; } .cx .own.gone { color: var(--ivory-3); }
+.cx.unknown { background: repeating-linear-gradient(135deg, var(--ink-1) 0 6px, var(--ink-0) 6px 12px); border-style: dashed; } .cx.unknown b { color: var(--ivory-3); font-weight: 500; }
+.codex-modal .modal { width: min(620px, 100%); } .codex-modal .modal-body { display: grid; grid-template-columns: 240px 1fr; gap: 1.2rem; align-items: center; } .cm-art { width: 100%; aspect-ratio: 1; position: relative; background: radial-gradient(70% 60% at 50% 45%, color-mix(in srgb, var(--rc, #888) 12%, #1d1a15), #0c0b09); } .cm-art.unknown { grid-column: 1 / -1; max-width: 220px; margin: 0 auto; } .codex-modal .center { grid-column: 1 / -1; }
+@media (max-width: 860px) { .catalogue { grid-template-columns: minmax(0, 1fr); } .filters { position: static; height: auto; border-width: 0 0 1px; } .shelf { padding: .8rem; } .plategrid.md { --cw: 148px; } .plategrid.sm { --cw: 112px; } .cell .card-quick { display: none; } .codex-modal .modal-body { grid-template-columns: minmax(0, 1fr); } .cm-art { max-width: 220px; margin: 0 auto; } }

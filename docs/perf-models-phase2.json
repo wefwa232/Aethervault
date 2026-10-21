@@ -1,0 +1,1020 @@
+{
+ "label": "phase2",
+ "quality": "medium",
+ "when": "2026-10-21T14:40:55.716Z",
+ "errors": [],
+ "models": [
+  {
+   "key": "container:egg",
+   "cold": {
+    "ok": true,
+    "build": 47.2,
+    "compile": 22.2,
+    "render": 12.4,
+    "calls": 85,
+    "tris": 61098
+   },
+   "warm": {
+    "ok": true,
+    "build": 16,
+    "compile": 21.3,
+    "render": 11.5,
+    "calls": 85,
+    "tris": 61098
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 2
+   }
+  },
+  {
+   "key": "container:crate",
+   "cold": {
+    "ok": true,
+    "build": 15.1,
+    "compile": 43.6,
+    "render": 187.3,
+    "calls": 142,
+    "tris": 19354
+   },
+   "warm": {
+    "ok": true,
+    "build": 11.8,
+    "compile": 21.1,
+    "render": 16.7,
+    "calls": 142,
+    "tris": 19354
+   },
+   "leak": {
+    "geometries": 7,
+    "textures": 4
+   }
+  },
+  {
+   "key": "container:vault",
+   "cold": {
+    "ok": true,
+    "build": 17,
+    "compile": 10.2,
+    "render": 20.3,
+    "calls": 214,
+    "tris": 28488
+   },
+   "warm": {
+    "ok": true,
+    "build": 17.2,
+    "compile": 10.4,
+    "render": 35.4,
+    "calls": 214,
+    "tris": 28488
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  },
+  {
+   "key": "container:pack",
+   "cold": {
+    "ok": true,
+    "build": 22.7,
+    "compile": 299.8,
+    "render": 27.1,
+    "calls": 42,
+    "tris": 70172
+   },
+   "warm": {
+    "ok": true,
+    "build": 17.5,
+    "compile": 16.7,
+    "render": 31.3,
+    "calls": 42,
+    "tris": 70172
+   },
+   "leak": {
+    "geometries": 1,
+    "textures": 2
+   }
+  },
+  {
+   "key": "container:capsule",
+   "cold": {
+    "ok": true,
+    "build": 16.1,
+    "compile": 238.6,
+    "render": 26.6,
+    "calls": 53,
+    "tris": 21128
+   },
+   "warm": {
+    "ok": true,
+    "build": 13.9,
+    "compile": 21.8,
+    "render": 11.1,
+    "calls": 53,
+    "tris": 21128
+   },
+   "leak": {
+    "geometries": 4,
+    "textures": 0
+   }
+  },
+  {
+   "key": "nimbit",
+   "cold": {
+    "ok": true,
+    "build": 9.4,
+    "compile": 20.5,
+    "render": 2,
+    "calls": 36,
+    "tris": 64382
+   },
+   "warm": {
+    "ok": true,
+    "build": 13,
+    "compile": 19.1,
+    "render": 2.6,
+    "calls": 36,
+    "tris": 64382
+   },
+   "max": {
+    "ok": true,
+    "build": 55.9,
+    "compile": 10.7,
+    "render": 11.4,
+    "calls": 105,
+    "tris": 71868
+   },
+   "worn": {
+    "ok": true,
+    "build": 8.3,
+    "compile": 20.9,
+    "render": 2.3,
+    "calls": 36,
+    "tris": 64382
+   },
+   "leak": {
+    "geometries": 3,
+    "textures": 3
+   }
+  },
+  {
+   "key": "nimbus",
+   "cold": {
+    "ok": true,
+    "build": 8.9,
+    "compile": 10.3,
+    "render": 2.3,
+    "calls": 43,
+    "tris": 69944
+   },
+   "warm": {
+    "ok": true,
+    "build": 12.8,
+    "compile": 20.5,
+    "render": 2.5,
+    "calls": 43,
+    "tris": 69944
+   },
+   "max": {
+    "ok": true,
+    "build": 12.1,
+    "compile": 11.2,
+    "render": 10.2,
+    "calls": 112,
+    "tris": 77430
+   },
+   "worn": {
+    "ok": true,
+    "build": 8.2,
+    "compile": 10.6,
+    "render": 2,
+    "calls": 43,
+    "tris": 69944
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  },
+  {
+   "key": "tempestral",
+   "cold": {
+    "ok": true,
+    "build": 9.9,
+    "compile": 21,
+    "render": 9.2,
+    "calls": 49,
+    "tris": 71998
+   },
+   "warm": {
+    "ok": true,
+    "build": 11.5,
+    "compile": 79.4,
+    "render": 24,
+    "calls": 49,
+    "tris": 71998
+   },
+   "max": {
+    "ok": true,
+    "build": 10.5,
+    "compile": 10.3,
+    "render": 11.4,
+    "calls": 118,
+    "tris": 79484
+   },
+   "worn": {
+    "ok": true,
+    "build": 9.5,
+    "compile": 10.6,
+    "render": 10.6,
+    "calls": 49,
+    "tris": 71998
+   },
+   "leak": {
+    "geometries": 3,
+    "textures": 2
+   }
+  },
+  {
+   "key": "pluvia",
+   "cold": {
+    "ok": true,
+    "build": 9.8,
+    "compile": 313.1,
+    "render": 9.5,
+    "calls": 44,
+    "tris": 56660
+   },
+   "warm": {
+    "ok": true,
+    "build": 9.2,
+    "compile": 21.5,
+    "render": 10.4,
+    "calls": 44,
+    "tris": 56660
+   },
+   "max": {
+    "ok": true,
+    "build": 9.7,
+    "compile": 361.5,
+    "render": 10.6,
+    "calls": 107,
+    "tris": 64098
+   },
+   "worn": {
+    "ok": true,
+    "build": 9.7,
+    "compile": 31.7,
+    "render": 8.6,
+    "calls": 44,
+    "tris": 56660
+   },
+   "leak": {
+    "geometries": 4,
+    "textures": 0
+   }
+  },
+  {
+   "key": "stormsovereign",
+   "cold": {
+    "ok": true,
+    "build": 18.7,
+    "compile": 339.7,
+    "render": 14.2,
+    "calls": 80,
+    "tris": 101048
+   },
+   "warm": {
+    "ok": true,
+    "build": 17,
+    "compile": 42.4,
+    "render": 21.6,
+    "calls": 80,
+    "tris": 101048
+   },
+   "max": {
+    "ok": true,
+    "build": 16.6,
+    "compile": 490.7,
+    "render": 16.8,
+    "calls": 143,
+    "tris": 108486
+   },
+   "worn": {
+    "ok": true,
+    "build": 17.9,
+    "compile": 33.3,
+    "render": 15.1,
+    "calls": 80,
+    "tris": 101048
+   },
+   "leak": {
+    "geometries": 8,
+    "textures": 2
+   }
+  },
+  {
+   "key": "emberkit",
+   "cold": {
+    "ok": true,
+    "build": 12.9,
+    "compile": 255,
+    "render": 10.9,
+    "calls": 55,
+    "tris": 40482
+   },
+   "warm": {
+    "ok": true,
+    "build": 12.4,
+    "compile": 20.6,
+    "render": 11.3,
+    "calls": 55,
+    "tris": 40482
+   },
+   "max": {
+    "ok": true,
+    "build": 11.7,
+    "compile": 420,
+    "render": 61.4,
+    "calls": 113,
+    "tris": 47298
+   },
+   "worn": {
+    "ok": true,
+    "build": 12.9,
+    "compile": 22.9,
+    "render": 10.3,
+    "calls": 55,
+    "tris": 40482
+   },
+   "leak": {
+    "geometries": 13,
+    "textures": 4
+   }
+  },
+  {
+   "key": "pyrodrake",
+   "cold": {
+    "ok": true,
+    "build": 36,
+    "compile": 281.6,
+    "render": 14,
+    "calls": 124,
+    "tris": 40878
+   },
+   "warm": {
+    "ok": true,
+    "build": 15.5,
+    "compile": 21.5,
+    "render": 12.8,
+    "calls": 124,
+    "tris": 40878
+   },
+   "max": {
+    "ok": true,
+    "build": 13.1,
+    "compile": 449.7,
+    "render": 61.3,
+    "calls": 176,
+    "tris": 47646
+   },
+   "worn": {
+    "ok": true,
+    "build": 14,
+    "compile": 28.6,
+    "render": 13.7,
+    "calls": 124,
+    "tris": 40878
+   },
+   "leak": {
+    "geometries": 8,
+    "textures": 2
+   }
+  },
+  {
+   "key": "mossback",
+   "cold": {
+    "ok": true,
+    "build": 24,
+    "compile": 297.7,
+    "render": 18.3,
+    "calls": 157,
+    "tris": 48180
+   },
+   "warm": {
+    "ok": true,
+    "build": 15.9,
+    "compile": 31.8,
+    "render": 14.9,
+    "calls": 157,
+    "tris": 48180
+   },
+   "max": {
+    "ok": true,
+    "build": 18.7,
+    "compile": 413.9,
+    "render": 62.9,
+    "calls": 215,
+    "tris": 54996
+   },
+   "worn": {
+    "ok": true,
+    "build": 18.3,
+    "compile": 31.6,
+    "render": 15.6,
+    "calls": 157,
+    "tris": 48180
+   },
+   "leak": {
+    "geometries": 11,
+    "textures": 0
+   }
+  },
+  {
+   "key": "grovewarden",
+   "cold": {
+    "ok": true,
+    "build": 37.1,
+    "compile": 33,
+    "render": 18.7,
+    "calls": 201,
+    "tris": 67112
+   },
+   "warm": {
+    "ok": true,
+    "build": 19,
+    "compile": 32.6,
+    "render": 24.1,
+    "calls": 201,
+    "tris": 67112
+   },
+   "max": {
+    "ok": true,
+    "build": 22.1,
+    "compile": 32.5,
+    "render": 20.3,
+    "calls": 253,
+    "tris": 73880
+   },
+   "worn": {
+    "ok": true,
+    "build": 21.5,
+    "compile": 33.9,
+    "render": 18.9,
+    "calls": 201,
+    "tris": 67112
+   },
+   "leak": {
+    "geometries": 4,
+    "textures": 0
+   }
+  },
+  {
+   "key": "rustblade",
+   "cold": {
+    "ok": true,
+    "build": 15.1,
+    "compile": 31.4,
+    "render": 17.2,
+    "calls": 51,
+    "tris": 14904
+   },
+   "warm": {
+    "ok": true,
+    "build": 13,
+    "compile": 31.9,
+    "render": 16.9,
+    "calls": 51,
+    "tris": 14904
+   },
+   "max": {
+    "ok": true,
+    "build": 15.6,
+    "compile": 33.3,
+    "render": 14.5,
+    "calls": 145,
+    "tris": 24424
+   },
+   "worn": {
+    "ok": true,
+    "build": 13.4,
+    "compile": 21.7,
+    "render": 12.4,
+    "calls": 51,
+    "tris": 14904
+   },
+   "leak": {
+    "geometries": 2,
+    "textures": 0
+   }
+  },
+  {
+   "key": "prismedge",
+   "cold": {
+    "ok": true,
+    "build": 15.4,
+    "compile": 321.3,
+    "render": 14,
+    "calls": 55,
+    "tris": 14553
+   },
+   "warm": {
+    "ok": true,
+    "build": 15.7,
+    "compile": 20.4,
+    "render": 13.7,
+    "calls": 55,
+    "tris": 14553
+   },
+   "max": {
+    "ok": true,
+    "build": 15.3,
+    "compile": 367.3,
+    "render": 16,
+    "calls": 149,
+    "tris": 24073
+   },
+   "worn": {
+    "ok": true,
+    "build": 15.7,
+    "compile": 33,
+    "render": 12.9,
+    "calls": 55,
+    "tris": 14553
+   },
+   "leak": {
+    "geometries": 1,
+    "textures": 0
+   }
+  },
+  {
+   "key": "ionbow",
+   "cold": {
+    "ok": true,
+    "build": 13.1,
+    "compile": 21,
+    "render": 14.8,
+    "calls": 66,
+    "tris": 17010
+   },
+   "warm": {
+    "ok": true,
+    "build": 13.4,
+    "compile": 21.4,
+    "render": 12.7,
+    "calls": 66,
+    "tris": 17010
+   },
+   "max": {
+    "ok": true,
+    "build": 14.5,
+    "compile": 21.8,
+    "render": 14.2,
+    "calls": 120,
+    "tris": 23782
+   },
+   "worn": {
+    "ok": true,
+    "build": 13.2,
+    "compile": 32.8,
+    "render": 11.9,
+    "calls": 66,
+    "tris": 17010
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  },
+  {
+   "key": "gravehammer",
+   "cold": {
+    "ok": true,
+    "build": 38.9,
+    "compile": 31.1,
+    "render": 18.1,
+    "calls": 91,
+    "tris": 22792
+   },
+   "warm": {
+    "ok": true,
+    "build": 14.4,
+    "compile": 31.9,
+    "render": 16.2,
+    "calls": 91,
+    "tris": 22792
+   },
+   "max": {
+    "ok": true,
+    "build": 14.7,
+    "compile": 32.6,
+    "render": 19.4,
+    "calls": 143,
+    "tris": 29560
+   },
+   "worn": {
+    "ok": true,
+    "build": 16.2,
+    "compile": 32.9,
+    "render": 14.6,
+    "calls": 91,
+    "tris": 22792
+   },
+   "leak": {
+    "geometries": 9,
+    "textures": 5
+   }
+  },
+  {
+   "key": "heartofeternity",
+   "cold": {
+    "ok": true,
+    "build": 18,
+    "compile": 401.3,
+    "render": 13.9,
+    "calls": 34,
+    "tris": 23050
+   },
+   "warm": {
+    "ok": true,
+    "build": 16.5,
+    "compile": 43.5,
+    "render": 13.3,
+    "calls": 34,
+    "tris": 23050
+   },
+   "max": {
+    "ok": true,
+    "build": 19.1,
+    "compile": 42.8,
+    "render": 16.1,
+    "calls": 97,
+    "tris": 34628
+   },
+   "worn": {
+    "ok": true,
+    "build": 15.6,
+    "compile": 42.4,
+    "render": 12.2,
+    "calls": 34,
+    "tris": 23050
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  },
+  {
+   "key": "oracletablet",
+   "cold": {
+    "ok": true,
+    "build": 38.2,
+    "compile": 31.7,
+    "render": 11.2,
+    "calls": 63,
+    "tris": 10136
+   },
+   "warm": {
+    "ok": true,
+    "build": 31,
+    "compile": 31.6,
+    "render": 10.9,
+    "calls": 63,
+    "tris": 10136
+   },
+   "max": {
+    "ok": true,
+    "build": 29,
+    "compile": 32.6,
+    "render": 30.2,
+    "calls": 115,
+    "tris": 16904
+   },
+   "worn": {
+    "ok": true,
+    "build": 11.9,
+    "compile": 20.5,
+    "render": 13.3,
+    "calls": 63,
+    "tris": 10136
+   },
+   "leak": {
+    "geometries": 2,
+    "textures": 1
+   }
+  },
+  {
+   "key": "moonstone",
+   "cold": {
+    "ok": true,
+    "build": 10.5,
+    "compile": 258.8,
+    "render": 11.3,
+    "calls": 32,
+    "tris": 19666
+   },
+   "warm": {
+    "ok": true,
+    "build": 11.7,
+    "compile": 22.1,
+    "render": 12,
+    "calls": 32,
+    "tris": 19666
+   },
+   "max": {
+    "ok": true,
+    "build": 13.3,
+    "compile": 347.7,
+    "render": 14.9,
+    "calls": 84,
+    "tris": 26434
+   },
+   "worn": {
+    "ok": true,
+    "build": 12.3,
+    "compile": 32.6,
+    "render": 11.5,
+    "calls": 32,
+    "tris": 19666
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  },
+  {
+   "key": "leviathan",
+   "cold": {
+    "ok": true,
+    "build": 20.6,
+    "compile": 305.9,
+    "render": 15.8,
+    "calls": 272,
+    "tris": 42604
+   },
+   "warm": {
+    "ok": true,
+    "build": 16.3,
+    "compile": 30.3,
+    "render": 14.7,
+    "calls": 272,
+    "tris": 42604
+   },
+   "max": {
+    "ok": true,
+    "build": 19,
+    "compile": 414.6,
+    "render": 19.6,
+    "calls": 304,
+    "tris": 60468
+   },
+   "worn": {
+    "ok": true,
+    "build": 16,
+    "compile": 32.7,
+    "render": 15.1,
+    "calls": 272,
+    "tris": 42604
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  },
+  {
+   "key": "pocketdrone",
+   "cold": {
+    "ok": true,
+    "build": 15.3,
+    "compile": 20.8,
+    "render": 13.4,
+    "calls": 97,
+    "tris": 14916
+   },
+   "warm": {
+    "ok": true,
+    "build": 13.2,
+    "compile": 31.3,
+    "render": 14.1,
+    "calls": 97,
+    "tris": 14916
+   },
+   "max": {
+    "ok": true,
+    "build": 16,
+    "compile": 32.4,
+    "render": 15.7,
+    "calls": 149,
+    "tris": 21684
+   },
+   "worn": {
+    "ok": true,
+    "build": 13.2,
+    "compile": 31,
+    "render": 12.4,
+    "calls": 97,
+    "tris": 14916
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  },
+  {
+   "key": "scraprover",
+   "cold": {
+    "ok": true,
+    "build": 18.4,
+    "compile": 191.1,
+    "render": 16.4,
+    "calls": 148,
+    "tris": 18364
+   },
+   "warm": {
+    "ok": true,
+    "build": 17.3,
+    "compile": 32.2,
+    "render": 15.5,
+    "calls": 148,
+    "tris": 18364
+   },
+   "max": {
+    "ok": true,
+    "build": 17.4,
+    "compile": 346.6,
+    "render": 63.6,
+    "calls": 200,
+    "tris": 25132
+   },
+   "worn": {
+    "ok": true,
+    "build": 17.2,
+    "compile": 33.3,
+    "render": 17.3,
+    "calls": 148,
+    "tris": 18364
+   },
+   "leak": {
+    "geometries": 1,
+    "textures": 4
+   }
+  },
+  {
+   "key": "whisperjar",
+   "cold": {
+    "ok": true,
+    "build": 20.9,
+    "compile": 293.7,
+    "render": 15.7,
+    "calls": 55,
+    "tris": 24626
+   },
+   "warm": {
+    "ok": true,
+    "build": 18.7,
+    "compile": 31.2,
+    "render": 15.9,
+    "calls": 55,
+    "tris": 24626
+   },
+   "max": {
+    "ok": true,
+    "build": 21.6,
+    "compile": 332.6,
+    "render": 20.3,
+    "calls": 108,
+    "tris": 28912
+   },
+   "worn": {
+    "ok": true,
+    "build": 18.3,
+    "compile": 31.9,
+    "render": 16.1,
+    "calls": 55,
+    "tris": 24626
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  },
+  {
+   "key": "impossiblecube",
+   "cold": {
+    "ok": true,
+    "build": 14.1,
+    "compile": 34.4,
+    "render": 20.3,
+    "calls": 42,
+    "tris": 13958
+   },
+   "warm": {
+    "ok": true,
+    "build": 12.1,
+    "compile": 20.8,
+    "render": 11,
+    "calls": 42,
+    "tris": 13958
+   },
+   "max": {
+    "ok": true,
+    "build": 15.4,
+    "compile": 31.4,
+    "render": 14.7,
+    "calls": 94,
+    "tris": 20726
+   },
+   "worn": {
+    "ok": true,
+    "build": 12.6,
+    "compile": 21.3,
+    "render": 12.2,
+    "calls": 42,
+    "tris": 13958
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  },
+  {
+   "key": "missingtexture",
+   "cold": {
+    "ok": true,
+    "build": 14.9,
+    "compile": 154.3,
+    "render": 13.4,
+    "calls": 49,
+    "tris": 7812
+   },
+   "warm": {
+    "ok": true,
+    "build": 13.2,
+    "compile": 32.9,
+    "render": 12.9,
+    "calls": 49,
+    "tris": 7812
+   },
+   "max": {
+    "ok": true,
+    "build": 15.8,
+    "compile": 31.2,
+    "render": 15.9,
+    "calls": 101,
+    "tris": 14580
+   },
+   "worn": {
+    "ok": true,
+    "build": 13.4,
+    "compile": 21.8,
+    "render": 13.5,
+    "calls": 49,
+    "tris": 7812
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  },
+  {
+   "key": "backwardsclock",
+   "cold": {
+    "ok": true,
+    "build": 17.8,
+    "compile": 312.1,
+    "render": 18.1,
+    "calls": 63,
+    "tris": 18556
+   },
+   "warm": {
+    "ok": true,
+    "build": 13.3,
+    "compile": 21,
+    "render": 16.9,
+    "calls": 63,
+    "tris": 18556
+   },
+   "max": {
+    "ok": true,
+    "build": 14.8,
+    "compile": 391.4,
+    "render": 21.7,
+    "calls": 115,
+    "tris": 25324
+   },
+   "worn": {
+    "ok": true,
+    "build": 41.5,
+    "compile": 33.3,
+    "render": 19.6,
+    "calls": 63,
+    "tris": 18556
+   },
+   "leak": {
+    "geometries": 0,
+    "textures": 0
+   }
+  }
+ ]
+}

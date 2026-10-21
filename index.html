@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aethervault — The Infinite Archive</title>
+<meta name="description" content="A private single-player collectible simulator. Simulation only — no real transactions.">
+<meta name="theme-color" content="#12110f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2312110f'/%3E%3Cpath d='M32 8l8 18 16 6-16 6-8 18-8-18-16-6 16-6z' fill='none' stroke='%23d7b46e' stroke-width='3' stroke-linejoin='miter'/%3E%3C/svg%3E">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="vendor/fonts/cormorant-garamond-latin-600-normal.woff2">
+<link rel="stylesheet" href="css/boot.css">
+<link rel="stylesheet" href="css/aether.css">
+<link rel="stylesheet" href="css/places.css">
+<link rel="stylesheet" href="css/open.css">
+<link rel="stylesheet" href="css/vault.css">
+<link rel="stylesheet" href="css/pages.css">
+<link rel="stylesheet" href="css/stage.css">
+<link rel="stylesheet" href="css/progress.css">
+</head>
+<body data-screen="home">
+<div id="bg" aria-hidden="true">
+  <div class="bg-wall"></div><div class="bg-floor"></div><div class="bg-detail"></div><div class="bg-light"></div>
+  <canvas id="ambient"></canvas>
+  <div class="bg-vignette"></div>
+</div>
+
+<div id="shakeRoot">
+  <div id="app">
+    <header id="topbar"></header>
+    <nav id="nav" aria-label="Main"></nav>
+    <main id="stage" tabindex="-1"></main>
+  </div>
+</div>
+
+<div id="sweep" aria-hidden="true"></div>
+<div id="opening" class="op" aria-live="polite"></div>
+<div id="overlay"></div>
+<div id="toasts" aria-live="polite"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div id="flash" aria-hidden="true"></div>
+<div id="grain" aria-hidden="true"></div>
+
+<div id="boot" class="boot" data-state="loading" role="dialog" aria-modal="true" aria-label="Aethervault is starting">
+  <div class="boot-bg" aria-hidden="true"><i class="boot-grid"></i><i class="boot-halo"></i><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><span class="boot-dust"></span><i class="boot-vig"></i></div>
+  <main class="boot-core">
+    <div class="boot-emblem" aria-hidden="true"><svg viewBox="-100 -100 200 200">
+      <g class="r1"><circle r="93" fill="none" stroke="#3b362d" stroke-width="3" stroke-dasharray="1.4 7.64"/></g>
+      <g class="r2"><circle r="86" fill="none" stroke="#28241e" stroke-width="1" /><circle r="86" fill="none" stroke="#6c5429" stroke-width="3" stroke-dasharray="2 134.6"/></g>
+      <circle class="arc-track" r="76"/><circle class="arc" id="bootArc" r="76"/>
+      <g class="core"><path d="M0-37 12.4 -9.3 37 0 12.4 9.3 0 37-12.4 9.3-37 0-12.4-9.3z" fill="rgba(215,180,110,.07)" stroke="#d7b46e" stroke-width="2.6" stroke-linejoin="miter"/><path d="M0-12 7 0 0 12-7 0z" fill="#d7b46e"/></g>
+    </svg></div>
+    <h1 class="boot-word">Aethervault</h1>
+    <p class="boot-tag">The Infinite Archive</p>
+    <div class="boot-status" role="status" aria-live="polite"><p class="boot-head" id="bootHead">Waking archive systems…</p><p class="boot-sub" id="bootSub">Initializing Archive Network</p></div>
+    <div class="boot-bar" id="bootBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Archive start-up progress"><i id="bootFill"></i><b></b></div>
+    <div class="boot-pct" id="bootPct">0%</div>
+    <ol class="boot-steps" id="bootSteps" aria-hidden="true"></ol>
+    <p class="boot-lore" id="bootLore" aria-hidden="true"></p>
+    <section class="boot-err" id="bootErr" hidden role="alert"></section>
+  </main>
+  <footer class="boot-foot"><span id="bootVer">Aethervault</span><button class="boot-skip" id="bootSkip" type="button" hidden>Skip</button><span class="boot-hint" id="bootHint">Click or press a key to enable sound</span><span class="off"><i></i>Local archive · offline · no network used</span></footer>
+</div>
+<noscript><p style="position:fixed;inset:0;display:grid;place-items:center;background:#12110f;color:#ece3cf;font:18px sans-serif">Aethervault needs JavaScript enabled.</p></noscript>
+
+<script src="vendor/three.min.js"></script>
+<script src="js/util.js"></script>
+<script src="js/data.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/state.js"></script>
+<script src="js/specimen.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/art.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/stage3d/lib.js"></script>
+<script src="js/stage3d/core.js"></script>
+<script src="js/stage3d/kit.js"></script>
+<script src="js/stage3d/forms.js"></script>
+<script src="js/stage3d/manifest.js"></script>
+<script src="js/stage3d/models-containers.js"></script>
+<script src="js/stage3d/models-crate-vault.js"></script>
+<script src="js/stage3d/models-containers2.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/opening.js"></script>
+<script src="js/screens/statsui.js"></script>
+<script src="js/screens/inspect.js"></script>
+<script src="js/screens/home.js"></script>
+<script src="js/screens/open.js"></script>
+<script src="js/screens/vault.js"></script>
+<script src="js/screens/pets.js"></script>
+<script src="js/screens/forge.js"></script>
+<script src="js/screens/store.js"></script>
+<script src="js/screens/settings.js"></script>
+<script src="js/boot.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+{
+ "q": "low",
+ "out": {
+  "pebblor": {
+   "L0": {
+    "ok": true,
+    "coldMs": 45.2,
+    "warmMs": 12.6,
+    "calls": 41,
+    "tris": 20604,
+    "geoms": 56,
+    "tex": 9
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 17.6,
+    "warmMs": 16.3,
+    "calls": 119,
+    "tris": 31012,
+    "geoms": 90,
+    "tex": 10
+   }
+  },
+  "glimfin": {
+   "L0": {
+    "ok": true,
+    "coldMs": 32.3,
+    "warmMs": 12.2,
+    "calls": 34,
+    "tris": 18526,
+    "geoms": 69,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 14.5,
+    "warmMs": 16.6,
+    "calls": 112,
+    "tris": 45182,
+    "geoms": 88,
+    "tex": 10
+   }
+  },
+  "gloomwing": {
+   "L0": {
+    "ok": true,
+    "coldMs": 24.6,
+    "warmMs": 13.4,
+    "calls": 63,
+    "tris": 18592,
+    "geoms": 81,
+    "tex": 11
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 18.7,
+    "warmMs": 18.1,
+    "calls": 145,
+    "tris": 25952,
+    "geoms": 114,
+    "tex": 11
+   }
+  },
+  "voidling": {
+   "L0": {
+    "ok": true,
+    "coldMs": 22.3,
+    "warmMs": 10.6,
+    "calls": 49,
+    "tris": 47212,
+    "geoms": 78,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 12.2,
+    "warmMs": 12.9,
+    "calls": 150,
+    "tris": 60138,
+    "geoms": 103,
+    "tex": 10
+   }
+  },
+  "sunmane": {
+   "L0": {
+    "ok": true,
+    "coldMs": 25.5,
+    "warmMs": 11.9,
+    "calls": 82,
+    "tris": 24952,
+    "geoms": 92,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 14.5,
+    "warmMs": 12.9,
+    "calls": 190,
+    "tris": 32948,
+    "geoms": 114,
+    "tex": 10
+   }
+  },
+  "oakbuckler": {
+   "L0": {
+    "ok": true,
+    "coldMs": 11.3,
+    "warmMs": 8.4,
+    "calls": 34,
+    "tris": 12286,
+    "geoms": 93,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 11.4,
+    "warmMs": 11,
+    "calls": 108,
+    "tris": 20734,
+    "geoms": 119,
+    "tex": 10
+   }
+  },
+  "aegis": {
+   "L0": {
+    "ok": true,
+    "coldMs": 9.4,
+    "warmMs": 9.5,
+    "calls": 37,
+    "tris": 8262,
+    "geoms": 112,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 10.5,
+    "warmMs": 10.7,
+    "calls": 136,
+    "tris": 14986,
+    "geoms": 130,
+    "tex": 10
+   }
+  },
+  "bonecharm": {
+   "L0": {
+    "ok": true,
+    "coldMs": 16.9,
+    "warmMs": 8.8,
+    "calls": 21,
+    "tris": 11312,
+    "geoms": 107,
+    "tex": 11
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 12.2,
+    "warmMs": 11.3,
+    "calls": 110,
+    "tris": 17368,
+    "geoms": 127,
+    "tex": 12
+   }
+  },
+  "amberfossil": {
+   "L0": {
+    "ok": true,
+    "coldMs": 24.5,
+    "warmMs": 9.3,
+    "calls": 45,
+    "tris": 15338,
+    "geoms": 125,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 12.2,
+    "warmMs": 11.8,
+    "calls": 135,
+    "tris": 21332,
+    "geoms": 159,
+    "tex": 11
+   }
+  },
+  "eclipsescepter": {
+   "L0": {
+    "ok": true,
+    "coldMs": 10.3,
+    "warmMs": 9.8,
+    "calls": 63,
+    "tris": 10094,
+    "geoms": 126,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 10.4,
+    "warmMs": 10.4,
+    "calls": 144,
+    "tris": 15830,
+    "geoms": 146,
+    "tex": 11
+   }
+  },
+  "sunkencrown": {
+   "L0": {
+    "ok": true,
+    "coldMs": 10,
+    "warmMs": 10.9,
+    "calls": 70,
+    "tris": 12549,
+    "geoms": 135,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 11.6,
+    "warmMs": 12.5,
+    "calls": 154,
+    "tris": 24693,
+    "geoms": 161,
+    "tex": 11
+   }
+  },
+  "skyskiff": {
+   "L0": {
+    "ok": true,
+    "coldMs": 12.9,
+    "warmMs": 11.4,
+    "calls": 49,
+    "tris": 12918,
+    "geoms": 146,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 14,
+    "warmMs": 13.3,
+    "calls": 136,
+    "tris": 19752,
+    "geoms": 181,
+    "tex": 10
+   }
+  },
+  "chronoracer": {
+   "L0": {
+    "ok": true,
+    "coldMs": 10.3,
+    "warmMs": 8.3,
+    "calls": 39,
+    "tris": 12448,
+    "geoms": 132,
+    "tex": 11
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 12.6,
+    "warmMs": 10.1,
+    "calls": 107,
+    "tris": 19264,
+    "geoms": 152,
+    "tex": 11
+   }
+  },
+  "starhopper": {
+   "L0": {
+    "ok": true,
+    "coldMs": 11.1,
+    "warmMs": 33.4,
+    "calls": 41,
+    "tris": 9838,
+    "geoms": 141,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 12.5,
+    "warmMs": 10.7,
+    "calls": 136,
+    "tris": 16932,
+    "geoms": 180,
+    "tex": 10
+   }
+  },
+  "infinitesock": {
+   "L0": {
+    "ok": true,
+    "coldMs": 9.3,
+    "warmMs": 7.4,
+    "calls": 39,
+    "tris": 11236,
+    "geoms": 132,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 10.3,
+    "warmMs": 9.4,
+    "calls": 153,
+    "tris": 18804,
+    "geoms": 150,
+    "tex": 10
+   }
+  },
+  "vendingfragment": {
+   "L0": {
+    "ok": true,
+    "coldMs": 13.9,
+    "warmMs": 10,
+    "calls": 27,
+    "tris": 7434,
+    "geoms": 131,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 14,
+    "warmMs": 11.2,
+    "calls": 131,
+    "tris": 20546,
+    "geoms": 157,
+    "tex": 11
+   }
+  },
+  "glitchedcursor": {
+   "L0": {
+    "ok": true,
+    "coldMs": 8.7,
+    "warmMs": 8.6,
+    "calls": 26,
+    "tris": 7142,
+    "geoms": 133,
+    "tex": 10
+   },
+   "L4+form": {
+    "ok": true,
+    "coldMs": 11.4,
+    "warmMs": 10.8,
+    "calls": 176,
+    "tris": 18602,
+    "geoms": 151,
+    "tex": 10
+   }
+  }
+ },
+ "errors": [
+  "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+ ]
+}

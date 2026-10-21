@@ -1,0 +1,88 @@
+# Aethervault — The Infinite Archive (v0.4, Phase Three)
+
+A private, single-player collectible simulator. **Simulation only — no real transactions, no network access.**
+v0.2 is a visual redesign and a real-time 3D vertical slice; no gameplay systems were added.
+
+## Launch
+
+**Windows:** double-click `Play-Aethervault.bat` (serves the folder locally and opens your browser).
+
+**Any platform:**
+
+```bash
+node serve.mjs 5173      # then open http://127.0.0.1:5173
+```
+
+`index.html` also works straight from disk (`file://`): the game uses classic scripts, bundled fonts and a vendored Three.js UMD build, so there is no build step and no install step.
+
+Requirements: a current Chromium, Firefox or Safari. WebGL is used for the 3D presentation; without it (or with 3D set to *Off*) the game falls back to its original 2D artwork.
+
+## What's new in v0.4 (Phase Three) — details in [`PHASE_THREE.md`](PHASE_THREE.md)
+
+- **All 40 collectibles are real 3D models** (17 new: Pebblor, Glimfin, Gloomwing, Voidling, Sunmane, Oak Buckler, Starforged Aegis, Bone Charm, Amber Fossil, Eclipse Scepter, Sunken Crown, Sky Skiff, Chrono Racer, Starhopper, Infinite Sock, Vending Fragment, Glitched Cursor). SVG art remains as the fallback.
+- **Category-specific statistics** for every specimen (weapon, shield, pet, machine, relic, oddity families), derived deterministically from its traits: identity, condition, variant, potential, upgrade stage and transformation. Inspect shows them with comparison, a next-upgrade preview, a potential-ceiling tick and an explanation of what feeds each number.
+- **Upgrading redesigned:** category stage names (Forged → Signature, Young → Apex Form, Standard → Apex Configuration, Dormant → True Form, Contained → Breached), per-stat previews, a before/after pair and a live 3D preview, structural model additions per stage, and a ledger of every change.
+- **Transformations for the whole catalogue:** every item has an evolution, a final form or a branch choice (57 forms; 23 of 40 items offer a real choice). Branches differ in geometry, motion, tint, stats and archive text. Earlier looks stay selectable; re-binding a branch costs Essence (free in Unlimited Mode).
+- **Rarity** is shown by the pedestal and light (no floating rings) — unchanged from the Phase Three pre-pass.
+- Saves from v0.1–v0.3 migrate in place (a backup of the raw save is written first).
+- Not in this version: fusion, quests, seasons, battle passes, events, trading, marketplace, multiplayer, accounts, Creator Mode, combat.
+
+## What's new in v0.3 (Phase Two) — details in [`PHASE_TWO.md`](PHASE_TWO.md)
+
+- A local-only startup sequence (six real initialisation stages, ~5 s cold / ~3 s warm, optional *Fast startup*, reduced-motion and 2D fallbacks, recovery panel for an unreadable save). No network is used.
+- 13 new 3D collectibles (Emberkit, Pyrodrake, Mossback, Grovewarden, Ionbow, Gravehammer, Oracle Tablet, Moonstone, Pocket Drone, Scrap Rover, Impossible Cube, Missing Texture, Backwards Clock) plus 3D Wanderer Pack and Oddity Capsule.
+- Performance: loops that sleep when nothing moves, an FPS limit (Auto / 30 / 60 / Uncapped), persistent thumbnail cache, consistent thumbnail framing, model files loaded after Home.
+- Saves from v0.1/v0.2 load unchanged.
+
+## What's in v0.2
+
+- A new interface identity (matte archive surfaces, brass used for prestige only, bundled type roles, one icon family, location-specific backdrops, left rail navigation). See [`VISUAL_DIRECTION.md`](VISUAL_DIRECTION.md).
+- A reusable 3D stage inside the existing 2D menus (one shared renderer, drag/zoom/spring-return, rarity-sensitive lighting, trait shader, thumbnails, quality levels, graceful fallback).
+- A 3D vertical slice: **Hatchling Egg, Forge Crate, Mythic Vault; the Nimbus line (Nimbit, Nimbus, Tempestral, Pluvia, Storm Sovereign); Rustblade + Prismedge; Heart of Eternity; Leviathan Engine; Whisper Jar.** Every other collectible keeps its SVG art.
+
+## 3D quality (Settings → 3D presentation)
+
+| Level | Render scale | Shadows | Materials | Frame cap |
+|---|---|---|---|---|
+| Off | — | — | pure 2D artwork | — |
+| Low | ≤ 1× | none (contact shadow only) | standard | 30 fps |
+| Medium (default) | ≤ 1.25× | 1024 PCF | clearcoat / iridescence | 60 fps |
+| High | ≤ 2× | 2048 PCF | clearcoat / iridescence | 60 fps |
+
+Only the active centerpiece (Home companion, Open-hall container, Pets stage, Forge chamber, inspection, ritual/reveal) renders in real time. Vault, Codex, lists and the atlas use cached thumbnails rendered by the same renderer. *Reduced motion* stops all ambient animation: 3D draws only while you interact.
+
+## Controls
+
+Drag a 3D object to turn it (it springs back to its presentation angle); scroll or pinch to zoom in inspection and the Forge; arrow keys and `+`/`−` work when a 3D view has focus. Pets look at the cursor; click one to nudge it.
+
+## Project layout
+
+```
+index.html              shell
+css/aether.css          design system: tokens, six surface types, buttons, controls, plates, modals
+css/places.css          backdrops per screen, Home
+css/open.css  vault.css  pages.css  stage.css     per-screen layout; cinematic stages (rituals, reveals, inspection, evolution)
+js/stage3d/lib.js       geometry builders, surface-nets cloud skins, procedural textures, shared trait shader
+js/stage3d/core.js      renderer, views, rigs/plinths, thumbnails, quality, loop
+js/stage3d/models-*.js  the vertical-slice models
+js/screens/*.js         home, open, vault, pets, forge, store, settings, inspect
+js/opening.js           rituals → reveals → summary
+vendor/                 three.min.js (r160, MIT) and fonts (SIL OFL)
+dev/gallery.html        model gallery and SVG-vs-3D comparison (?compare=1, ?sheet=…)
+tools/                  dev-only Puppeteer scripts (screenshots, validation) — not needed to play
+tests/logic.test.js     game-rule tests (Node, no browser)
+docs/                   screenshots (before/after/validation), validation reports, legacy v0.1 CSS
+```
+
+## Tests
+
+```bash
+node tests/logic.test.js                      # 37 rule/contract checks, no dependencies
+cd tools && npm install && cd ..              # one-time, dev only (puppeteer-core; uses your installed Edge/Chrome)
+node tools/phase2.mjs                         # Phase Two: startup, fallback, save compat, new models, FPS limit, loop sleeping
+node tools/perf.mjs <label>                   # performance probe (see PHASE_TWO.md)
+node tools/validate.mjs all                   # browser suite: boot, buttons, modes, protection, upgrade, evolve, reveals, leaks, quality, motion, responsive, save, audio
+node tools/shoot-after.mjs                    # regenerate docs/screenshots/after
+```
+
+Open `http://127.0.0.1:5173/dev/gallery.html?compare=1` to see every slice model next to its original SVG.

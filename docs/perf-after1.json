@@ -1,0 +1,530 @@
+{
+ "label": "after1",
+ "when": "2026-10-21T14:08:58.635Z",
+ "note": "headless Chromium, 1600x900, DPR1",
+ "quality": {
+  "low": {
+   "startup": {
+    "puppeteerLoadMs": 134,
+    "domContentLoadedMs": 123,
+    "loadEventMs": 131,
+    "interactiveHomeMs": 545,
+    "timedOut": false
+   },
+   "afterBoot": {
+    "heapMB": 19.6,
+    "views": 1,
+    "geometries": 30,
+    "textures": 9,
+    "programs": 9,
+    "drawCalls": 34,
+    "triangles": 38628,
+    "thumbs": 3,
+    "queue": 0,
+    "glCanvas": [
+     1152,
+     1024
+    ],
+    "stageFrames": 53,
+    "stageAvgMs": 0.4,
+    "stageWorstMs": 6.47,
+    "glContexts": 1,
+    "rafFns": 1
+   },
+   "homeIdle": {
+    "frames": 864,
+    "avgFps": 143.9,
+    "avgMs": 6.95,
+    "p95Ms": 7,
+    "p99Ms": 7.1,
+    "worstMs": 7.1,
+    "over33": 0,
+    "over50": 0,
+    "rafCallsPerSec": 288
+   },
+   "homeIdleStage": {
+    "views": 1,
+    "geometries": 30,
+    "textures": 9,
+    "programs": 9,
+    "drawCalls": 34,
+    "triangles": 38628,
+    "thumbs": 3,
+    "queue": 0,
+    "glCanvas": [
+     1152,
+     1024
+    ],
+    "stageFrames": 233,
+    "stageAvgMs": 0.39,
+    "stageWorstMs": 2.63,
+    "glContexts": 1,
+    "rafFns": 2
+   },
+   "homeInteract": {
+    "frames": 576,
+    "avgFps": 143.9,
+    "avgMs": 6.95,
+    "p95Ms": 7,
+    "p99Ms": 7.1,
+    "worstMs": 7.7,
+    "over33": 0,
+    "over50": 0,
+    "rafCallsPerSec": 289
+   },
+   "navigation": {
+    "vault": {
+     "syncMs": 50.7,
+     "stage": {
+      "views": 0,
+      "geometries": 46,
+      "textures": 18,
+      "programs": 0,
+      "drawCalls": 540,
+      "triangles": 278770,
+      "thumbs": 15,
+      "queue": 0,
+      "glCanvas": [
+       1152,
+       1024
+      ],
+      "stageFrames": 353,
+      "stageAvgMs": 0.4,
+      "stageWorstMs": 1.44,
+      "glContexts": 1,
+      "rafFns": 2
+     },
+     "idle": {
+      "frames": 360,
+      "avgFps": 143.9,
+      "avgMs": 6.95,
+      "p95Ms": 7,
+      "p99Ms": 7.1,
+      "worstMs": 7.1,
+      "over33": 0,
+      "over50": 0,
+      "rafCallsPerSec": 144
+     },
+     "heapMB": 6.3
+    },
+    "pets": {
+     "syncMs": 40.6,
+     "stage": {
+      "views": 1,
+      "geometries": 66,
+      "textures": 19,
+      "programs": 9,
+      "drawCalls": 34,
+      "triangles": 38628,
+      "thumbs": 25,
+      "queue": 0,
+      "glCanvas": [
+       1152,
+       1024
+      ],
+      "stageFrames": 405,
+      "stageAvgMs": 0.38,
+      "stageWorstMs": 2.25,
+      "glContexts": 1,
+      "rafFns": 2
+     }
+    },
+    "forge": {
+     "syncMs": 49.8,
+     "stage": {
+      "views": 1,
+      "geometries": 102,
+      "textures": 19,
+      "programs": 12,
+      "drawCalls": 66,
+      "triangles": 30794,
+      "thumbs": 30,
+      "queue": 0,
+      "glCanvas": [
+       1280,
+       1024
+      ],
+      "stageFrames": 454,
+      "stageAvgMs": 0.62,
+      "stageWorstMs": 12.74,
+      "glContexts": 1,
+      "rafFns": 2
+     }
+    },
+    "open": {
+     "syncMs": 10.4,
+     "stage": {
+      "views": 0,
+      "geometries": 46,
+      "textures": 18,
+      "programs": 0,
+      "drawCalls": 66,
+      "triangles": 30794,
+      "thumbs": 30,
+      "queue": 0,
+      "glCanvas": [
+       1280,
+       1024
+      ],
+      "stageFrames": 454,
+      "stageAvgMs": 0.62,
+      "stageWorstMs": 12.74,
+      "glContexts": 1,
+      "rafFns": 2
+     }
+    },
+    "home": {
+     "syncMs": 18.8,
+     "stage": {
+      "views": 1,
+      "geometries": 66,
+      "textures": 19,
+      "programs": 9,
+      "drawCalls": 34,
+      "triangles": 38628,
+      "thumbs": 30,
+      "queue": 0,
+      "glCanvas": [
+       1280,
+       1024
+      ],
+      "stageFrames": 507,
+      "stageAvgMs": 0.51,
+      "stageWorstMs": 9.76,
+      "glContexts": 1,
+      "rafFns": 2
+     }
+    }
+   },
+   "inspectCycles": {
+    "n": 20,
+    "openSyncMs": [
+     10.1,
+     7.8,
+     9.2,
+     8.1,
+     14.7,
+     13.3,
+     11.8,
+     14.4,
+     16.1,
+     16.6,
+     16.8,
+     16.9,
+     6.9,
+     5.6,
+     8.7,
+     7.2,
+     14.7,
+     12.2,
+     11.9,
+     14.9
+    ],
+    "avgOpenSyncMs": 11.9,
+    "maxOpenSyncMs": 16.9,
+    "before": {
+     "heapMB": 31.4,
+     "views": 1,
+     "geometries": 66,
+     "textures": 19,
+     "programs": 9,
+     "drawCalls": 34,
+     "triangles": 38628,
+     "thumbs": 30,
+     "queue": 0,
+     "glCanvas": [
+      1280,
+      1024
+     ],
+     "stageFrames": 507,
+     "stageAvgMs": 0.51,
+     "stageWorstMs": 9.76,
+     "glContexts": 1,
+     "rafFns": 2
+    },
+    "after": {
+     "heapMB": 10.8,
+     "views": 1,
+     "geometries": 66,
+     "textures": 19,
+     "programs": 9,
+     "drawCalls": 34,
+     "triangles": 38628,
+     "thumbs": 30,
+     "queue": 0,
+     "glCanvas": [
+      1280,
+      1024
+     ],
+     "stageFrames": 1080,
+     "stageAvgMs": 0.64,
+     "stageWorstMs": 9.56,
+     "glContexts": 1,
+     "rafFns": 2
+    }
+   }
+  },
+  "medium": {
+   "startup": {
+    "puppeteerLoadMs": 201,
+    "domContentLoadedMs": 176,
+    "loadEventMs": 198,
+    "interactiveHomeMs": 580,
+    "timedOut": false
+   },
+   "afterBoot": {
+    "heapMB": 26,
+    "views": 1,
+    "geometries": 24,
+    "textures": 7,
+    "programs": 10,
+    "drawCalls": 56,
+    "triangles": 71746,
+    "thumbs": 3,
+    "queue": 0,
+    "glCanvas": [
+     1152,
+     1024
+    ],
+    "stageFrames": 113,
+    "stageAvgMs": 0.46,
+    "stageWorstMs": 12.32,
+    "glContexts": 1,
+    "rafFns": 1
+   },
+   "homeIdle": {
+    "frames": 863,
+    "avgFps": 143.9,
+    "avgMs": 6.95,
+    "p95Ms": 7,
+    "p99Ms": 7.1,
+    "worstMs": 7.1,
+    "over33": 0,
+    "over50": 0,
+    "rafCallsPerSec": 288
+   },
+   "homeIdleStage": {
+    "views": 1,
+    "geometries": 28,
+    "textures": 7,
+    "programs": 10,
+    "drawCalls": 56,
+    "triangles": 71746,
+    "thumbs": 3,
+    "queue": 0,
+    "glCanvas": [
+     1152,
+     1024
+    ],
+    "stageFrames": 473,
+    "stageAvgMs": 0.49,
+    "stageWorstMs": 2.03,
+    "glContexts": 1,
+    "rafFns": 2
+   },
+   "homeInteract": {
+    "frames": 575,
+    "avgFps": 143.9,
+    "avgMs": 6.95,
+    "p95Ms": 7,
+    "p99Ms": 7.1,
+    "worstMs": 7.1,
+    "over33": 0,
+    "over50": 0,
+    "rafCallsPerSec": 288
+   },
+   "navigation": {
+    "vault": {
+     "syncMs": 38.5,
+     "stage": {
+      "views": 0,
+      "geometries": 41,
+      "textures": 18,
+      "programs": 1,
+      "drawCalls": 565,
+      "triangles": 311894,
+      "thumbs": 15,
+      "queue": 0,
+      "glCanvas": [
+       1152,
+       1024
+      ],
+      "stageFrames": 713,
+      "stageAvgMs": 0.43,
+      "stageWorstMs": 0.61,
+      "glContexts": 1,
+      "rafFns": 2
+     },
+     "idle": {
+      "frames": 360,
+      "avgFps": 143.9,
+      "avgMs": 6.95,
+      "p95Ms": 7,
+      "p99Ms": 7.1,
+      "worstMs": 7.1,
+      "over33": 0,
+      "over50": 0,
+      "rafCallsPerSec": 144
+     },
+     "heapMB": 6.4
+    },
+    "pets": {
+     "syncMs": 41.8,
+     "stage": {
+      "views": 1,
+      "geometries": 60,
+      "textures": 20,
+      "programs": 10,
+      "drawCalls": 56,
+      "triangles": 71746,
+      "thumbs": 25,
+      "queue": 0,
+      "glCanvas": [
+       1152,
+       1024
+      ],
+      "stageFrames": 819,
+      "stageAvgMs": 0.48,
+      "stageWorstMs": 25.11,
+      "glContexts": 1,
+      "rafFns": 2
+     }
+    },
+    "forge": {
+     "syncMs": 51,
+     "stage": {
+      "views": 1,
+      "geometries": 96,
+      "textures": 20,
+      "programs": 15,
+      "drawCalls": 86,
+      "triangles": 41276,
+      "thumbs": 30,
+      "queue": 0,
+      "glCanvas": [
+       1280,
+       1024
+      ],
+      "stageFrames": 903,
+      "stageAvgMs": 0.73,
+      "stageWorstMs": 16.48,
+      "glContexts": 1,
+      "rafFns": 2
+     }
+    },
+    "open": {
+     "syncMs": 9.8,
+     "stage": {
+      "views": 0,
+      "geometries": 41,
+      "textures": 18,
+      "programs": 1,
+      "drawCalls": 86,
+      "triangles": 41276,
+      "thumbs": 30,
+      "queue": 0,
+      "glCanvas": [
+       1280,
+       1024
+      ],
+      "stageFrames": 903,
+      "stageAvgMs": 0.73,
+      "stageWorstMs": 16.48,
+      "glContexts": 1,
+      "rafFns": 2
+     }
+    },
+    "home": {
+     "syncMs": 22.6,
+     "stage": {
+      "views": 1,
+      "geometries": 60,
+      "textures": 20,
+      "programs": 10,
+      "drawCalls": 56,
+      "triangles": 71746,
+      "thumbs": 30,
+      "queue": 0,
+      "glCanvas": [
+       1280,
+       1024
+      ],
+      "stageFrames": 1010,
+      "stageAvgMs": 0.44,
+      "stageWorstMs": 9.64,
+      "glContexts": 1,
+      "rafFns": 2
+     }
+    }
+   },
+   "inspectCycles": {
+    "n": 20,
+    "openSyncMs": [
+     8,
+     8.3,
+     8.7,
+     9.8,
+     17.8,
+     14.4,
+     12,
+     17.6,
+     18.3,
+     16.2,
+     18.7,
+     15.1,
+     5.9,
+     7.6,
+     8.1,
+     8.7,
+     18.6,
+     12.9,
+     13.7,
+     16.1
+    ],
+    "avgOpenSyncMs": 12.8,
+    "maxOpenSyncMs": 18.7,
+    "before": {
+     "heapMB": 15.1,
+     "views": 1,
+     "geometries": 60,
+     "textures": 20,
+     "programs": 10,
+     "drawCalls": 56,
+     "triangles": 71746,
+     "thumbs": 30,
+     "queue": 0,
+     "glCanvas": [
+      1280,
+      1024
+     ],
+     "stageFrames": 1010,
+     "stageAvgMs": 0.44,
+     "stageWorstMs": 9.64,
+     "glContexts": 1,
+     "rafFns": 2
+    },
+    "after": {
+     "heapMB": 14.4,
+     "views": 1,
+     "geometries": 60,
+     "textures": 20,
+     "programs": 10,
+     "drawCalls": 56,
+     "triangles": 71746,
+     "thumbs": 30,
+     "queue": 0,
+     "glCanvas": [
+      1280,
+      1024
+     ],
+     "stageFrames": 2034,
+     "stageAvgMs": 0.64,
+     "stageWorstMs": 10.04,
+     "glContexts": 1,
+     "rafFns": 2
+    }
+   }
+  }
+ },
+ "errors": []
+}

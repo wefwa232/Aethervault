@@ -1,0 +1,71 @@
+{
+ "date": "2026-10-20T18:47:21.200Z",
+ "results": [
+  {
+   "group": "boot",
+   "name": "fresh load shows onboarding modal",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "no page errors on boot",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "WebGL stage is supported & renderer created",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "onboarding starts the first-egg ritual (3D view mounted)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "egg ritual completes into a reveal",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "profile saved (name, mode, onboarded, starter pet, companion)",
+   "ok": true,
+   "detail": "{\"name\":\"Tester\",\"mode\":\"unlimited\",\"onboarded\":true,\"count\":1,\"comp\":true}"
+  },
+  {
+   "group": "modes",
+   "name": "Unlimited shows ∞ balances",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Unlimited opens a container with 0 credits",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Unlimited spends nothing",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Standard refuses an unaffordable opening (250 credits vs 100)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Standard deducts the price",
+   "ok": true,
+   "detail": "{\"ok\":true,\"credits\":750}"
+  }
+ ]
+}
