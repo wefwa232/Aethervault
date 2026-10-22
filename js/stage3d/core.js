@@ -633,7 +633,7 @@
     S.booted = (S.supported() ? (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()) : Promise.resolve()).then(() => { if (S.supported() && ensureGL()) { loopEnabled = true; startLoop(); } return S.supported(); });
     return S.booted;
   };
-  S.lib = L; S.encode = encode; S.decode = decode; S.renderer = () => renderer; S.reducedMotion = reduced;
+  S.lib = L; S.encode = encode; S.decode = decode; S.renderer = () => renderer; S.reducedMotion = reduced; S.env = () => envTex; S.glCanvas = () => glCanvas;
   S.glInfo = () => { if (!renderer) return null; const gl = renderer.getContext(), ext = gl.getExtension('WEBGL_debug_renderer_info'); return { renderer: ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER), vendor: ext ? gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR), webgl2: renderer.capabilities.isWebGL2, maxTex: renderer.capabilities.maxTextureSize }; };
   S.ensureGL = ensureGL;
 })();

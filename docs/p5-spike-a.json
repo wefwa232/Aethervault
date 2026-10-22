@@ -1,0 +1,449 @@
+{
+ "label": "a",
+ "quality": "medium",
+ "at": "2026-10-22T14:15:02.502Z",
+ "viewport": "1600x900 DPR1 headless Chrome, uncapped rAF",
+ "modes": {
+  "pets12": {
+   "full": {
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 313,
+    "perUnit": [
+     "nimbit:29438t/17c -> 29438t/17c",
+     "nimbus:34436t/28c -> 34436t/28c",
+     "tempestral:36350t/36c -> 36350t/36c",
+     "pluvia:31528t/45c -> 31528t/45c",
+     "stormsovereign:53934t/84c -> 53934t/84c",
+     "emberkit:17620t/28c -> 17620t/28c",
+     "pyrodrake:20035t/69c -> 20035t/69c",
+     "pebblor:17241t/44c -> 17241t/44c",
+     "mossback:27540t/102c -> 27540t/102c",
+     "grovewarden:36650t/147c -> 36650t/147c",
+     "glimfin:11569t/20c -> 11569t/20c",
+     "gloomwing:13979t/56c -> 13979t/56c"
+    ],
+    "scene": {
+     "calls": 716,
+     "triangles": 326288
+    },
+    "perf": {
+     "frames": 570,
+     "avgMs": 7.03,
+     "avgFps": 142.2,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 27.8,
+     "jsMs": 2.45,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 417,
+     "textures": 31
+    },
+    "programs": 44,
+    "afterDispose": {
+     "geometries": 113,
+     "textures": 29
+    },
+    "heapMB": 51.5
+   },
+   "merged": {
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 49,
+    "perUnit": [
+     "nimbit:29438t/17c -> 25172t/3c",
+     "nimbus:34436t/28c -> 30168t/5c",
+     "tempestral:36350t/36c -> 36340t/9c",
+     "pluvia:31528t/45c -> 27264t/9c",
+     "stormsovereign:53934t/84c -> 53888t/12c",
+     "emberkit:17620t/28c -> 13092t/8c",
+     "pyrodrake:20035t/69c -> 15484t/12c",
+     "pebblor:17241t/44c -> 12928t/8c",
+     "mossback:27540t/102c -> 20772t/16c",
+     "grovewarden:36650t/147c -> 29848t/21c",
+     "glimfin:11569t/20c -> 7088t/4c",
+     "gloomwing:13979t/56c -> 9692t/8c"
+    ],
+    "scene": {
+     "calls": 130,
+     "triangles": 281790
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.96,
+     "avgFps": 143.6,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 13.9,
+     "jsMs": 0.66,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 235,
+     "textures": 33
+    },
+    "programs": 33,
+    "afterDispose": {
+     "geometries": 117,
+     "textures": 32
+    },
+    "heapMB": 56.2
+   },
+   "dedupe": {
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 48,
+    "perUnit": [
+     "nimbit:29438t/17c -> 25172t/3c",
+     "nimbus:34436t/28c -> 30168t/5c",
+     "tempestral:36350t/36c -> 36340t/8c",
+     "pluvia:31528t/45c -> 27264t/9c",
+     "stormsovereign:53934t/84c -> 53888t/11c",
+     "emberkit:17620t/28c -> 13092t/7c",
+     "pyrodrake:20035t/69c -> 15484t/12c",
+     "pebblor:17241t/44c -> 12928t/8c",
+     "mossback:27540t/102c -> 20772t/16c",
+     "grovewarden:36650t/147c -> 29848t/21c",
+     "glimfin:11569t/20c -> 7088t/4c",
+     "gloomwing:13979t/56c -> 9692t/8c"
+    ],
+    "scene": {
+     "calls": 127,
+     "triangles": 281790
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.63,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 232,
+     "textures": 34
+    },
+    "programs": 33,
+    "afterDispose": {
+     "geometries": 117,
+     "textures": 33
+    },
+    "heapMB": 48.5
+   },
+   "dedupe-lod2": {
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 59,
+    "perUnit": [
+     "nimbit:29438t/17c -> 25172t/3c",
+     "nimbus:34436t/28c -> 30168t/5c",
+     "tempestral:36350t/36c -> 36340t/8c",
+     "pluvia:31528t/45c -> 27264t/9c",
+     "stormsovereign:53934t/84c -> 53888t/11c",
+     "emberkit:12300t/28c -> 7772t/7c",
+     "pyrodrake:15323t/69c -> 10772t/12c",
+     "pebblor:13029t/44c -> 8716t/8c",
+     "mossback:26300t/102c -> 19532t/16c",
+     "grovewarden:32814t/147c -> 26012t/21c",
+     "glimfin:8441t/20c -> 3960t/4c",
+     "gloomwing:11283t/56c -> 6996t/8c"
+    ],
+    "scene": {
+     "calls": 127,
+     "triangles": 256646
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.64,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 219,
+     "textures": 35
+    },
+    "programs": 33,
+    "afterDispose": {
+     "geometries": 104,
+     "textures": 34
+    },
+    "heapMB": 59.6
+   },
+   "dedupe-lod3": {
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 116,
+    "perUnit": [
+     "nimbit:29438t/17c -> 25172t/3c",
+     "nimbus:34436t/28c -> 30168t/5c",
+     "tempestral:36350t/36c -> 36340t/8c",
+     "pluvia:31528t/45c -> 27264t/9c",
+     "stormsovereign:53934t/84c -> 53888t/11c",
+     "emberkit:11256t/28c -> 6728t/7c",
+     "pyrodrake:14489t/69c -> 9938t/12c",
+     "pebblor:12213t/44c -> 7900t/8c",
+     "mossback:26116t/102c -> 19348t/16c",
+     "grovewarden:32154t/147c -> 25352t/21c",
+     "glimfin:7829t/20c -> 3348t/4c",
+     "gloomwing:10793t/56c -> 6506t/8c"
+    ],
+    "scene": {
+     "calls": 127,
+     "triangles": 252006
+    },
+    "perf": {
+     "frames": 577,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.63,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 165,
+     "textures": 36
+    },
+    "programs": 33,
+    "afterDispose": {
+     "geometries": 50,
+     "textures": 35
+    },
+    "heapMB": 44.5
+   }
+  },
+  "mixed12": {
+   "full": {
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 161,
+    "perUnit": [
+     "pyrodrake:17819t/62c -> 17819t/62c",
+     "grovewarden:32448t/107c -> 32448t/107c",
+     "stormsovereign:50872t/50c -> 50872t/50c",
+     "voidling:46596t/60c -> 46596t/60c",
+     "leviathan:26557t/170c -> 26557t/170c",
+     "scraprover:6401t/71c -> 6401t/71c",
+     "pocketdrone:6862t/51c -> 6862t/51c",
+     "gravehammer:10391t/56c -> 10391t/56c",
+     "ionbow:9930t/58c -> 9930t/58c",
+     "aegis:6420t/70c -> 6420t/70c",
+     "moonstone:8569t/15c -> 8569t/15c",
+     "backwardsclock:5858t/31c -> 5858t/31c"
+    ],
+    "scene": {
+     "calls": 835,
+     "triangles": 228884
+    },
+    "perf": {
+     "frames": 577,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 2.42,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 451,
+     "textures": 42
+    },
+    "programs": 40,
+    "afterDispose": {
+     "geometries": 113,
+     "textures": 41
+    },
+    "heapMB": 56.7
+   },
+   "merged": {
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 93,
+    "perUnit": [
+     "pyrodrake:17819t/62c -> 13292t/10c",
+     "grovewarden:32448t/107c -> 28152t/19c",
+     "stormsovereign:50872t/50c -> 50860t/11c",
+     "voidling:46596t/60c -> 10048t/5c",
+     "leviathan:26557t/170c -> 26520t/13c",
+     "scraprover:6401t/71c -> 6336t/10c",
+     "pocketdrone:6862t/51c -> 6684t/9c",
+     "gravehammer:10391t/56c -> 9564t/9c",
+     "ionbow:9930t/58c -> 7420t/8c",
+     "aegis:6420t/70c -> 3884t/9c",
+     "moonstone:8569t/15c -> 5584t/3c",
+     "backwardsclock:5858t/31c -> 5826t/9c"
+    ],
+    "scene": {
+     "calls": 129,
+     "triangles": 174208
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.6,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 149,
+     "textures": 44
+    },
+    "programs": 30,
+    "afterDispose": {
+     "geometries": 31,
+     "textures": 43
+    },
+    "heapMB": 31.7
+   },
+   "dedupe": {
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 122,
+    "perUnit": [
+     "pyrodrake:17819t/62c -> 13292t/10c",
+     "grovewarden:32448t/107c -> 28152t/19c",
+     "stormsovereign:50872t/50c -> 50860t/10c",
+     "voidling:46596t/60c -> 10048t/5c",
+     "leviathan:26557t/170c -> 26520t/12c",
+     "scraprover:6401t/71c -> 6336t/10c",
+     "pocketdrone:6862t/51c -> 6684t/9c",
+     "gravehammer:10391t/56c -> 9564t/7c",
+     "ionbow:9930t/58c -> 7420t/8c",
+     "aegis:6420t/70c -> 3884t/9c",
+     "moonstone:8569t/15c -> 5584t/3c",
+     "backwardsclock:5858t/31c -> 5826t/9c"
+    ],
+    "scene": {
+     "calls": 125,
+     "triangles": 174208
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.6,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 145,
+     "textures": 46
+    },
+    "programs": 30,
+    "afterDispose": {
+     "geometries": 31,
+     "textures": 45
+    },
+    "heapMB": 35.2
+   },
+   "dedupe-lod2": {
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 97,
+    "perUnit": [
+     "pyrodrake:13107t/62c -> 8580t/10c",
+     "grovewarden:28612t/107c -> 24316t/19c",
+     "stormsovereign:50872t/50c -> 50860t/10c",
+     "voidling:38724t/60c -> 6112t/5c",
+     "leviathan:26557t/170c -> 26520t/12c",
+     "scraprover:6401t/71c -> 6336t/10c",
+     "pocketdrone:6862t/51c -> 6684t/9c",
+     "gravehammer:10391t/56c -> 9564t/7c",
+     "ionbow:9930t/58c -> 7420t/8c",
+     "aegis:6420t/70c -> 3884t/9c",
+     "moonstone:8569t/15c -> 5584t/3c",
+     "backwardsclock:5858t/31c -> 5826t/9c"
+    ],
+    "scene": {
+     "calls": 125,
+     "triangles": 161724
+    },
+    "perf": {
+     "frames": 577,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.61,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 145,
+     "textures": 48
+    },
+    "programs": 30,
+    "afterDispose": {
+     "geometries": 31,
+     "textures": 47
+    },
+    "heapMB": 34.1
+   },
+   "dedupe-lod3": {
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 91,
+    "perUnit": [
+     "pyrodrake:12273t/62c -> 7746t/10c",
+     "grovewarden:27952t/107c -> 23656t/19c",
+     "stormsovereign:50872t/50c -> 50860t/10c",
+     "voidling:37284t/60c -> 5392t/5c",
+     "leviathan:26557t/170c -> 26520t/12c",
+     "scraprover:6401t/71c -> 6336t/10c",
+     "pocketdrone:6862t/51c -> 6684t/9c",
+     "gravehammer:10391t/56c -> 9564t/7c",
+     "ionbow:9930t/58c -> 7420t/8c",
+     "aegis:6420t/70c -> 3884t/9c",
+     "moonstone:8569t/15c -> 5584t/3c",
+     "backwardsclock:5858t/31c -> 5826t/9c"
+    ],
+    "scene": {
+     "calls": 125,
+     "triangles": 159510
+    },
+    "perf": {
+     "frames": 577,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.61,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 145,
+     "textures": 50
+    },
+    "programs": 30,
+    "afterDispose": {
+     "geometries": 31,
+     "textures": 49
+    },
+    "heapMB": 50.4
+   }
+  }
+ },
+ "gl": {
+  "renderer": "ANGLE (AMD, AMD Radeon RX 7800 XT (0x0000747E) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "vendor": "Google Inc. (AMD)",
+  "webgl2": true,
+  "maxTex": 16384
+ },
+ "errors": []
+}

@@ -1,0 +1,509 @@
+{
+ "label": "low",
+ "quality": "low",
+ "at": "2026-10-22T14:19:33.487Z",
+ "viewport": "1600x900 DPR1 headless Chrome, uncapped rAF",
+ "modes": {
+  "pets12": {
+   "full": {
+    "bench": {
+     "syncAvgMs": 2.52,
+     "syncP95Ms": 2.9,
+     "syncMaxMs": 3.2,
+     "submitAvgMs": 1.87
+    },
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 264,
+    "perUnit": [
+     "nimbit:29436t/17c -> 29436t/17c",
+     "nimbus:34434t/28c -> 34434t/28c",
+     "tempestral:36348t/36c -> 36348t/36c",
+     "pluvia:31526t/45c -> 31526t/45c",
+     "stormsovereign:53932t/84c -> 53932t/84c",
+     "emberkit:17617t/28c -> 17617t/28c",
+     "pyrodrake:20031t/69c -> 20031t/69c",
+     "pebblor:17239t/44c -> 17239t/44c",
+     "mossback:27538t/102c -> 27538t/102c",
+     "grovewarden:36646t/147c -> 36646t/147c",
+     "glimfin:11566t/20c -> 11566t/20c",
+     "gloomwing:13976t/56c -> 13976t/56c"
+    ],
+    "scene": {
+     "calls": 722,
+     "triangles": 330776
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 2.21,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 405,
+     "textures": 32
+    },
+    "programs": 29,
+    "afterDispose": {
+     "geometries": 112,
+     "textures": 31
+    },
+    "heapMB": 46.9
+   },
+   "merged": {
+    "bench": {
+     "syncAvgMs": 1.33,
+     "syncP95Ms": 1.7,
+     "syncMaxMs": 2.7,
+     "submitAvgMs": 0.37
+    },
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 67,
+    "perUnit": [
+     "nimbit:29436t/17c -> 25172t/3c",
+     "nimbus:34434t/28c -> 30168t/5c",
+     "tempestral:36348t/36c -> 36340t/9c",
+     "pluvia:31526t/45c -> 27264t/9c",
+     "stormsovereign:53932t/84c -> 53888t/12c",
+     "emberkit:17617t/28c -> 13092t/8c",
+     "pyrodrake:20031t/69c -> 15484t/12c",
+     "pebblor:17239t/44c -> 12928t/8c",
+     "mossback:27538t/102c -> 20772t/16c",
+     "grovewarden:36646t/147c -> 29848t/21c",
+     "glimfin:11566t/20c -> 7088t/4c",
+     "gloomwing:13976t/56c -> 9692t/8c"
+    ],
+    "scene": {
+     "calls": 130,
+     "triangles": 281790
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.54,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 234,
+     "textures": 34
+    },
+    "programs": 22,
+    "afterDispose": {
+     "geometries": 116,
+     "textures": 33
+    },
+    "heapMB": 34.3
+   },
+   "dedupe": {
+    "bench": {
+     "syncAvgMs": 1.31,
+     "syncP95Ms": 1.7,
+     "syncMaxMs": 3.5,
+     "submitAvgMs": 0.36
+    },
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 49,
+    "perUnit": [
+     "nimbit:29436t/17c -> 25172t/3c",
+     "nimbus:34434t/28c -> 30168t/5c",
+     "tempestral:36348t/36c -> 36340t/8c",
+     "pluvia:31526t/45c -> 27264t/9c",
+     "stormsovereign:53932t/84c -> 53888t/11c",
+     "emberkit:17617t/28c -> 13092t/7c",
+     "pyrodrake:20031t/69c -> 15484t/12c",
+     "pebblor:17239t/44c -> 12928t/8c",
+     "mossback:27538t/102c -> 20772t/16c",
+     "grovewarden:36646t/147c -> 29848t/21c",
+     "glimfin:11566t/20c -> 7088t/4c",
+     "gloomwing:13976t/56c -> 9692t/8c"
+    ],
+    "scene": {
+     "calls": 127,
+     "triangles": 281790
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.54,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 232,
+     "textures": 35
+    },
+    "programs": 22,
+    "afterDispose": {
+     "geometries": 117,
+     "textures": 34
+    },
+    "heapMB": 33.6
+   },
+   "dedupe-lod2": {
+    "bench": {
+     "syncAvgMs": 1.46,
+     "syncP95Ms": 2,
+     "syncMaxMs": 4.3,
+     "submitAvgMs": 0.39
+    },
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 59,
+    "perUnit": [
+     "nimbit:29436t/17c -> 25172t/3c",
+     "nimbus:34434t/28c -> 30168t/5c",
+     "tempestral:36348t/36c -> 36340t/8c",
+     "pluvia:31526t/45c -> 27264t/9c",
+     "stormsovereign:53932t/84c -> 53888t/11c",
+     "emberkit:12297t/28c -> 7772t/7c",
+     "pyrodrake:15319t/69c -> 10772t/12c",
+     "pebblor:13027t/44c -> 8716t/8c",
+     "mossback:26298t/102c -> 19532t/16c",
+     "grovewarden:32810t/147c -> 26012t/21c",
+     "glimfin:8438t/20c -> 3960t/4c",
+     "gloomwing:11280t/56c -> 6996t/8c"
+    ],
+    "scene": {
+     "calls": 127,
+     "triangles": 256646
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.55,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 219,
+     "textures": 36
+    },
+    "programs": 22,
+    "afterDispose": {
+     "geometries": 104,
+     "textures": 35
+    },
+    "heapMB": 33.1
+   },
+   "dedupe-lod3": {
+    "bench": {
+     "syncAvgMs": 1.32,
+     "syncP95Ms": 1.7,
+     "syncMaxMs": 3.8,
+     "submitAvgMs": 0.36
+    },
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 116,
+    "perUnit": [
+     "nimbit:29436t/17c -> 25172t/3c",
+     "nimbus:34434t/28c -> 30168t/5c",
+     "tempestral:36348t/36c -> 36340t/8c",
+     "pluvia:31526t/45c -> 27264t/9c",
+     "stormsovereign:53932t/84c -> 53888t/11c",
+     "emberkit:11253t/28c -> 6728t/7c",
+     "pyrodrake:14485t/69c -> 9938t/12c",
+     "pebblor:12211t/44c -> 7900t/8c",
+     "mossback:26114t/102c -> 19348t/16c",
+     "grovewarden:32150t/147c -> 25352t/21c",
+     "glimfin:7826t/20c -> 3348t/4c",
+     "gloomwing:10790t/56c -> 6506t/8c"
+    ],
+    "scene": {
+     "calls": 127,
+     "triangles": 252006
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.56,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 165,
+     "textures": 37
+    },
+    "programs": 22,
+    "afterDispose": {
+     "geometries": 50,
+     "textures": 36
+    },
+    "heapMB": 31.1
+   }
+  },
+  "mixed12": {
+   "full": {
+    "bench": {
+     "syncAvgMs": 2.84,
+     "syncP95Ms": 3.3,
+     "syncMaxMs": 3.6,
+     "submitAvgMs": 1.93
+    },
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 106,
+    "perUnit": [
+     "pyrodrake:17815t/62c -> 17815t/62c",
+     "grovewarden:32444t/107c -> 32444t/107c",
+     "stormsovereign:50870t/50c -> 50870t/50c",
+     "voidling:46592t/60c -> 46592t/60c",
+     "leviathan:26550t/167c -> 26550t/167c",
+     "scraprover:6398t/71c -> 6398t/71c",
+     "pocketdrone:6860t/51c -> 6860t/51c",
+     "gravehammer:10388t/56c -> 10388t/56c",
+     "ionbow:9928t/58c -> 9928t/58c",
+     "aegis:6418t/70c -> 6418t/70c",
+     "moonstone:8566t/15c -> 8566t/15c",
+     "backwardsclock:5854t/31c -> 5854t/31c"
+    ],
+    "scene": {
+     "calls": 832,
+     "triangles": 228878
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 2.29,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 451,
+     "textures": 43
+    },
+    "programs": 29,
+    "afterDispose": {
+     "geometries": 113,
+     "textures": 42
+    },
+    "heapMB": 42.1
+   },
+   "merged": {
+    "bench": {
+     "syncAvgMs": 1.24,
+     "syncP95Ms": 1.6,
+     "syncMaxMs": 3.3,
+     "submitAvgMs": 0.34
+    },
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 87,
+    "perUnit": [
+     "pyrodrake:17815t/62c -> 13292t/10c",
+     "grovewarden:32444t/107c -> 28152t/19c",
+     "stormsovereign:50870t/50c -> 50860t/11c",
+     "voidling:46592t/60c -> 10048t/5c",
+     "leviathan:26550t/167c -> 26520t/13c",
+     "scraprover:6398t/71c -> 6336t/10c",
+     "pocketdrone:6860t/51c -> 6684t/9c",
+     "gravehammer:10388t/56c -> 9564t/9c",
+     "ionbow:9928t/58c -> 7420t/8c",
+     "aegis:6418t/70c -> 3884t/9c",
+     "moonstone:8566t/15c -> 5584t/3c",
+     "backwardsclock:5854t/31c -> 5826t/9c"
+    ],
+    "scene": {
+     "calls": 129,
+     "triangles": 174208
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.54,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 149,
+     "textures": 45
+    },
+    "programs": 21,
+    "afterDispose": {
+     "geometries": 31,
+     "textures": 44
+    },
+    "heapMB": 48.8
+   },
+   "dedupe": {
+    "bench": {
+     "syncAvgMs": 1.22,
+     "syncP95Ms": 1.5,
+     "syncMaxMs": 2.8,
+     "submitAvgMs": 0.33
+    },
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 121,
+    "perUnit": [
+     "pyrodrake:17815t/62c -> 13292t/10c",
+     "grovewarden:32444t/107c -> 28152t/19c",
+     "stormsovereign:50870t/50c -> 50860t/10c",
+     "voidling:46592t/60c -> 10048t/5c",
+     "leviathan:26550t/167c -> 26520t/12c",
+     "scraprover:6398t/71c -> 6336t/10c",
+     "pocketdrone:6860t/51c -> 6684t/9c",
+     "gravehammer:10388t/56c -> 9564t/7c",
+     "ionbow:9928t/58c -> 7420t/8c",
+     "aegis:6418t/70c -> 3884t/9c",
+     "moonstone:8566t/15c -> 5584t/3c",
+     "backwardsclock:5854t/31c -> 5826t/9c"
+    ],
+    "scene": {
+     "calls": 125,
+     "triangles": 174208
+    },
+    "perf": {
+     "frames": 577,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.53,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 145,
+     "textures": 47
+    },
+    "programs": 21,
+    "afterDispose": {
+     "geometries": 31,
+     "textures": 46
+    },
+    "heapMB": 47.4
+   },
+   "dedupe-lod2": {
+    "bench": {
+     "syncAvgMs": 1.23,
+     "syncP95Ms": 1.6,
+     "syncMaxMs": 3.6,
+     "submitAvgMs": 0.34
+    },
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 96,
+    "perUnit": [
+     "pyrodrake:13103t/62c -> 8580t/10c",
+     "grovewarden:28608t/107c -> 24316t/19c",
+     "stormsovereign:50870t/50c -> 50860t/10c",
+     "voidling:38720t/60c -> 6112t/5c",
+     "leviathan:26550t/167c -> 26520t/12c",
+     "scraprover:6398t/71c -> 6336t/10c",
+     "pocketdrone:6860t/51c -> 6684t/9c",
+     "gravehammer:10388t/56c -> 9564t/7c",
+     "ionbow:9928t/58c -> 7420t/8c",
+     "aegis:6418t/70c -> 3884t/9c",
+     "moonstone:8566t/15c -> 5584t/3c",
+     "backwardsclock:5854t/31c -> 5826t/9c"
+    ],
+    "scene": {
+     "calls": 125,
+     "triangles": 161724
+    },
+    "perf": {
+     "frames": 576,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.53,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 145,
+     "textures": 49
+    },
+    "programs": 21,
+    "afterDispose": {
+     "geometries": 31,
+     "textures": 48
+    },
+    "heapMB": 46.7
+   },
+   "dedupe-lod3": {
+    "bench": {
+     "syncAvgMs": 1.23,
+     "syncP95Ms": 1.6,
+     "syncMaxMs": 3.5,
+     "submitAvgMs": 0.34
+    },
+    "units": 12,
+    "nulls": 0,
+    "buildMs": 93,
+    "perUnit": [
+     "pyrodrake:12269t/62c -> 7746t/10c",
+     "grovewarden:27948t/107c -> 23656t/19c",
+     "stormsovereign:50870t/50c -> 50860t/10c",
+     "voidling:37280t/60c -> 5392t/5c",
+     "leviathan:26550t/167c -> 26520t/12c",
+     "scraprover:6398t/71c -> 6336t/10c",
+     "pocketdrone:6860t/51c -> 6684t/9c",
+     "gravehammer:10388t/56c -> 9564t/7c",
+     "ionbow:9928t/58c -> 7420t/8c",
+     "aegis:6418t/70c -> 3884t/9c",
+     "moonstone:8566t/15c -> 5584t/3c",
+     "backwardsclock:5854t/31c -> 5826t/9c"
+    ],
+    "scene": {
+     "calls": 125,
+     "triangles": 159510
+    },
+    "perf": {
+     "frames": 575,
+     "avgMs": 6.95,
+     "avgFps": 143.9,
+     "p95Ms": 7,
+     "p99Ms": 7.1,
+     "worstMs": 7.1,
+     "jsMs": 0.53,
+     "over33": 0
+    },
+    "memory": {
+     "geometries": 145,
+     "textures": 51
+    },
+    "programs": 21,
+    "afterDispose": {
+     "geometries": 31,
+     "textures": 50
+    },
+    "heapMB": 46.4
+   }
+  }
+ },
+ "gl": {
+  "renderer": "ANGLE (AMD, AMD Radeon RX 7800 XT (0x0000747E) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "vendor": "Google Inc. (AMD)",
+  "webgl2": true,
+  "maxTex": 16384
+ },
+ "errors": []
+}

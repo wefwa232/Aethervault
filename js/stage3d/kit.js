@@ -37,7 +37,7 @@
   K.ball = (x, y, z, vr, sx = 1, sy = 1, sz = 1, w = 1) => ({ x, y, z, r: vr * KK, w, sx, sy, sz });
   const ballBounds = balls => { const mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9]; balls.forEach(b => { if (b.w < 0) return; const r = b.r * .8; [[b.x, b.sx], [b.y, b.sy], [b.z, b.sz]].forEach(([c, s], i) => { mn[i] = Math.min(mn[i], c - r * s); mx[i] = Math.max(mx[i], c + r * s); }); }); return { mn, mx }; };
   /** Cached skin geometry. o: { cs (cell size), iso, noise, noiseScale, colorFn }. geometry.userData.field is the implicit field (for face placement). */
-  K.skin = (ctx, key, balls, o = {}) => ctx.geo('kskin:' + key, () => { const { mn, mx } = ballBounds(balls), cs = o.cs || .05, cells = [0, 1, 2].map(i => Math.min(90, Math.max(4, Math.ceil((mx[i] - mn[i]) / cs)))); return L.blobSkin(balls, { min: mn, max: mx }, cells, Object.assign({ iso: .5, noiseScale: 5, seed: key.length * 31 + 7 }, o)); });
+  K.skin = (ctx, key, balls, o = {}) => ctx.geo('kskin:' + key + (ctx.lod ? '@' + ctx.lod : ''), () => { const { mn, mx } = ballBounds(balls), cs = (o.cs || .05) * (ctx.lod || 1), cells = [0, 1, 2].map(i => Math.min(90, Math.max(4, Math.ceil((mx[i] - mn[i]) / cs)))); return L.blobSkin(balls, { min: mn, max: mx }, cells, Object.assign({ iso: .5, noiseScale: 5, seed: key.length * 31 + 7 }, o)); });
   /** Vertex-colour shader for skins: lighter on top, darker underneath, ambient-occlusion in creases, optional belly colour. */
   K.shade = (col, belly) => (x, y, z, nx, ny, nz, fv, field) => {
     const top = .5 + .5 * ny, out = field(x + nx * .1, y + ny * .1, z + nz * .1), ao = clamp(out * 3.2, 0, 1);
