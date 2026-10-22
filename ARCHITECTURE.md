@@ -12,11 +12,15 @@ css/aether.css          design system: tokens, six surface types, buttons, contr
 css/places.css          per-screen backdrops (CSS only) + Home
 css/open.css vault.css pages.css stage.css    per-screen layout; cinematic stages (rituals, reveals, inspect, evolution)
 css/progress.css        Phase Three: stat rows, transformation tree, appearance selector, ledger, Forge console
+css/p4.css              Phase Four: cards, fusion, Vault views, rituals, roulette, Organise
 js/util.js              PRNG (mulberry32), weighted pick, formatting, DOM helpers, escape
 js/data.js              CONTENT REGISTRIES: rarities, variants, conditions, patterns, items, evolutions, containers, store…
 js/state.js             save schema, defaults (incl. settings.quality3d), load/save/migrate, event bus (AV.bus)
 js/progress.js          Phase Three data: stat archetypes, category stage names, 57 transformation forms, looks (pure)
-js/stats.js             Phase Three stat framework: families, deterministic compute/ceiling/delta/carry (pure)
+js/stats.js             Phase Three stat framework: families, deterministic compute/ceiling/delta/carry (pure); Phase Four adds the card family and fusion/print terms
+js/cards.js             Phase Four: card catalogue (3 sets, 64 cards), classes, finishes, foils, editions, print bonuses (pure)
+js/fusion.js            Phase Four: families/elements, 12 recipes, compatibility kinds, mutations, exact plan() (pure)
+js/vaultq.js            Phase Four: Vault index, combinable filters, sorts, saved-search serialisation (pure)
 js/specimen.js          specimen generation, value/essence/upgrade-cost formulas (pure functions)
 js/engine.js            game actions: open, buy, exchange, dismantle, upgrade, evolve, daily, xp, mode
 js/art.js               procedural SVG for every item + container (kept as the 2D fallback), ONE icon family, art.render()
@@ -31,7 +35,9 @@ js/stage3d/forms.js     Phase Three: stage details + transformation motifs appli
 js/stage3d/models-*.js  containers, crate+vault, pets (Nimbus line), sword, relic, machine, oddity, and (Phase Three) pets2, gear3, relic3, machine3, oddity3
 js/ui.js                router, top bar, rail nav, toasts, modals, catalogue plates, minis
 js/opening.js           ritual (3D or SVG) → reveals (3D stage + specimen sheet) → summary
-js/screens/*.js         home, open, vault (+ codex), inspect, pets (+ lineage), forge (chamber), store (exchange), settings, statsui (stat/tree/looks HTML builders)
+js/opening-p4.js        Phase Four: Wanderer card-pack reveal, condensed multi-open, Forge Crate roulette, reload-recovery notice
+js/cardart.js           Phase Four: card artwork (30 scenes + 5 beings; SVG and Canvas backends)
+js/screens/*.js         home, open, vault (+ codex), vault-views (binder, families, duplicates, timeline, history, sets, compare, advanced filters), inspect (+ Organise), pets (+ lineage), forge (chamber), fusion (chamber), store (exchange), settings, statsui (stat/tree/looks HTML builders)
 js/main.js              boot: load → stage boot → onboarding → router
 tests/logic.test.js     Node harness: game rules + presentation data contracts
 tools/                  dev-only Puppeteer scripts (validation, screenshots)
@@ -44,14 +50,14 @@ UI event ──► AV.engine.action() ──► mutates AV.state ──► AV.st
                                                                               │
                           screens subscribe to topics and re-render ◄─────────┘
 ```
-Topics: `wallet`, `specimens`, `settings`, `profile`, `mode`, `companion`. Future systems (quests, pass, events)
+Topics: `wallet`, `specimens`, `settings`, `profile`, `mode`, `companion`, `org` (Phase Four). Future systems (quests, pass, events)
 subscribe to the same bus; e.g. a quest module listens to `opened`, `dismantled`, `upgraded` without touching the
 engine.
 
-## 4. Data model (save v2; same storage key as v1)
+## 4. Data model (save v3; same storage key as v1)
 ```
 save = {
-  version: 2,
+  version: 3,
   profile:  { name, level, xp, title, createdAt },
   mode:     'standard' | 'unlimited',
   economy:  { priceMult, rewardMult },              // Custom Mode hook
@@ -68,7 +74,12 @@ save = {
   recent:   [specimenId],                           // newest first, capped
   settings: { master, music, sfx, opening, animSpeed, reducedMotion, shake, flashing, textSize, skipRituals },
   flags:    { onboarded, seenTips },
-  ext:      { }                                     // namespaced storage for future modules
+  ext:      { },                                    // namespaced storage for future modules
+  // Phase Four (v3)
+  org:      { searches[], folders[{id,name,ids[]}], tags:{id:[..]}, notes:{id:text}, touched:{id:t} },
+  fusions:  [ { id, kind, recipe, parents[], consumed[], result, at } ], fusionSeq: n,
+  lastOpening: { container, count, ids[], at, seen } | null,
+  binder:   { set, page }
 }
 Specimen = {
   id, base,                       // base = item id (evolution changes this; id/serial stay)
@@ -136,10 +147,21 @@ Adding an item = one entry in `ITEMS` + one function in `art.js`; adding a conta
 - **Rendering forms (`forms.js`):** `View.setSpec` applies the displayed spec (`look` via `AV.progress.displaySpec`) then calls `S.forms.apply(ctx, inst)`, which measures the model's solid bounds and adds geometry: stage details by category and the form's motifs. Thumbnail cache keys include `form`; `S.REV` was bumped.
 - **Migration (`state.js`):** v1 to v2 backs up the raw save to `aethervault.save.v1.backup-p3`, migrates a copy, fingerprint-checks every specimen, adopts it only if valid; on failure the original loads untouched.
 
+## 7d. Phase Four systems
+- **Save v3 (`state.js migrateP4`):** adds `org` (saved searches, folders/albums, tags, notes, touched), `fusions` (ledger) + `fusionSeq`, `lastOpening` (reload recovery), `binder`. Same rule as v2: raw copy to `aethervault.save.v1.backup-p4` once, migrate a draft, fingerprint every specimen (identity, stats and form must be unchanged), adopt only if valid, else the original loads untouched. A rolling `…backup-fusion` copy is written before each Standard-mode fusion commit.
+- **Containers:** each container owns an explicit item pool (`engine.poolItems`, `minPotential`): Wanderer Pack = 5 Cards (ascending reveal), Hatchling = ordinary juveniles, Starlit = prestigious pets (potential ≥ 55), Capsule = oddities, Forge Crate = gear + machines (roulette), Relic Chest = relics only (3D model, `models-containers3.js`), Mythic Vault = every non-card category.
+- **Cards (`cards.js`, `cardart.js`, `models-cards.js`):** a Card is its own category (`card` stat family), never grants the depicted specimen. Material hierarchy Common → Anomaly, finish/foil/edition/alt art, print condition; high-rarity cards project a hologram that retracts on drag, rises into an inspection pose and returns after idle (`settings.holoReturn`). Thumbnails are cached images; 2D fallback always available.
+- **Fusion (`fusion.js`, `engine.fusePreview/fuse/unfuse`):** `plan()` is the single source for preview and result, so the preview is exactly what commits. Standard consumes parents (confirmation, protection, backup, atomic rollback via `state.replace`); Unlimited is free and reversible. Result carries `spec.fusion` ({id, rank, parents, mutation, tint}); stats fold it in through `fusion.statBonus`; `forms.js` renders mutation motifs and rank details.
+- **Vault (`vaultq.js`, `screens/vault.js`, `screens/vault-views.js`):** the index is rebuilt only when `specimens`/`org` topics fire; filters AND across facets and OR within one; every view uses cached thumbnails or SVG (0 live 3D views in the Vault, verified). Wide tables sit in `.tscroll` scrollers so nothing is clipped at ~375 px.
+- **Inspect → Organise:** tags (max 12, normalised), a 600-character note saved on blur, collection membership. All through `engine.setTags/addTag/removeTag/setNote/folder*`; none of it changes specimen identity. The sheet keeps its scroll position across redraws.
+- **CSS naming rule learned the hard way:** global class names are shared by every screen. Two collisions shipped in Phase Four and were fixed (`.rl-row` roulette vs Vault rarity ladder → `.rlad-row`; Phase Three's `.ledger` list vs the top-bar wallet → `ol.ledger`). Prefix new classes by screen.
+
 ## 8. Testing
 - `node tools/phase3.mjs` — 39 browser checks for Phase Three (migration of a real v1 save, 40/40 models, Inspect/Forge flows, transformations, quality modes) → `docs/validation-phase3.json`.
 - `node tests/phase3.test.js` — 22 Node checks (stats, progression, transformations, migration).
 - `node tools/p3-sheet.mjs` / `node tools/p3-perf.mjs` — gallery contact sheets and per-model build time / draw calls.
 - `node tools/phase2.mjs` — 40 browser checks for Phase Two (results in `docs/validation-phase2.json`).
-- `node tests/logic.test.js` — rule tests (generation bounds, protected dismantle, economy, evolution, save migration) and presentation data contracts (37 checks).
+- `node tests/logic.test.js` — rule tests (generation bounds, protected dismantle, economy, evolution, save migration) and presentation data contracts (45 checks).
+- `node tests/phase4.test.js` — 30 Node checks: card catalogue, container pools (400-pack and per-container category checks), save v3 migration + fault injection, fusion (9), Vault queries (3000 specimens).
+- `node tools/p4-shot.mjs <scenario|all>` — Phase Four Chrome scenarios + screenshots (`vault`, `organise`, `fusion`, `pack`, `roulette`, `rituals`, `cards3d`, `cards2d`, `chest`, `starlit`); `node tools/p4-smoke.mjs <label>` — container/Vault smoke test.
 - `node tools/validate.mjs all` — real-browser suite: boot/onboarding, every visible control, Standard/Unlimited, favorite/lock protection, dismantle, upgrade, both evolution branches, all container rituals and eight rarity reveals, leak checks, quality levels, reduced motion, responsive layouts, save/reload, audio settings. Results are written to `docs/validation-*.json`.

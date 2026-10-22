@@ -1,0 +1,215 @@
+{
+ "date": "2026-10-22T13:50:16.811Z",
+ "results": [
+  {
+   "group": "boot",
+   "name": "fresh load shows onboarding modal",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "no page errors on boot",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "WebGL stage is supported & renderer created",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "onboarding starts the first-egg ritual (3D view mounted)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "egg ritual completes into a reveal",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "boot",
+   "name": "profile saved (name, mode, onboarded, starter pet, companion)",
+   "ok": true,
+   "detail": "{\"name\":\"Tester\",\"mode\":\"unlimited\",\"onboarded\":true,\"count\":1,\"comp\":true}"
+  },
+  {
+   "group": "modes",
+   "name": "Unlimited shows ∞ balances",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Unlimited opens a container with 0 credits",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Unlimited spends nothing",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Standard refuses an unaffordable opening (250 credits vs 100)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "modes",
+   "name": "Standard deducts the price",
+   "ok": true,
+   "detail": "{\"ok\":true,\"credits\":750}"
+  },
+  {
+   "group": "protect",
+   "name": "favorite protects a specimen (UI)",
+   "ok": true,
+   "detail": "Favorited"
+  },
+  {
+   "group": "protect",
+   "name": "dismantle of a favorited specimen shows a refusal, no confirm modal",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "favorited specimen still exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "engine skips protected specimens even when asked",
+   "ok": true,
+   "detail": "{\"skipped\":1,\"count\":0,\"still\":true}"
+  },
+  {
+   "group": "protect",
+   "name": "lock protects a specimen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "select-all dismantle opens a confirmation that mentions protected items",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "protect",
+   "name": "after dismantling everything selected, locked specimen and companion remain",
+   "ok": true,
+   "detail": "{\"locked\":true,\"comp\":true,\"left\":2}"
+  },
+  {
+   "group": "protect",
+   "name": "dismantling granted essence and updated stats",
+   "ok": true,
+   "detail": "dismantled=23"
+  },
+  {
+   "group": "upgrade",
+   "name": "Upgrade via the console raises the stage",
+   "ok": true,
+   "detail": "level=1"
+  },
+  {
+   "group": "upgrade",
+   "name": "forge lamp ladder advanced",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "forge renders a live 3D chamber",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "next-stage preview shows a preview tag",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "repeated upgrades reach the Signature stage (4)",
+   "ok": true,
+   "detail": "level=4"
+  },
+  {
+   "group": "upgrade",
+   "name": "no Upgrade button at the cap",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "upgrade",
+   "name": "no page errors during upgrading",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] both branches are offered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] evolution preview swaps the live model",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] cinematic is shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[tempestral] specimen became tempestral, stage reset, serial kept",
+   "ok": true,
+   "detail": "{\"base\":\"tempestral\",\"level\":0,\"serial\":421}"
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] both branches are offered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] evolution preview swaps the live model",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] cinematic is shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "evolve",
+   "name": "[pluvia] specimen became pluvia, stage reset, serial kept",
+   "ok": true,
+   "detail": "{\"base\":\"pluvia\",\"level\":0,\"serial\":421}"
+  },
+  {
+   "group": "evolve",
+   "name": "Tempestral evolves into Storm Sovereign (engine)",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

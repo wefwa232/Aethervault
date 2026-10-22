@@ -87,7 +87,7 @@ const BAD = /pageerror|\[error\]/;
   const before = await page.evaluate(() => { const s = AV.state.get(); delete s.settings.fpsLimit; delete s.settings.fastStartup; s.settings.quality3d = 'high'; AV.state.save(true); return { n: Object.keys(s.specimens).length, credits: s.wallet.credits, name: s.profile.name, companion: s.companion }; });
   await page.goto(base + '?fastboot=1', { waitUntil: 'load' }); await booted(page);
   const after = await page.evaluate(() => { const s = AV.state.get(); return { n: Object.keys(s.specimens).length, credits: s.wallet.credits, name: s.profile.name, companion: s.companion, fps: s.settings.fpsLimit, q: s.settings.quality3d, v: s.version, boot: AV.boot.report.stages[1].detail }; });
-  check('save', 'old save keeps specimens, wallet, profile, companion and chosen quality', before.n === after.n && before.credits === after.credits && before.name === after.name && before.companion === after.companion && after.q === 'high' && after.v === 2, JSON.stringify(after));
+  check('save', 'old save keeps specimens, wallet, profile, companion and chosen quality', before.n === after.n && before.credits === after.credits && before.name === after.name && before.companion === after.companion && after.q === 'high' && after.v >= 2, JSON.stringify(after));
   check('save', 'new settings default in without a schema bump', after.fps === 'auto');
   await browser.close();
 }
@@ -138,7 +138,7 @@ const NEW = ['emberkit', 'pyrodrake', 'mossback', 'grovewarden', 'ionbow', 'grav
     await page.evaluate(id => { AV.state.get().wallet.credits = 99999; AV.opening.start(id, 1); }, cid); await sleep(1400);
     const has3d = await page.evaluate(() => !!document.querySelector('.rit-view canvas.stage3d'));
     for (let i = 0; i < 6; i++) { await page.evaluate(() => { const v = document.querySelector('.rit-view'); if (v) { const b = v.getBoundingClientRect(); v.dispatchEvent(new PointerEvent('pointerdown', { clientX: b.left + 10, clientY: b.top + 100, pointerId: 1, bubbles: true })); v.dispatchEvent(new PointerEvent('pointermove', { clientX: b.left + b.width * .8, clientY: b.top + 100, pointerId: 1, bubbles: true })); v.dispatchEvent(new PointerEvent('pointerup', { clientX: b.left + b.width * .8, clientY: b.top + 100, pointerId: 1, bubbles: true })); v.click(); } }); await sleep(260); }
-    await sleep(2600); const reveal = await page.evaluate(() => !!document.querySelector('.rv'));
+    await sleep(2600); const reveal = await page.evaluate(() => !!document.querySelector('.rv, .cr, .cg')); // .rv = item reveal; .cr / .cg = Phase Four card-pack reveal (stack / condensed)
     for (let i = 0; i < 10 && (await page.evaluate(() => AV.opening.busy())); i++) { await page.evaluate(() => { const d = document.querySelector('[data-a=done]'), n = document.querySelector('[data-a=next]'), s = document.querySelector('.op-skip'); if (d) d.click(); else if (n && n.offsetParent) n.click(); else if (s && s.offsetParent) s.click(); }); await sleep(500); }
     check('content', `${label} ritual runs in 3D with real clicks and reaches the reveal`, has3d && reveal, `3d=${has3d} reveal=${reveal}`);
   }

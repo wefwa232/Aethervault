@@ -39,6 +39,19 @@
             ${tog('fastStartup', 'Fast startup', 'Shortens the startup sequence on launches after the first')}
             <div class="field-h">Text size</div>
             <div class="seg" role="group" aria-label="Text size">${[[.9, 'Small'], [1, 'Normal'], [1.15, 'Large'], [1.3, 'Largest']].map(([v, l]) => `<button class="${st.textSize === v ? 'on' : ''}" data-ts="${v}">${l}</button>`).join('')}</div></section>
+          <section class="s-matte pad"><h3 class="sect">${A.icon('open')} Openings, cards &amp; fusion</h3>
+            <div class="field-h">Multi-open behaviour <small class="tiny dim">for ×5 and ×10</small></div>
+            <div class="seg" role="group" aria-label="Multi-open behaviour">${[['condensed', 'Condensed grid'], ['sequential', 'One by one'], ['instant', 'Straight to results']].map(([v, l]) => `<button class="${(st.multiOpen || 'condensed') === v ? 'on' : ''}" data-opt4="multiOpen" data-v="${v}">${l}</button>`).join('')}</div>
+            <div class="field-h">Forge reel speed</div>
+            <div class="seg" role="group" aria-label="Forge reel speed">${[[.75, 'Slow'], [1, 'Normal'], [1.5, 'Brisk'], [2.5, 'Fast']].map(([v, l]) => `<button class="${(+st.rouletteSpeed || 1) === v ? 'on' : ''}" data-opt4="rouletteSpeed" data-v="${v}" data-num="1">${l}</button>`).join('')}</div>
+            ${slider('clickVolume', 'Reel click intensity', 'The ratchet of the Forge reel')}
+            ${tog('cardHolo', 'Card holograms', 'Epic and rarer cards project their subject while untouched (not on Low quality)')}
+            <div class="field-h">Return to hologram after</div>
+            <div class="seg" role="group" aria-label="Auto-return to hologram">${[[0, 'Never'], [3, '3 s'], [4, '4 s'], [8, '8 s']].map(([v, l]) => `<button class="${(st.holoReturn == null ? 4 : +st.holoReturn) === v ? 'on' : ''}" data-opt4="holoReturn" data-v="${v}" data-num="1">${l}</button>`).join('')}</div>
+            <div class="field-h">Fusion animation</div>
+            <div class="seg" role="group" aria-label="Fusion animation">${[['full', 'Full'], ['short', 'Short'], ['off', 'Off']].map(([v, l]) => `<button class="${(st.fusionAnim || 'full') === v ? 'on' : ''}" data-opt4="fusionAnim" data-v="${v}">${l}</button>`).join('')}</div>
+            ${tog('binderAnim', 'Binder page turns', 'Animate pages in the card binder')}
+            <p class="muted tiny">Reduced motion shortens the reel, replaces the pack tear with a simple reveal, and simplifies holograms and fusion — nothing is hidden.</p></section>
           <section class="s-matte pad"><h3 class="sect">${A.icon('download')} Your data</h3>
             <p class="muted">Your save lives in this browser's local storage. Export a backup file any time.</p>
             <div class="btn-row"><button class="btn ghost" data-act="export">${A.icon('download')}Export save</button><button class="btn ghost" data-act="import">${A.icon('upload')}Import save</button><input type="file" id="impFile" accept=".json,application/json" hidden></div>
@@ -62,6 +75,7 @@
       const q3 = e.target.closest('[data-q3]'); if (q3) { E.setSetting('quality3d', q3.dataset.q3); au.play('confirm'); ui.toast(`3D quality: ${q3.dataset.q3}`, { icon: 'cube', silent: true }); return; }
       const fp = e.target.closest('[data-fps]'); if (fp) { const v = fp.dataset.fps; E.setSetting('fpsLimit', v === 'auto' || v === 'max' ? v : +v); draw(); return; }
       const sp = e.target.closest('[data-spd]'); if (sp) { E.setSetting('animSpeed', +sp.dataset.spd); draw(); return; }
+      const o4 = e.target.closest('[data-opt4]'); if (o4) { E.setSetting(o4.dataset.opt4, o4.dataset.num ? +o4.dataset.v : o4.dataset.v); draw(); return; }
       const ts = e.target.closest('[data-ts]'); if (ts) { E.setSetting('textSize', +ts.dataset.ts); draw(); return; }
       const a = e.target.closest('[data-act]'); if (!a) return;
       if (a.dataset.act === 'test') au.sting(5);

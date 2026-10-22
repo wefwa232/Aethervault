@@ -2,7 +2,7 @@
 (function () {
   const root = typeof window !== 'undefined' ? window : globalThis;
   const AV = root.AV = root.AV || {};
-  AV.VERSION = { number: '0.4.0', build: 'P3-20261021', name: 'Phase Three' };
+  AV.VERSION = { number: '0.5.0', build: 'P4-20261022', name: 'Phase Four' };
 
   // Deterministic PRNG so a specimen's seed always yields the same pattern/quirks.
   function mulberry32(a) {

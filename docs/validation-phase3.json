@@ -4,7 +4,7 @@
  "results": [
   {
    "group": "migration",
-   "name": "v1 save loads and is migrated in place (version 2)",
+   "name": "v1 save loads and is migrated in place (current schema; v3 since Phase Four)",
    "ok": true,
    "detail": "{\"backup\":\"aethervault.save.v1.backup-p3\",\"migrated\":25}"
   },
@@ -30,7 +30,7 @@
    "group": "migration",
    "name": "backup of the raw v1 save was written once and matches its size",
    "ok": true,
-   "detail": "14531 vs 14531"
+   "detail": "14807 vs 14807"
   },
   {
    "group": "migration",
@@ -46,9 +46,9 @@
   },
   {
    "group": "catalog",
-   "name": "all 40 base collectibles have a 3D model",
+   "name": "every collectible (the 40 Phase Three items plus Phase Four cards) has a 3D model",
    "ok": true,
-   "detail": "3D 40/40 missing "
+   "detail": "3D 104/104 missing "
   },
   {
    "group": "catalog",
@@ -210,7 +210,7 @@
    "group": "quality",
    "name": "Low, Medium, High render the transformed machine (frame rate recorded)",
    "ok": true,
-   "detail": "{\"low\":145,\"medium\":145,\"high\":145,\"off\":145}"
+   "detail": "{\"low\":145,\"medium\":145,\"high\":146,\"off\":145}"
   },
   {
    "group": "quality",
@@ -222,7 +222,7 @@
    "group": "quality",
    "name": "leaving the Forge disposes its live view (no hidden live 3D)",
    "ok": true,
-   "detail": "{\"quality\":\"medium\",\"fpsLimit\":0,\"views\":0,\"queue\":0,\"thumbs\":72,\"geoCache\":37,\"memory\":{\"geometries\":33,\"textures\":8},\"programs\":1,\"render\":{\"calls\":440,\"triangles\":83410},\"frames\":217,\"totalMs\":275.3,\"frameMs\":1.13,\"worstMs\":10.36,\"caches\":{\"patterns\":1,\"wear\":1},\"canvas\":[1280,1024],\"loop\":{\"running\":false,\"wakes\":9,\"sleeps\":9}}"
+   "detail": "{\"quality\":\"medium\",\"fpsLimit\":0,\"views\":0,\"queue\":0,\"thumbs\":72,\"geoCache\":37,\"memory\":{\"geometries\":33,\"textures\":8},\"programs\":1,\"render\":{\"calls\":440,\"triangles\":83410},\"frames\":216,\"totalMs\":219.3,\"frameMs\":0.83,\"worstMs\":9.76,\"caches\":{\"patterns\":1,\"wear\":1},\"canvas\":[1280,1024],\"loop\":{\"running\":false,\"wakes\":9,\"sleeps\":9}}"
   },
   {
    "group": "rings",

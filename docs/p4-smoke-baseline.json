@@ -1,0 +1,60 @@
+{
+ "label": "baseline",
+ "at": "2026-10-21T17:12:44.689Z",
+ "containers": {
+  "wanderer": {
+   "ritual": "pack",
+   "model3d": true,
+   "fallback": false,
+   "live": 1
+  },
+  "hatchling": {
+   "ritual": "egg",
+   "model3d": true,
+   "fallback": false,
+   "live": 1
+  },
+  "capsule": {
+   "ritual": "capsule",
+   "model3d": true,
+   "fallback": false,
+   "live": 1
+  },
+  "forge": {
+   "ritual": "crate",
+   "model3d": true,
+   "fallback": false,
+   "live": 1
+  },
+  "starlit": {
+   "ritual": "egg",
+   "model3d": true,
+   "fallback": false,
+   "live": 1
+  },
+  "reliquary": {
+   "ritual": "chest",
+   "model3d": false,
+   "fallback": true,
+   "live": 0
+  },
+  "vault": {
+   "ritual": "vault",
+   "model3d": true,
+   "fallback": false,
+   "live": 1
+  }
+ },
+ "errors": [],
+ "bootMs": 6004,
+ "version": {
+  "number": "0.4.0",
+  "build": "P3-20261021",
+  "name": "Phase Three"
+ },
+ "vault": {
+  "plates": 25,
+  "live": 0,
+  "thumbs": 25
+ }
+}

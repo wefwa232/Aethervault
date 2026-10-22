@@ -12,9 +12,10 @@
     { id: 'vault', label: 'Vault', icon: 'vault' },
     { id: 'pets', label: 'Pets', icon: 'paw' },
     { id: 'forge', label: 'Forge', icon: 'upgrade' },
+    { id: 'fusion', label: 'Fusion', icon: 'fuse' },
     { id: 'store', label: 'Store', icon: 'store' },
   ];
-  const WHERE = { home: 'Archive Chamber', open: 'Containment Hall', vault: 'Specimen Catalogue', pets: 'Living Specimen Wing', forge: 'Transformation Chamber', store: 'The Exchange', settings: 'Archive Controls' };
+  const WHERE = { home: 'Archive Chamber', open: 'Containment Hall', vault: 'Specimen Catalogue', pets: 'Living Specimen Wing', forge: 'Transformation Chamber', fusion: 'Fusion Chamber', store: 'The Exchange', settings: 'Archive Controls' };
 
   const settings = () => AV.state.get().settings;
   const reduced = () => !!settings().reducedMotion;

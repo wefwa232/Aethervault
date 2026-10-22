@@ -40,7 +40,8 @@
     const auraChance = 0.05 + tier * 0.05;
     const aura = opts.aura || (r() < auraChance ? U.pick(D.AURAS.filter(a => a.id !== 'none'), r).id : 'none');
     const sizeSpread = item.cat === 'pet' ? 0.22 : 0.14;
-    const size = +(1 + (r() * 2 - 1) * sizeSpread).toFixed(3);
+    let size = +(1 + (r() * 2 - 1) * sizeSpread).toFixed(3);
+    if (item.cat === 'card') size = 1; // printed cards share one format
     const serial = opts.serial != null ? opts.serial : Math.floor(r() * 9999) + 1;
 
     const spec = {
@@ -55,6 +56,7 @@
       history: [],
     };
     if (item.cat === 'pet') spec.personality = U.pick(D.PERSONALITIES, r).id;
+    if (item.cat === 'card' && AV.cards) spec.card = AV.cards.roll(item, r, opts.card || {});
     initProgress(spec);
     return spec;
   }
@@ -75,7 +77,7 @@
   const itemOf = s => D.ITEMS[s.base];
   const rarityOf = s => D.RARITY[itemOf(s).rarity];
   const catOf = s => D.CATEGORY[itemOf(s).cat];
-  const displayName = s => s.nickname || itemOf(s).name;
+  const displayName = s => s.nickname || (s.fusion && s.fusion.name) || itemOf(s).name;
   const conditionLabel = s => (D.CONDITION_LABELS[itemOf(s).cat] || D.CONDITION_LABELS.default)[s.condition];
   const variantOf = s => D.VARIANT[s.variant];
   const maxLevel = s => (s.potential >= 25 ? MAX_LEVEL : MAX_LEVEL - 1);
@@ -86,7 +88,7 @@
     const R = rarityOf(s);
     const aura = s.aura !== 'none' ? 1.15 : 1;
     const v = R.value * variantOf(s).mult * D.CONDITION_MULT[s.condition] * (0.75 + s.potential / 200)
-      * serialInfo(s.serial).mult * (1 + s.level * 0.45) * aura;
+      * serialInfo(s.serial).mult * (1 + s.level * 0.45) * aura * (AV.fusion ? AV.fusion.valueMult(s) : 1);
     return Math.max(1, Math.round(v));
   }
 

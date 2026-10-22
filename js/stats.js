@@ -37,6 +37,12 @@
       S('coherence', 'Coherence', 'stable', 'How much it agrees with itself.'), S('containment', 'Containment', 'stable', 'How well it stays put.'), S('activity', 'Activity', 'volatile', 'How much it is doing.'),
       S('distortion', 'Distortion', 'volatile', 'Reality bent around it.'), S('stability', 'Stability', 'stable', 'Resistance to collapse.'),
       S('growth', 'Unknown Potential', 'growth', 'What it might still become.')] },
+    // Phase Four: literal collectible cards. Collecting/inspection qualities, not combat values.
+    card: { name: 'Card', stats: [
+      S('print', 'Print Quality', 'stable', 'Registration, ink density and sharpness of the print.'), S('depth', 'Illustration Depth', 'finesse', 'How far the artwork seems to go back.'),
+      S('foil', 'Foil Complexity', 'magic', 'Layers and behaviour of the foil treatment.'), S('preservation', 'Preservation', 'stable', 'How well the stock and edges have kept.'),
+      S('projection', 'Projection Strength', 'power', 'How strongly the card projects its subject.'), S('prestige', 'Prestige', 'volatile', 'Standing of the printing among collectors.'),
+      S('growth', 'Enhancement Potential', 'growth', 'How far this copy can be enhanced.')] },
     // Defined for a later phase: the game has no cosmetic items yet.
     cosmetic: { name: 'Cosmetic', stats: [
       S('finish', 'Finish', 'stable', 'Surface quality.'), S('animation', 'Animation', 'finesse', 'Motion it carries.'), S('reactivity', 'Reactivity', 'finesse', 'How it answers touch.'),
@@ -69,13 +75,15 @@
     const pattern = (hash01((spec.pattern || 'plain') + ':' + k) - 0.5) * 4;
     const size = tag === 'power' ? ((spec.size || 1) - 1) * 20 : 0;
     const noise = (hash01(((spec.seed >>> 0) || 0) + ':' + k) - 0.5) * 8;
-    const trait = cond + variant + pattern + size + noise;
+    const card = spec.card && AV.cards ? AV.cards.bonus(spec, k) : 0; // print traits of a card copy (finish, foil, edition, alt art)
+    const trait = cond + variant + pattern + size + noise + card;
     const w = k === arch.weak ? 0.6 : (k === arch.focus[0] || k === arch.focus[1]) ? 1.4 : 1;
     const growth = Math.min(level, 4) * (2.2 + spec.potential / 30) * w;
     const f = spec.form ? P().form(spec.form) : null;
     const form = f ? (f.lean[k] || 0) - ((f.trade && f.trade[k]) || 0) : 0;
     const carry = (spec.carry && spec.carry[k]) || 0;
-    return { identity, trait, growth, form, carry, raw: identity + trait + growth + form + carry, cond, variant, pattern, size, noise, focus };
+    const fuse = spec.fusion && AV.fusion ? AV.fusion.statBonus(spec, k, tag, k === arch.focus[0] || k === arch.focus[1]) : 0; // Phase Four: fusion rank + mutation lean
+    return { identity, trait, growth, form: form + fuse, carry, fuse, raw: identity + trait + growth + form + fuse + carry, cond, variant, pattern, size, noise, focus, card };
   }
 
   /** Stats for a specimen. over: { level, form, carry } to preview a hypothetical state. */

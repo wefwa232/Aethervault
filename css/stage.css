@@ -23,7 +23,7 @@
 @keyframes ritBurst { 40% { transform: scale(1.1); filter: brightness(1.8); } 100% { transform: scale(1.35); opacity: 0; filter: brightness(2.4); } }
 .cracks path { opacity: 0; stroke-dasharray: 120; stroke-dashoffset: 120; transition: stroke-dashoffset .25s ease-out, opacity .1s; }
 .cracks.s1 .k1, .cracks.s2 .k1, .cracks.s3 .k1, .cracks.s4 .k1, .cracks.s2 .k2, .cracks.s3 .k2, .cracks.s4 .k2, .cracks.s3 .k3, .cracks.s4 .k3, .cracks.s4 .k4 { opacity: 1; stroke-dashoffset: 0; }
-.cart-egg .egg-glow { opacity: calc(.25 + var(--prog, 0) * .75); } .cart-egg.opened .egg-body { transform-box: fill-box; transform-origin: center; animation: eggSplit .5s ease-out forwards; } @keyframes eggSplit { 100% { transform: scale(1.5); opacity: 0; } }
+.cart-egg .egg-glow, .cart-starlit .egg-glow { opacity: calc(.25 + var(--prog, 0) * .75); } .cart-starlit.opened .egg-body, .cart-egg.opened .egg-body { transform-box: fill-box; transform-origin: center; animation: eggSplit .5s ease-out forwards; } @keyframes eggSplit { 100% { transform: scale(1.5); opacity: 0; } }
 .cart-capsule { transform: rotate(var(--twist, 0deg)); transition: transform .45s cubic-bezier(.3, 1.4, .5, 1); } .cart-capsule .cap-top, .cart-capsule .cap-bot { transform-box: fill-box; transition: transform .5s cubic-bezier(.3, 1.4, .5, 1), opacity .4s; } .cart-capsule .cap-glow { opacity: calc(.2 + var(--prog, 0) * .8); }
 .cart-capsule.opened { transform: none; } .cart-capsule.opened .cap-top { transform: translateY(-70px) rotate(-24deg); opacity: 0; transition-delay: .1s; } .cart-capsule.opened .cap-bot { transform: translateY(30px); opacity: 0; }
 .cart-pack .pk-top { transition: transform .12s ease-out; transform-box: fill-box; } .cart-pack.opened .pk-bottom { opacity: 0; transition: opacity .5s .1s; }
@@ -70,6 +70,7 @@ body.glitching #shakeRoot { animation: uiGlitch .18s steps(2) infinite; } body.g
 .insp { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(370px, 1fr); height: 100%; }
 .insp-stage { background: radial-gradient(65% 60% at 50% 48%, color-mix(in srgb, var(--rc) 13%, #221e18), #0a0908 82%); min-height: 420px; --cut: 0px; }
 .insp-stage.s-lumen { margin: 14px; }
+.io-holo { position: absolute; right: 12px; top: 12px; } .card-sheet .sheet dd small { color: var(--ink-3, #8a816c); }
 .is-view { position: absolute; inset: 0; } .is-over { position: absolute; inset: 0; pointer-events: none; z-index: 3; } .is-over > * { pointer-events: auto; }
 .io-badges { position: absolute; left: 16px; top: 16px; display: flex; gap: .35rem; }
 .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; display: grid; place-items: center; background: rgba(11, 10, 9, .85); border: 1px solid var(--hair); color: var(--ivory-2); transition: background .12s, color .12s; } .nav-arrow:hover:not(:disabled) { background: var(--ink-3); color: var(--ivory); } .nav-arrow:disabled { opacity: .25; cursor: default; } .nav-arrow.l { left: 14px; } .nav-arrow.r { right: 14px; } .nav-arrow.r .ico { transform: rotate(180deg); }

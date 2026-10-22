@@ -48,6 +48,11 @@
     }
     const s = AV.state.get();
     if (s && !s.flags.onboarded) onboarding();
+    else if (s && s.lastOpening && !s.lastOpening.seen) {
+      const lo = s.lastOpening, c = AV.data.CONTAINER[lo.container], n = lo.ids.filter(id => s.specimens[id]).length;
+      lo.seen = true; AV.state.save();
+      setTimeout(() => ui.toast(`Your last ${c ? c.name : 'opening'} was interrupted. All ${n} of its prizes were saved to the Vault before the animation began.`, { icon: 'check', kind: 'good', ms: 6500 }), 1200);
+    }
     AV.boot.afterHome();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();

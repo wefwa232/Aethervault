@@ -94,6 +94,18 @@
     fav() { tone(988, .08, { type: 'sine', gain: .12 }); tone(1319, .18, { type: 'sine', gain: .1, delay: .06 }); },
     lockset() { tone(420, .06, { type: 'square', gain: .08, lp: 1200 }); tone(280, .1, { type: 'square', gain: .08, delay: .05, lp: 900 }); },
     glitch() { for (let i = 0; i < 9; i++) { const d = i * .07 + Math.random() * .03; tone(80 + Math.random() * 1800, .05 + Math.random() * .05, { type: 'square', gain: .09, delay: d, bus: busOpen }); noise(.05, { f0: 500 + Math.random() * 6000, q: 6, gain: .12, delay: d, bus: busOpen }); } },
+    // Phase Four: wax seal (crack + dust), a constellation star (rising pentatonic chime), a heavy lid, and the Forge reel click
+    seal(n = 1) { noise(.09, { f0: 1800 + n * 300, q: 2.5, gain: .24, bus: busOpen }); tone(220 - n * 20, .2, { type: 'triangle', gain: .16, slide: .6, bus: busOpen }); noise(.5, { f0: 900, f1: 300, q: .7, gain: .05, delay: .08, bus: busOpen }); },
+    star(n = 1) { const m = [72, 74, 76, 79, 81, 84][Math.min(5, n - 1)]; tone(midi(m), .9, { type: 'sine', gain: .1, attack: .01, bus: busOpen }); tone(midi(m + 12), .5, { type: 'triangle', gain: .035, delay: .03, bus: busOpen }); },
+    lid() { noise(1.1, { f0: 260, f1: 120, q: 3, gain: .07, attack: .2, bus: busOpen }); tone(70, 1.2, { type: 'sawtooth', gain: .05, slide: .8, lp: 300, attack: .3, bus: busOpen }); },
+    // card pack: a crisp paper turn, and a soft rising shimmer before a Rare+ card (by tier, never loud)
+    flip() { noise(.08, { f0: 3200, f1: 1400, q: 1.2, gain: .16, bus: busOpen }); tone(900, .05, { type: 'triangle', gain: .05, bus: busOpen, delay: .02 }); },
+    cardcue(t = 2) { for (let i = 0; i < Math.min(5, t); i++) tone(midi(76 + i * 3), .35, { type: 'sine', gain: .025 + t * .004, delay: i * .06, bus: busOpen }); },
+    // Forge reel: a ratchet click whose voice depends on reel speed (light and high while fast, a heavy clack as it slows); o.delay schedules it on the audio clock
+    reelclick(o = {}) { const v = (o.vol == null ? .7 : o.vol), sp = Math.max(0, Math.min(1, o.speed || 0)), d = o.delay || 0; if (v <= 0) return;
+      noise(.022 + (1 - sp) * .02, { f0: 1500 + sp * 3600, q: 5, gain: (.07 + (1 - sp) * .1) * v, delay: d, bus: busOpen });
+      tone(sp > .35 ? 1300 + sp * 700 : 420 - (1 - sp) * 90, .03 + (1 - sp) * .03, { type: sp > .35 ? 'square' : 'triangle', gain: (.025 + (1 - sp) * .07) * v, lp: 3000, delay: d, bus: busOpen }); },
+    reelland(t = 0) { tone(110, .25, { type: 'sine', gain: .22, slide: .6, bus: busOpen }); noise(.06, { f0: 900, q: 2, gain: .12, bus: busOpen }); if (t >= 2) chord([67 + t, 71 + t, 74 + t], .5, { type: 'triangle', gain: .05 + t * .01, stagger: .05, bus: busOpen, delay: .05 }); },
     trait() { tone(1400 + Math.random() * 300, .07, { type: 'triangle', gain: .09, bus: busOpen }); },
     // startup sequence: a low waking hum, a rising soft tick per completed stage, a bright resolve when the gateway opens
     bootwake() { tone(55, 1.4, { type: 'sine', gain: .1, attack: .6 }); tone(110, 1.2, { type: 'sine', gain: .04, attack: .7 }); },

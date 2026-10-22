@@ -348,6 +348,12 @@
     ${[[70, 70, 7], [128, 90, 9], [84, 128, 8], [120, 146, 6], [100, 52, 5], [58, 112, 5]].map(s => `<ellipse cx="${s[0]}" cy="${s[1]}" rx="${s[2]}" ry="${s[2] * .8}" fill="${c[1]}" opacity=".45"/>`).join('')}
     <path d="M62 56q-14 28-8 56" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".6"/>
     <g class="cracks" fill="none" stroke="#2a1a3a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path class="k1" d="M100 24l-8 22 12 14-10 18"/><path class="k2" d="M132 62l-16 14 10 16-14 12"/><path class="k3" d="M62 96l16 8-6 18 16 6"/><path class="k4" d="M138 130l-14-6-8 16 12 10M96 150l-8 12 12 10"/></g></g>`;
+  CART.starlit = (c, u) => `<defs>${lg(u + 'e', '#2a2f6e', '#0b0c26', .2, 0, .8, 1)}${rg(u + 'g', c[0] + 'aa', c[0] + '00', .5, .5, .5)}</defs>
+    <circle class="egg-glow" cx="100" cy="104" r="92" fill="url(#${u}g)"/>${shadow(44)}
+    <g class="egg-body"><path d="M100 14C60 14 34 70 34 112c0 38 30 66 66 66s66-28 66-66c0-42-26-98-66-98z" fill="url(#${u}e)" stroke="#d8c27a" stroke-width="3"/>
+    ${[[60, 80], [142, 70], [70, 150], [128, 160], [112, 40], [52, 118], [150, 118], [96, 170]].map(s => `<circle cx="${s[0]}" cy="${s[1]}" r="1.6" fill="#fff" opacity=".7"/>`).join('')}
+    <g class="cracks" fill="none" stroke="${c[0]}" stroke-width="2.5" stroke-linecap="round"><path class="k1" d="M84 58L106 84"/><path class="k2" d="M106 84L98 116"/><path class="k3" d="M98 116L122 140"/><path class="k4" d="M106 84L132 98"/></g>
+    ${[[84, 58], [106, 84], [98, 116], [122, 140], [132, 98]].map(s => `<path d="${star(s[0], s[1], 7, 2.4, 4)}" fill="#fff6c8"/>`).join('')}</g>`;
   CART.crate = (c, u) => `<defs>${lg(u + 'w', '#6b7488', '#2a3042')}${lg(u + 'm', c[1], c[0])}${rg(u + 'g', c[1] + '99', c[1] + '00', .5, .5, .5)}</defs>
     <circle class="crate-glow" cx="100" cy="104" r="88" fill="url(#${u}g)"/>${shadow(62)}
     <rect x="24" y="52" width="152" height="118" rx="8" fill="url(#${u}w)" stroke="#161c28" stroke-width="3.5"/>
@@ -381,6 +387,14 @@
   // ---------- ICONS: one family — 24 grid, 1.5 stroke, square caps, mitred joins ----------
   const ICONS = {
     home: '<path d="M3 21V10l9-6.5 9 6.5v11M3 21h18M9.5 21v-6.5h5V21"/>',
+    card: '<path d="M6.5 3.5h11v17h-11zM9 6.5h6M9 15.5h6M9 18h3.5"/><path d="M9 8.5h6v4.5H9z"/>',
+    fuse: '<path d="M4 6.5a3.5 3.5 0 1 0 7 0 3.5 3.5 0 1 0-7 0M13 6.5a3.5 3.5 0 1 0 7 0 3.5 3.5 0 1 0-7 0M7.5 10l4.5 5.5 4.5-5.5M12 15.5V21M9.5 21h5"/>',
+    binder: '<path d="M5 3.5h13.5v17H5zM8 3.5v17M3.5 7h3M3.5 12h3M3.5 17h3M11 7.5h4.5v6H11z"/>',
+    folder: '<path d="M3 6.5h6.5l2 2.5H21v10.5H3z"/>',
+    tag: '<path d="M3.5 3.5h8l9 9-8 8-9-9zM7.5 7.5h.01"/>',
+    compare: '<path d="M3.5 4.5h7v15h-7zM13.5 4.5h7v15h-7zM6 9h2M16 9h2M6 13h2M16 12h2M16 15h2"/>',
+    filter: '<path d="M3.5 5h17l-6.5 8v6l-4 1.5V13z"/>',
+    history: '<path d="M4 12a8 8 0 1 0 2.4-5.7M4 4.5v4h4M12 7.5V12l3 2"/>',
     open: '<path d="M4 8.5 12 4l8 4.5v9L12 22l-8-4.5zM4 8.5l8 4.5 8-4.5M12 13v9"/>',
     vault: '<path d="M3.5 4.5h17v15h-17zM6 19.5V22M18 19.5V22"/><circle cx="12" cy="12" r="4"/><path d="M12 8v8M8 12h8"/>',
     paw: '<path d="M7.5 18.5h9.2a4 4 0 0 0 .7-7.9 5.2 5.2 0 0 0-9.9-1A4.5 4.5 0 0 0 7.5 18.5zM12.4 11.2l-2.2 3.3h3l-2.2 3.4"/>',
@@ -515,6 +529,11 @@
     const spec = typeof specOrBase === 'string' ? null : specOrBase;
     const base = spec ? spec.base : specOrBase;
     const item = D.ITEMS[base];
+    if (item.cat === 'card' && AV.cardArt) { // Phase Four: printed cards draw their own frame, illustration, wear and print traits
+      const t3 = !opts.silhouette && !opts.no3d && AV.stage && AV.stage.supported() ? AV.stage.art(spec || base) : null;
+      const body = opts.silhouette ? `<rect x="51" y="6" width="98" height="186" rx="8" fill="#0c0b0a" stroke="#3a342a" stroke-width="2"/><path d="${star(100, 92, 20, 6, 4)}" fill="#2a251e"/>` : AV.cardArt.svg(spec || base);
+      return `<div class="art art-card ${opts.silhouette ? 'sil' : ''} ${t3 ? 'art-t3 is-pending' : ''} ${opts.cls || ''}" ${t3 ? `data-t3="${t3.key}"` : ''}><svg class="art-svg" viewBox="0 0 200 200" role="img" aria-label="${U.esc(item.name)}">${body}</svg></div>`;
+    }
     const u = U.uid('a');
     const fn = ART[base];
     const body = fn ? fn(item.pal, u) : `<circle cx="100" cy="100" r="60" fill="${item.pal[0]}"/>`;

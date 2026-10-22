@@ -6,7 +6,7 @@
   const U = AV.util, D = AV.data, E = AV.engine, SP = AV.specimen, A = AV.art, ui = AV.ui, fx = AV.fx, au = AV.audio;
   const esc = U.esc;
   let busy = false;
-  const STAGE_TIER = { egg: 2, crate: 3, vault: 5, pack: 2, capsule: 3 };
+  const STAGE_TIER = { egg: 2, crate: 3, vault: 5, pack: 2, capsule: 3, chest: 3, starlit: 3 };
 
   /** A cancellable timeline: every wait resolves instantly once skipped, so animations fast-forward to their end state. */
   class Seq {
@@ -48,7 +48,15 @@
     try {
       const instant = ui.speed() === 0;
       if (!instant && !(AV.state.get().settings.skipRituals && !opts.starter)) await ritual(c, count, results, bestR);
-      if (!instant) await reveals(results, c);
+      if (!instant) {
+        // Phase Four: each container presents its results in its own way; multi-opens follow the player's preference
+        const P4 = AV.openingP4, mo = AV.state.get().settings.multiOpen || 'condensed', multi = count > 1 && !opts.starter;
+        if (multi && mo === 'instant') { /* straight to the results */ }
+        else if (P4 && c.cats && c.cats.includes('card') && results.every(r => r.spec && D.ITEMS[r.spec.base] && D.ITEMS[r.spec.base].cat === 'card')) await P4.cards(results, c, count); // the card-pack reveal only presents cards
+        else if (P4 && c.ritual === 'crate') await P4.roulette(results, c, count);
+        else if (P4 && multi && mo === 'condensed') await P4.condensed(results, c, {});
+        else await reveals(results, c);
+      }
       again = await summary(c, count, results, opts);
     } catch (e) { console.error('opening error', e); }
     document.body.classList.remove('opening-on', 'glitching');
@@ -61,7 +69,7 @@
   }
 
   // ---------------------------------------------------------------- ritual
-  const PROMPTS = { pack: ['Swipe across the top to tear the wrapper', 'Tap to tear'], egg: ['Tap the egg — something is moving', ''], capsule: ['Tap to twist the capsule', ''], chest: ['Tap to break the seals', ''], vault: ['Tap to turn the wheel', ''], crate: ['Press and hold to charge the lock', ''] };
+  const PROMPTS = { pack: ['Swipe across the top to tear the wrapper', 'Tap to tear'], egg: ['Tap the egg — something is moving', ''], capsule: ['Tap to twist the capsule', ''], chest: ['Tap each wax seal to break it', ''], starlit: ['Trace the constellation — tap to light each star', ''], vault: ['Tap to turn the wheel', ''], crate: ['Press and hold to charge the lock', ''] };
 
   async function ritual(c, count, results, bestR) {
     const kind = c.ritual, body = q('.op-body'), seq = new Seq();
@@ -102,18 +110,33 @@
         fx.burstAt(art, { count: 8 + n * 3, colors: [c.theme[1], '#ece3cf'], speed: 4, life: 30 }); fx.shake(3 + n, 220);
         if (n >= need) finish();
       };
+    } else if (kind === 'starlit') {
+      const need = quick ? 2 : 5; let n = 0; const cr = svg && svg.querySelector('.cracks');
+      const tap = () => {
+        if (n >= need || !tapOk()) return; n++; setP(n / need); au.play('star', n);
+        if (inst) inst.pulse(); else { cr.setAttribute('class', 'cracks s' + Math.ceil(n / need * 4)); art.classList.remove('wob'); void art.offsetWidth; art.classList.add('wob'); }
+        fx.burstAt(art, { count: 6 + n * 2, colors: [c.theme[0], '#fff6c8'], speed: 2.5, life: 34, gravity: -.02 });
+        if (n >= need) finish();
+      };
+      art.addEventListener('click', tap);
     } else if (kind === 'capsule') {
       const need = quick ? 1 : 3; let n = 0;
+      const JUMPS = [[-46, 8, -3], [38, -14, 4], [0, 0, 0]], red = ui.reduced();
       art.onclick = () => {
         if (n >= need || !tapOk()) return; n++; setP(n / need); au.play('twist');
         if (inst) inst.pulse(); else { svg.style.setProperty('--twist', (n * 120) + 'deg'); art.classList.remove('wob'); void art.offsetWidth; art.classList.add('wob'); }
         fx.burstAt(art, { count: 10, colors: [c.theme[0], '#ece3cf'], speed: 4, life: 28 });
+        if (!red && n < need) { const j = JUMPS[(n - 1) % JUMPS.length]; art.style.transition = 'transform .09s steps(2)'; art.style.transform = `translate(${j[0]}px, ${j[1]}px) rotate(${j[2]}deg)`; }
+        else art.style.transform = '';
+        glitchLabels([prompt, q('.op-title b')], red ? 120 : 340);
         if (n >= need) finish();
       };
     } else if (kind === 'chest' || kind === 'vault') {
       const need = quick ? 1 : 3; let n = 0;
       const tap = () => {
-        if (n >= need || !tapOk()) return; n++; setP(n / need); au.play('lock', n);
+        if (n >= need || !tapOk()) return; n++; setP(n / need); au.play(kind === 'chest' ? 'seal' : 'lock', n);
+        if (kind === 'vault') prompt.firstChild.textContent = n >= need ? 'All locks released' : ['First lock released — two remain', 'Second lock released — one remains'][n - 1] || 'Tap to turn the wheel';
+        else if (kind === 'chest') prompt.firstChild.textContent = n >= need ? 'The seals are broken' : `${need - n} seal${need - n > 1 ? 's' : ''} remain${need - n > 1 ? '' : 's'}`;
         if (inst) inst.pulse(); else { svg.style.setProperty('--open', String(n / need)); svg.style.setProperty('--turn', (n * 120) + 'deg'); for (let i = 0; i < Math.ceil(n / need * 3); i++) { const l = svg.querySelector('.vl' + i); if (l) l.classList.add('on'); } art.classList.remove('wob'); void art.offsetWidth; art.classList.add('wob'); }
         fx.burstAt(art, { count: 10 + n * 4, colors: [c.theme[1], '#ece3cf'], speed: 5, life: 32 }); fx.shake(3, 200);
         if (n >= need) finish();
@@ -159,8 +182,16 @@
     fx.shake(6 + bestR.tier, 320);
     rit.classList.add('bursting');
     const s2 = new Seq(); skipBtn.onclick = () => s2.skip();
-    await s2.wait(ui.dur(use3d ? 1250 : 550));
+    if (kind === 'chest' && inst) au.play('lid');
+    await s2.wait(ui.dur(use3d ? ({ chest: 2100, starlit: 1700 }[kind] || 1250) : 550));
     if (view) view.dispose();
+  }
+
+  /** Oddity creative detail: nearby labels briefly lose their letters to the containment fault, then recover. */
+  function glitchLabels(els, ms) {
+    const G = '▚▞░▒╳◇◆▲▼⌁', r = Math.random;
+    els.filter(Boolean).forEach(el => { const node = el.firstChild && el.firstChild.nodeType === 3 ? el.firstChild : null; if (!node) return; const orig = node.__orig || (node.__orig = node.textContent);
+      let k = 0; const iv = setInterval(() => { k++; node.textContent = orig.split('').map(ch => (ch !== ' ' && r() < .28 ? G[Math.floor(r() * G.length)] : ch)).join(''); if (k * 60 >= ms) { clearInterval(iv); node.textContent = orig; } }, 60); });
   }
 
   // ---------------------------------------------------------------- reveals
@@ -324,11 +355,12 @@
           ui.toast(`Dismantled ${r.count} → +${U.fmt(r.essence)} essence`, { kind: 'good', icon: 'essence' }); render();
         }
       });
+      const lo = AV.state.get().lastOpening; if (lo && !lo.seen) { lo.seen = true; AV.state.save(); } // the interrupted-opening notice is no longer needed
       const keyH = e => { if (!ui.hasModal() && (e.key === 'Escape')) resolve('done'); };
       document.addEventListener('keydown', keyH);
       const orig = resolve; resolve = v => { document.removeEventListener('keydown', keyH); orig(v); };
     });
   }
 
-  AV.opening = { start, busy: () => busy, Seq };
+  AV.opening = { start, busy: () => busy, Seq, _: { q, host, Seq, reveals } };
 })();

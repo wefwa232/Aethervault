@@ -1,0 +1,65 @@
+{
+ "date": "2026-10-22T13:50:45.152Z",
+ "results": [
+  {
+   "group": "motion",
+   "name": "reduced motion: idle 3D view does not render continuously",
+   "ok": true,
+   "detail": "frames in 2.5s: 0"
+  },
+  {
+   "group": "motion",
+   "name": "reduced motion: body flagged, ambient canvas hidden",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "motion",
+   "name": "reduced motion: dragging still rotates and redraws",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "motion",
+   "name": "motion restored: 3D animates again",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "save",
+   "name": "favorite, nickname and 3D quality survive a reload",
+   "ok": true,
+   "detail": "{\"fav\":true,\"nick\":\"Cirrus\",\"q\":\"low\",\"n\":25,\"shown\":\"Cirrus\"}"
+  },
+  {
+   "group": "save",
+   "name": "home shows the saved companion nickname",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "save",
+   "name": "specimen count unchanged after reload",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "audio",
+   "name": "volume sliders write settings (master .31, music 0)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "audio",
+   "name": "test-sound button runs without error and an AudioContext exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "audio",
+   "name": "toggle persists to settings",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

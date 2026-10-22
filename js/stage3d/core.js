@@ -234,7 +234,8 @@
       if (this.opts.plinth && this.opts.mode !== 'thumb') {
         this.plinthR = U.clamp((f.r || 1) * .95, .5, 1.7);
         const lines = this.opts.plate === false ? null : [{ text: (spec.plateTitle || (item ? item.name : spec.name) || '').toUpperCase(), font: '600 74px "Barlow Condensed", sans-serif', spacing: '5px', y: 92 }, { text: spec.plateSub || (spec.serial ? '№ ' + U.pad(spec.serial, 4) + '  ·  ' + (R ? R.name.toUpperCase() : '') : ''), font: '500 52px "IBM Plex Mono", monospace', y: 172, color: '#b5ab92' }];
-        this.plinth = buildPlinth(this.plinthR, lines, tier, rc, q); this.stageGroup.add(this.plinth.group);
+        const prc = spec.fusion && spec.fusion.tint ? L.mix(rc, spec.fusion.tint, .5) : rc; // a fused specimen's pedestal carries its mutation colour
+        this.plinth = buildPlinth(this.plinthR, lines, tier, prc, q); this.stageGroup.add(this.plinth.group);
       } else this.plinth = null;
       // contact shadow
       if (!this.plinth || !this.shadows) { const sm = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: L.shadowTex(), transparent: true, opacity: this.plinth ? .55 : .6, depthWrite: false })); sm.rotation.x = -Math.PI / 2; sm.position.y = 0.003; const rr = (f.r || 1) * 2.4; sm.scale.set(rr, rr, 1); sm.userData.noSil = true; this.stageGroup.add(sm); this.shadowMesh = sm; }
@@ -372,7 +373,7 @@
       const fk = dt * 60; // motion is tuned per 60Hz frame; scale by real elapsed time so it's identical at any refresh rate / frame skip
       if (!r.dragging) { r.yaw += r.vy * fk; r.pitch = U.clamp(r.pitch + r.vp * fk, -.45, .5); r.vy *= Math.pow(.93, fk); r.vp *= Math.pow(.9, fk); if (Math.abs(r.vy) < 1e-5) r.vy = 0; if (Math.abs(r.vp) < 1e-5) r.vp = 0; r.idle += dt; }
       let sway = 0;
-      if (!r.dragging && r.idle > 1.1) { const rest = this.rest, k = 1 - Math.pow(.0009, dt); let dy = ((rest.yaw - r.yaw) % (Math.PI * 2)); if (dy > Math.PI) dy -= Math.PI * 2; if (dy < -Math.PI) dy += Math.PI * 2; r.yaw += dy * (st.reduced ? 1 : k); r.pitch += (rest.pitch - r.pitch) * (st.reduced ? 1 : k); if (Math.abs(dy) > .002 || Math.abs(r.pitch - rest.pitch) > .002) this.dirty = true; if (animate && this.opts.bob) sway = Math.sin(st.t * .45) * .1; }
+      if (!r.dragging && r.idle > (this.opts.restDelay || 1.1)) { const rest = this.rest, k = 1 - Math.pow(.0009, dt); let dy = ((rest.yaw - r.yaw) % (Math.PI * 2)); if (dy > Math.PI) dy -= Math.PI * 2; if (dy < -Math.PI) dy += Math.PI * 2; r.yaw += dy * (st.reduced ? 1 : k); r.pitch += (rest.pitch - r.pitch) * (st.reduced ? 1 : k); if (Math.abs(dy) > .002 || Math.abs(r.pitch - rest.pitch) > .002) this.dirty = true; if (animate && this.opts.bob) sway = Math.sin(st.t * .45) * .1; }
       this.zoom += (this.zoomT - this.zoom) * (1 - Math.pow(.002, dt));
       this.pivot.rotation.y = r.yaw + sway; this.pivot.rotation.x = r.pitch;
       let bobY = 0; if (animate && this.opts.bob && this.inst.float) bobY = Math.sin(st.t * 1.1) * this.inst.float;
@@ -443,7 +444,7 @@
       if (!animate && !v.dirty && !moving) {
         // reduced motion / still view: draw only on demand, but keep counting the idle delay so it can ease back to its rest pose
         if (v.st.reduced === rm && atRest(v)) return;
-        v.rot.idle += dt; if (v.rot.idle > 1.1) v.dirty = true; else { want = true; urgent = true; return; }
+        v.rot.idle += dt; if (v.rot.idle > (v.opts.restDelay || 1.1)) v.dirty = true; else { want = true; urgent = true; return; }
       }
       want = true; if (v.dirty || moving || !animate) urgent = true;
       const cap = capOf(v), iv = cap === Infinity ? 0 : 1000 / cap;
@@ -470,10 +471,12 @@
   S.REV = 'p3-1'; // bump whenever a model, light rig or thumbnail framing changes so persisted thumbnails regenerate
   const thumbs = new Map(), queue = []; let thumbBusy = 0; const THUMB_MAX = 260;
   const disp = s => (s && s.base && s.look && s.look !== 'auto' && AV.progress ? AV.progress.displaySpec(s) : s);
-  const encode0 = s => [s.base, s.variant || 'none', s.pattern || 'plain', (s.seed >>> 0), s.palette || 0, s.condition || 0, s.level || 0, Math.round((s.potential || 0) / 20), s.serial || 0, s.container || '', s.form || ''].join('|');
+  // Phase Four appends a card's print key and a fused specimen's mutation key only when present, so every older key is unchanged
+  const extra = s => { const c = s.card && AV.cards ? AV.cards.key(s.card) : '', f = s.fusion && AV.fusion ? AV.fusion.renderKey(s) : ''; return c || f ? '|' + c + (f ? '|' + f : '') : ''; };
+  const encode0 = s => [s.base, s.variant || 'none', s.pattern || 'plain', (s.seed >>> 0), s.palette || 0, s.condition || 0, s.level || 0, Math.round((s.potential || 0) / 20), s.serial || 0, s.container || '', s.form || ''].join('|') + extra(s);
   const encode = s => encode0(disp(s));
   S.encodeC = (kind, theme) => 'C|' + kind + '|' + (theme || []).join(',');
-  const decode = k => { const a = k.split('|'); if (a[0] === 'C') return { container: a[1], theme: (a[2] || '').split(','), seed: 7, name: a[1] }; return { base: a[0], variant: a[1], pattern: a[2], seed: +a[3], palette: +a[4], condition: +a[5], level: +a[6], potential: +a[7] * 20, serial: +a[8], container: a[9] || undefined, form: a[10] || null }; };
+  const decode = k => { const a = k.split('|'); if (a[0] === 'C') return { container: a[1], theme: (a[2] || '').split(','), seed: 7, name: a[1] }; const o = { base: a[0], variant: a[1], pattern: a[2], seed: +a[3], palette: +a[4], condition: +a[5], level: +a[6], potential: +a[7] * 20, serial: +a[8], container: a[9] || undefined, form: a[10] || null }; if (a[11] && AV.cards) o.card = AV.cards.unkey(a[11]); if (a[12] && AV.fusion) AV.fusion.applyRenderKey(o, a[12]); return o; };
   const ckey = k => S.REV + (S.q().physical ? 'P' : 'S') + '|' + k;
 
   const idb = (() => {
@@ -531,7 +534,7 @@
       v = new View(host, { mode: 'thumb', interactive: false, plinth: false, live: false, motes: false, margin: 1.12, pitch: .12, fov: 28 });
       v.w = v.h = size; v.px = 1; v.canvas.width = v.canvas.height = size; v.camera.aspect = 1; v.camera.updateProjectionMatrix();
       if (!v.setSpec(spec)) return null;
-      await v.readyP; if (v.disposed || !v.ready) return null;
+      await v.readyP; if (v.inst && v.inst.loadP) { await v.inst.loadP; v.prepare(); await v.readyP; } if (v.disposed || !v.ready) return null;
       v.st.t = 4.2; v.tick(.016, performance.now()); v.tick(.016, performance.now()); frameThumb(v, size);
       const ex = renderer.toneMappingExposure; renderer.toneMappingExposure = 1.22; v.render(); renderer.toneMappingExposure = ex;
       const blob = await new Promise(res => v.canvas.toBlob(res, 'image/webp', .86)); if (!blob) return null; thumbDraw++;

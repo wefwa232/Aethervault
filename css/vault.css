@@ -3,10 +3,10 @@
 .filters { position: sticky; top: 0; height: calc(100vh - var(--top-h)); overflow-y: auto; padding: 1rem .95rem 1.4rem; border-width: 0 1px 0 0; --fill: rgba(18, 17, 15, .94); align-self: start; }
 .filters .sect { margin-top: 1.1rem; } .filters .sect:first-child { margin-top: 0; }
 .divs, .rlad { display: grid; }
-.div-row, .rl-row { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: .55rem; padding: .42rem .45rem; background: none; border: 0; border-bottom: 1px solid var(--hair-2); text-align: left; color: var(--ivory-2); font: 500 .88rem var(--f-head); transition: background .12s, color .12s; }
-.div-row .ico { width: 16px; height: 16px; color: var(--ivory-3); } .div-row b, .rl-row b { font-size: .75rem; color: var(--ivory-3); font-weight: 400; }
-.div-row:hover, .rl-row:hover { background: var(--ink-2); color: var(--ivory); } .div-row.on { background: linear-gradient(90deg, #2a2418, transparent); color: var(--brass-hi); box-shadow: inset 3px 0 var(--brass-hi); } .div-row.on .ico { color: var(--brass-hi); }
-.rl-row { grid-template-columns: 30px minmax(0, 1fr) auto; } .rl-row.on { background: color-mix(in srgb, var(--rc) 10%, var(--ink-1)); color: var(--ivory); box-shadow: inset 3px 0 var(--rc); } .rl-row:not(.on) .rk { opacity: .55; }
+.div-row, .rlad-row { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: .55rem; padding: .42rem .45rem; background: none; border: 0; border-bottom: 1px solid var(--hair-2); text-align: left; color: var(--ivory-2); font: 500 .88rem var(--f-head); transition: background .12s, color .12s; }
+.div-row .ico { width: 16px; height: 16px; color: var(--ivory-3); } .div-row b, .rlad-row b { font-size: .75rem; color: var(--ivory-3); font-weight: 400; }
+.div-row:hover, .rlad-row:hover { background: var(--ink-2); color: var(--ivory); } .div-row.on { background: linear-gradient(90deg, #2a2418, transparent); color: var(--brass-hi); box-shadow: inset 3px 0 var(--brass-hi); } .div-row.on .ico { color: var(--brass-hi); }
+.rlad-row { grid-template-columns: 30px minmax(0, 1fr) auto; } .rlad-row.on { background: color-mix(in srgb, var(--rc) 10%, var(--ink-1)); color: var(--ivory); box-shadow: inset 3px 0 var(--rc); } .rlad-row:not(.on) .rk { opacity: .55; }
 .selects { display: grid; gap: .4rem; } .selects select { width: 100%; }
 .kswitch { display: grid; margin-top: .6rem; }
 .ks { display: grid; grid-template-columns: 18px 1fr 26px; align-items: center; gap: .55rem; padding: .45rem .45rem; background: none; border: 0; border-bottom: 1px solid var(--hair-2); color: var(--ivory-2); text-align: left; font: 500 .88rem var(--f-head); }

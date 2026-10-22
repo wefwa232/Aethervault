@@ -1,4 +1,14 @@
-# AETHERVAULT — TODO / Status (v0.4)
+# AETHERVAULT — TODO / Status (v0.5)
+
+## Phase Four (done, see PHASE_FOUR.md)
+- [x] Container identity (explicit pools), Relic Chest + Starlit Egg 3D, Wanderer card pack, Forge Crate roulette, reworked rituals
+- [x] Literal Cards (3 sets, 64 cards), 3D cards + holograms, Fusion Chamber, Vault expansion (9 views, filters, saved searches, collections), Inspect → Organise
+- [x] Save v3 migration with raw backup + fault injection; settings for the new systems
+- [x] Validation: logic 45/45, phase3 Node 22/22, phase4 Node 30/30, phase3 Chrome 39/39, phase2 Chrome 40/40, Vault + Organise Chrome scenarios (see PHASE_FOUR.md §10)
+- [ ] Not built: a machine "post-reveal cooldown" (the original brief had no specification; dropped rather than invented)
+- [ ] Not verified: mobile/touch behaviour of the new screens beyond a 375 px overflow check, other browsers, low-end GPUs, audio mix of the new sounds (cannot listen)
+- [ ] Deferred on purpose: quests, seasons, battle pass, events, trading, marketplace, multiplayer, accounts, Creator Mode, interchangeable skins
+
 
 ## Phase Three (done, see PHASE_THREE.md)
 - [x] Rarity rings removed; rarity on pedestal and light

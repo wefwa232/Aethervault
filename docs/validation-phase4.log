@@ -1,0 +1,87 @@
+=== boot,modes,protect,upgrade,evolve
+PASS  [boot] fresh load shows onboarding modal
+PASS  [boot] no page errors on boot
+PASS  [boot] WebGL stage is supported & renderer created
+PASS  [boot] onboarding starts the first-egg ritual (3D view mounted)
+PASS  [boot] egg ritual completes into a reveal
+PASS  [boot] profile saved (name, mode, onboarded, starter pet, companion)  — {"name":"Tester","mode":"unlimited","onboarded":true,"count":1,"comp":true}
+PASS  [modes] Unlimited shows ∞ balances
+PASS  [modes] Unlimited opens a container with 0 credits
+PASS  [modes] Unlimited spends nothing
+PASS  [modes] Standard refuses an unaffordable opening (250 credits vs 100)
+PASS  [modes] Standard deducts the price  — {"ok":true,"credits":750}
+PASS  [protect] favorite protects a specimen (UI)  — Favorited
+PASS  [protect] dismantle of a favorited specimen shows a refusal, no confirm modal
+PASS  [protect] favorited specimen still exists
+PASS  [protect] engine skips protected specimens even when asked  — {"skipped":1,"count":0,"still":true}
+PASS  [protect] lock protects a specimen
+PASS  [protect] select-all dismantle opens a confirmation that mentions protected items
+PASS  [protect] after dismantling everything selected, locked specimen and companion remain  — {"locked":true,"comp":true,"left":2}
+PASS  [protect] dismantling granted essence and updated stats  — dismantled=23
+PASS  [upgrade] Upgrade via the console raises the stage  — level=1
+PASS  [upgrade] forge lamp ladder advanced
+PASS  [upgrade] forge renders a live 3D chamber
+PASS  [upgrade] next-stage preview shows a preview tag
+PASS  [upgrade] repeated upgrades reach the Signature stage (4)  — level=4
+PASS  [upgrade] no Upgrade button at the cap
+PASS  [upgrade] no page errors during upgrading
+PASS  [evolve] [tempestral] both branches are offered
+PASS  [evolve] [tempestral] evolution preview swaps the live model
+PASS  [evolve] [tempestral] cinematic is shown
+PASS  [evolve] [tempestral] specimen became tempestral, stage reset, serial kept  — {"base":"tempestral","level":0,"serial":421}
+PASS  [evolve] [pluvia] both branches are offered
+PASS  [evolve] [pluvia] evolution preview swaps the live model
+PASS  [evolve] [pluvia] cinematic is shown
+PASS  [evolve] [pluvia] specimen became pluvia, stage reset, serial kept  — {"base":"pluvia","level":0,"serial":421}
+PASS  [evolve] Tempestral evolves into Storm Sovereign (engine)
+35/35 checks passed; page errors seen: 0
+=== audio,save,motion
+PASS  [motion] reduced motion: idle 3D view does not render continuously  — frames in 2.5s: 0
+PASS  [motion] reduced motion: body flagged, ambient canvas hidden
+PASS  [motion] reduced motion: dragging still rotates and redraws
+PASS  [motion] motion restored: 3D animates again
+PASS  [save] favorite, nickname and 3D quality survive a reload  — {"fav":true,"nick":"Cirrus","q":"low","n":25,"shown":"Cirrus"}
+PASS  [save] home shows the saved companion nickname
+PASS  [save] specimen count unchanged after reload
+PASS  [audio] volume sliders write settings (master .31, music 0)
+PASS  [audio] test-sound button runs without error and an AudioContext exists
+PASS  [audio] toggle persists to settings
+10/10 checks passed; page errors seen: 0
+=== buttons
+PASS  [buttons] clicked 164 visible controls across 7 screens without a page error  — new errors: 
+1/1 checks passed; page errors seen: 0
+=== reveals,leaks
+FAIL  [reveals] common (rustblade) reveal reaches the ready state  — 3D view=false flat=false
+FAIL  [reveals] rare (nimbus) reveal reaches the ready state  — 3D view=false flat=false
+FAIL  [reveals] epic (tempestral) reveal reaches the ready state  — 3D view=false flat=false
+FAIL  [reveals] mythic (prismedge) reveal reaches the ready state  — 3D view=false flat=false
+FAIL  [reveals] legendary (stormsovereign) reveal reaches the ready state  — 3D view=false flat=false
+FAIL  [reveals] transcendent (heartofeternity) reveal reaches the ready state  — 3D view=false flat=false
+FAIL  [reveals] anomaly (missingtexture) reveal reaches the ready state  — 3D view=false flat=false
+FAIL  [reveals] uncommon (pebblor, SVG fallback) reveal reaches ready
+PASS  [reveals] container wanderer (pack) ritual on 3D → reveal → summary completes
+PASS  [reveals] container hatchling (egg) ritual on 3D → reveal → summary completes
+PASS  [reveals] container capsule (capsule) ritual on 3D → reveal → summary completes
+PASS  [reveals] container forge (crate) ritual on 3D → reveal → summary completes
+PASS  [reveals] container starlit (egg) ritual on 3D → reveal → summary completes
+PASS  [reveals] container reliquary (chest) ritual on 3D → reveal → summary completes
+PASS  [reveals] container vault (vault) ritual on 3D → reveal → summary completes
+FAIL  [reveals] no page errors across reveals  — [error] opening error JSHandle@error | [error] opening error JSHandle@error | [error] opening error JSHandle@error | [error] opening error JSHandle@error | [error] opening error J
+FAIL  [leaks] live 3D views return to ≤1 after 28 openings  — views=29
+PASS  [leaks] GPU geometries stable over openings 12→28 (±15%)  — 78 → 78
+PASS  [leaks] GPU textures stable over openings 12→28 (±15%)  — 23 → 30
+FAIL  [leaks] shader programs bounded (<40)  — programs=68
+PASS  [leaks] inspect open/close ×24 leaves no live views beyond baseline  — 28 → 28
+PASS  [leaks] inspect ×24: geometries/textures within +25 of baseline  — geo 89→86, tex 26→28
+11/22 checks passed; page errors seen: 0
+=== quality,responsive
+PASS  [quality] quality=high: 3D canvas renders  — cpu≈0.67ms/frame, rAF≈144fps
+PASS  [quality] quality=medium: 3D canvas renders  — cpu≈0.72ms/frame, rAF≈144fps
+PASS  [quality] quality=low: 3D canvas renders  — cpu≈0.56ms/frame, rAF≈144fps
+PASS  [quality] quality=off: 2D fallback renders SVG, no canvas  — cpu≈0ms/frame, rAF≈144fps
+PASS  [quality] no page errors across quality changes
+PASS  [responsive] desktop 1920×1080: no horizontal overflow on any screen
+PASS  [responsive] laptop 1366×768: no horizontal overflow on any screen
+PASS  [responsive] tablet 820×1180: no horizontal overflow on any screen
+PASS  [responsive] phone 390×844: no horizontal overflow on any screen
+9/9 checks passed; page errors seen: 0

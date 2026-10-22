@@ -25,7 +25,9 @@
     const m = S().economy.priceMult || 1;
     return { cur: container.price.cur, amt: Math.max(0, Math.ceil(container.price.amt * m)) };
   }
+  /** The items a container can award: an explicit list (Phase Four: Hatchling/Starlit) or every obtainable item of its categories. */
   function poolItems(container) {
+    if (container.items) return container.items.map(id => D.ITEMS[id]).filter(Boolean);
     return D.ITEM_LIST.filter(i => i.obtainable && container.cats.includes(i.cat));
   }
   /** Effective rarity table after dropping rarities with no items in the pool; optionally restricted by a minimum tier. */
@@ -106,25 +108,31 @@
     const s = S(), results = [];
     let xp = 10 * count;
     for (let n = 0; n < count; n++) {
+      const pack = [];
       for (let i = 0; i < c.count; i++) {
         const slot = c.slots[i] || {};
         const pityCount = (s.pity[c.id] || 0);
         const pityActive = !!(c.pity && pityCount + 1 >= c.pity.after);
         const item = rollSlot(c, slot.min, pityActive);
-        const spec = SP.generate(item.id, { container: c.id, variantBoost: c.variantBoost });
+        const spec = SP.generate(item.id, { container: c.id, variantBoost: c.variantBoost, minPotential: c.minPotential });
         const meta = addSpecimen(spec, `Drawn from a ${c.name}.`);
         if (c.pity) {
           if (D.RARITY[item.rarity].tier >= D.RARITY[c.pity.rarity].tier) s.pity[c.id] = 0;
           else s.pity[c.id] = pityCount + 1;
         }
         xp += (D.RARITY[item.rarity].tier + 1) * 5 + (meta.isNew ? 40 : 0);
-        results.push({ spec, isNew: meta.isNew, newVariant: meta.newVariant, pityTriggered: pityActive && D.RARITY[item.rarity].tier >= D.RARITY[c.pity.rarity].tier });
+        pack.push({ spec, isNew: meta.isNew, newVariant: meta.newVariant, pityTriggered: pityActive && D.RARITY[item.rarity].tier >= D.RARITY[c.pity.rarity].tier, pack: n });
       }
+      // Card packs present their cards from lowest to highest rarity (presentation order only: every card was already rolled)
+      if (c.ascending) pack.sort((a, b) => SP.rarityTier(a.spec) - SP.rarityTier(b.spec));
+      results.push(...pack);
     }
     s.stats.opened += count;
+    // Reload protection: the rewards are saved now, before any animation, and the opening is remembered until its summary is seen.
+    s.lastOpening = { container: c.id, count, ids: results.map(r => r.spec.id), at: Date.now(), seen: false };
     const levelUps = addXp(xp);
     bus.emit('specimens'); bus.emit('opened', { container: c, results });
-    tick();
+    AV.state.save(true);
     return { ok: true, results, cost, levelUps, xp };
   }
 
@@ -175,6 +183,7 @@
       delete s.specimens[id]; removed.push(id); count++;
     }
     s.recent = s.recent.filter(i => !removed.includes(i));
+    pruneOrg(removed);
     s.stats.dismantled += count;
     if (essence) grant({ essence }, { noMult: false });
     bus.emit('specimens'); tick();
@@ -319,6 +328,96 @@
     sp.look = lookId; bus.emit('specimens'); tick(); return true;
   }
 
+  // ---------- Fusion (Phase Four) ----------
+  const FU = () => AV.fusion;
+  /** Why the given inputs cannot be consumed (Standard rules; Unlimited when consuming). Locked/favorited never; a companion only as the primary. */
+  function fuseBlockers(p, ds) {
+    const out = [];
+    [p, ...ds].forEach((x, i) => { if (!x) return; if (x.locked) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is locked`); else if (x.favorite) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is favorited`); else if (i > 0 && S().companion === x.id) out.push(`${SP.displayName(x)} is your companion`); });
+    return out;
+  }
+  /** Read-only: the exact result, cost, protection blockers and consequences of a fusion. */
+  function fusePreview(pid, dids, opts = {}) {
+    const p = get(pid), ds = (dids || []).map(get).filter(Boolean), pl = FU().plan(p, ds);
+    if (!pl.ok) return pl;
+    const sim = isUnlimited() && !opts.consume;
+    pl.sim = sim; pl.cost = isUnlimited() ? {} : pl.cost; pl.affordable = canAfford(pl.cost); pl.blocked = sim ? [] : fuseBlockers(p, ds);
+    pl.consequences = sim ? ['Simulated (Unlimited Mode): every input stays in your Vault.', 'A new fused specimen is added with its own identifier.', 'It can be reversed later; nothing is lost.']
+      : ['The primary and every donor are consumed (removed from the Vault).', 'A new fused specimen is created with a new identifier and the primary\'s ownership history.', 'The fusion ledger keeps a full record of every parent.', 'A safety backup of your save is written first. This cannot be undone in Standard Mode.'];
+    return pl;
+  }
+  /** Commit a fusion atomically. On any failure the whole state is rolled back to the moment before. */
+  function fuse(pid, dids, opts = {}) {
+    const p = get(pid), ds = (dids || []).map(get).filter(Boolean), pl = FU().plan(p, ds);
+    if (!pl.ok) return { ok: false, err: pl.reason };
+    const sim = isUnlimited() && !opts.consume, blocked = sim ? [] : fuseBlockers(p, ds);
+    if (blocked.length) return { ok: false, err: blocked.join('; ') + '. Unlock or un-favorite first.', blocked };
+    const cost = isUnlimited() ? {} : pl.cost; if (!canAfford(cost)) return { ok: false, err: 'Not enough resources' };
+    const s = S(), snapshot = JSON.stringify(s);
+    if (!sim) { try { localStorage.setItem(AV.state.BACKUP_KEY_FUSION, snapshot); } catch (e) { return { ok: false, err: 'The safety backup could not be written, so nothing was fused.' }; } }
+    let r;
+    try {
+      spend(cost);
+      r = pl.result; const fxId = 'FX-' + U.pad(++s.fusionSeq, 4), now = Date.now(), parents = [p, ...ds];
+      r.id = 's' + (s.nextId++); Object.assign(r.fusion, { id: fxId, at: now, sim });
+      r.origin = Object.assign({}, p.origin, { fusion: fxId });
+      const label = { duplicate: 'duplicate fusion', recipe: 'recipe fusion', hybrid: 'hybrid fusion', infusion: 'element infusion', oddity: 'Oddity fusion', composite: 'composite print' }[pl.kind] || 'fusion';
+      r.history = (p.history || []).slice(-40).concat([{ t: now, type: 'fuse', text: `${sim ? 'Simulated ' : ''}${label} ${fxId} of ${parents.map(x => `${SP.displayName(x)} #${U.pad(x.serial, 4)}`).join(' + ')}${r.fusion.mutation ? ' — ' + r.fusion.mutation.name : ''}${pl.kind === 'duplicate' ? ' — Fusion Rank ' + FU().ROMAN[r.fusion.rank] : ''}.` }]);
+      r.prog = (p.prog || []).slice(-59).concat([{ t: now, type: 'fuse', from: SP.displayName(p), to: r.fusion.name || SP.itemOf(p).name, cost, delta: AV.stats.delta(pl.before, pl.after) }]);
+      s.specimens[r.id] = r;
+      const consumed = sim ? [] : parents.map(x => x.id);
+      if (AV.__faultFusion) throw new Error('fault injected (test hook)');
+      carryOrg(p.id, r.id);
+      consumed.forEach(id => delete s.specimens[id]); pruneOrg(consumed);
+      if (consumed.includes(s.companion)) s.companion = r.id;
+      s.recent = [r.id].concat((s.recent || []).filter(i => !consumed.includes(i))).slice(0, 24);
+      s.fusions.push({ id: fxId, at: now, kind: pl.kind, recipe: r.fusion.recipe, sim, consumed, result: r.id, mutation: r.fusion.mutation, cost, parents: parents.map(x => JSON.parse(JSON.stringify(x))) });
+      s.stats.fusions = (s.stats.fusions || 0) + 1;
+      if (!s.specimens[r.id] || Object.values(r.stats || {}).some(v => !isFinite(v)) || consumed.some(id => s.specimens[id])) throw new Error('validation failed');
+    } catch (e) {
+      AV.state.replace(JSON.parse(snapshot)); bus.emit('specimens'); bus.emit('wallet');
+      return { ok: false, err: 'The fusion failed and was rolled back; nothing changed (' + e.message + ').', restored: true };
+    }
+    const levelUps = addXp(40);
+    bus.emit('specimens'); bus.emit('fused', { spec: r }); AV.state.save(true);
+    return { ok: true, spec: r, fx: r.fusion.id, sim, plan: pl, levelUps };
+  }
+  /** Unlimited Mode: undo a fusion. Restores any parent that was consumed (from the ledger) and removes the fused specimen. */
+  function unfuse(rid) {
+    if (!isUnlimited()) return { ok: false, err: 'Reversing a fusion is an Unlimited Mode power.' };
+    const s = S(), r = get(rid); if (!r || !r.fusion) return { ok: false, err: 'Not a fused specimen' };
+    const rec = (s.fusions || []).find(f => f.result === rid); if (!rec) return { ok: false, err: 'No fusion record' };
+    let restored = 0; rec.parents.forEach(ps => { if (!s.specimens[ps.id] && rec.consumed.includes(ps.id)) { s.specimens[ps.id] = ps; restored++; } });
+    delete s.specimens[rid]; rec.reversed = Date.now(); if (s.companion === rid) s.companion = rec.parents[0].id;
+    s.recent = (s.recent || []).filter(i => i !== rid);
+    bus.emit('specimens'); AV.state.save(true);
+    return { ok: true, restored };
+  }
+
+  // ---------- Vault organisation (Phase Four) ----------
+  // Folders/albums (a specimen may sit in several), tags, notes and saved searches live in S().org. None of it touches identity.
+  const ORG = () => S().org;
+  const cleanName = n => String(n || '').replace(/\s+/g, ' ').trim().slice(0, 32);
+  const touch = ids => { const t = Date.now(); ids.forEach(id => (ORG().touched[id] = t)); };
+  const orgChanged = () => { bus.emit('org'); tick(); };
+  function folderCreate(name) { const f = { id: 'f' + Date.now().toString(36) + (ORG().folders.length + 1), name: cleanName(name) || 'New collection', ids: [], at: Date.now() }; ORG().folders.push(f); orgChanged(); return f; }
+  function folderRename(fid, name) { const f = ORG().folders.find(x => x.id === fid); if (!f || !cleanName(name)) return false; f.name = cleanName(name); orgChanged(); return true; }
+  function folderDelete(fid) { const o = ORG(), n = o.folders.length; o.folders = o.folders.filter(x => x.id !== fid); orgChanged(); return o.folders.length < n; }
+  function folderAdd(fid, ids) { const f = ORG().folders.find(x => x.id === fid); if (!f) return 0; let n = 0; ids.forEach(id => { if (get(id) && !f.ids.includes(id)) { f.ids.push(id); n++; } }); touch(ids); orgChanged(); return n; }
+  function folderRemove(fid, ids) { const f = ORG().folders.find(x => x.id === fid); if (!f) return 0; const n = f.ids.length; f.ids = f.ids.filter(id => !ids.includes(id)); orgChanged(); return n - f.ids.length; }
+  const normTag = t => String(t || '').toLowerCase().replace(/^#/, '').replace(/[^a-z0-9 _-]/g, '').trim().replace(/\s+/g, '-').slice(0, 24);
+  function setTags(id, tags) { if (!get(id)) return []; const t = [...new Set((tags || []).map(normTag).filter(Boolean))].slice(0, 12); if (t.length) ORG().tags[id] = t; else delete ORG().tags[id]; touch([id]); orgChanged(); return t; }
+  function addTag(ids, tag) { const t = normTag(tag); if (!t) return 0; let n = 0; ids.forEach(id => { if (!get(id)) return; const cur = ORG().tags[id] || []; if (!cur.includes(t) && cur.length < 12) { ORG().tags[id] = cur.concat(t); n++; } }); touch(ids); orgChanged(); return n; }
+  function removeTag(ids, tag) { const t = normTag(tag); ids.forEach(id => { const cur = ORG().tags[id]; if (cur) { const nx = cur.filter(x => x !== t); if (nx.length) ORG().tags[id] = nx; else delete ORG().tags[id]; } }); orgChanged(); }
+  function setNote(id, text) { if (!get(id)) return; const t = String(text || '').slice(0, 600); if (t.trim()) ORG().notes[id] = t; else delete ORG().notes[id]; touch([id]); orgChanged(); }
+  function searchSave(p) { const s = { id: 'q' + Date.now().toString(36) + (ORG().searches.length + 1), name: cleanName(p.name) || 'Saved search', fav: false, f: p.f || {}, q: p.q || '', sort: p.sort || 'newest', view: p.view || 'grid', at: Date.now() }; ORG().searches.push(s); orgChanged(); return s; }
+  function searchUpdate(qid, patch) { const s = ORG().searches.find(x => x.id === qid); if (!s) return null; if (patch.name != null) s.name = cleanName(patch.name) || s.name; ['f', 'q', 'sort', 'view', 'fav'].forEach(k => { if (patch[k] !== undefined) s[k] = patch[k]; }); orgChanged(); return s; }
+  function searchDelete(qid) { const o = ORG(), n = o.searches.length; o.searches = o.searches.filter(x => x.id !== qid); orgChanged(); return o.searches.length < n; }
+  /** Drop organisation references to specimens that no longer exist (dismantled, or consumed by a fusion). */
+  function pruneOrg(ids) { const o = ORG(); if (!o) return; o.folders.forEach(f => { f.ids = f.ids.filter(id => !ids.includes(id)); }); ids.forEach(id => { delete o.tags[id]; delete o.notes[id]; delete o.touched[id]; }); }
+  /** A fused result inherits its primary's tags, note and collections. */
+  function carryOrg(fromId, toId) { const o = ORG(); if (!o) return; if (o.tags[fromId]) o.tags[toId] = o.tags[fromId].slice(); if (o.notes[fromId]) o.notes[toId] = o.notes[fromId]; o.folders.forEach(f => { if (f.ids.includes(fromId) && !f.ids.includes(toId)) f.ids.push(toId); }); o.touched[toId] = Date.now(); }
+
   // ---------- Daily reward ----------
   function dailyStatus(today = U.dateKey()) {
     const d = S().daily;
@@ -387,6 +486,8 @@
   }
 
   AV.engine = { isUnlimited, balance, canAfford, spend, grant, price, poolItems, rarityTable, oddsReport, addSpecimen, xpNeeded, addXp,
+    fusePreview, fuse, unfuse, fuseBlockers,
+    folderCreate, folderRename, folderDelete, folderAdd, folderRemove, setTags, addTag, removeTag, setNote, searchSave, searchUpdate, searchDelete, pruneOrg,
     open, giveStarter, get, all, protectReason, toggleFavorite, toggleLock, setFlags, rename, setCompanion,
     dismantle, duplicatePlan, essencePreview, duplicateSpecimen, upgrade, upgradePreview, evolveOptions, evolve, transformOptions, transform, reform, setLook,
     dailyStatus, claimDaily, buyCash, topUpPlayCash, exchange, buyBundle, dailyOfferId, setMode, setSetting, totals };

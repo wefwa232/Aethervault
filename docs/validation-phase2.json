@@ -1,5 +1,5 @@
 {
- "when": "2026-10-21T16:22:12.976Z",
+ "when": "2026-10-22T13:44:04.076Z",
  "passed": 40,
  "total": 40,
  "results": [
@@ -13,13 +13,13 @@
    "group": "boot",
    "name": "cold start lands in the 4–6 s window (presentation floor + real work)",
    "ok": true,
-   "detail": "5068 ms wall; floor 3800 ms; real work 605 ms"
+   "detail": "4968 ms wall; floor 3800 ms; real work 578 ms"
   },
   {
    "group": "boot",
    "name": "all six stages did real work and none degraded",
    "ok": true,
-   "detail": "awaken:8ms ledger:3ms curator:13ms renderer:163ms index:67ms gateway:351ms"
+   "detail": "awaken:3ms ledger:7ms curator:12ms renderer:143ms index:58ms gateway:355ms"
   },
   {
    "group": "boot",
@@ -37,7 +37,7 @@
    "group": "boot",
    "name": "warm start is shorter and is flagged warm",
    "ok": true,
-   "detail": "3360 ms (cold 5068)"
+   "detail": "3399 ms (cold 4968)"
   },
   {
    "group": "boot",
@@ -49,7 +49,7 @@
    "group": "boot",
    "name": "“Fast startup” shortens a warm start further",
    "ok": true,
-   "detail": "2414 ms"
+   "detail": "2391 ms"
   },
   {
    "group": "boot",
@@ -121,7 +121,7 @@
    "group": "save",
    "name": "old save keeps specimens, wallet, profile, companion and chosen quality",
    "ok": true,
-   "detail": "{\"n\":25,\"credits\":24000,\"name\":\"Archivist Vale\",\"companion\":\"s1\",\"fps\":\"auto\",\"q\":\"high\",\"v\":2,\"boot\":\"25 specimens · schema v2\"}"
+   "detail": "{\"n\":25,\"credits\":24000,\"name\":\"Archivist Vale\",\"companion\":\"s1\",\"fps\":\"auto\",\"q\":\"high\",\"v\":3,\"boot\":\"25 specimens · schema v3\"}"
   },
   {
    "group": "save",
@@ -139,7 +139,7 @@
    "group": "content",
    "name": "worst synchronous build (after the first model) under 80 ms",
    "ok": true,
-   "detail": "oracletablet 48.3, grovewarden 34.3, ionbow 32.8 | first-use pattern/wear texture generation (existing system, cached afterwards) up to 336 ms"
+   "detail": "oracletablet 50.4, impossiblecube 39.9, ionbow 33.9 | first-use pattern/wear texture generation (existing system, cached afterwards) up to 319 ms"
   },
   {
    "group": "content",
@@ -199,13 +199,13 @@
    "group": "fps",
    "name": "FPS limit 30 renders ≈30 fps",
    "ok": true,
-   "detail": "30 fps"
+   "detail": "30.3 fps"
   },
   {
    "group": "fps",
    "name": "FPS limit 60 renders ≈60 fps (or the display rate if lower)",
    "ok": true,
-   "detail": "60.3 fps"
+   "detail": "59.9 fps"
   },
   {
    "group": "fps",
@@ -217,7 +217,7 @@
    "group": "fps",
    "name": "Auto: Low preset ≈30 fps, Medium ≈60 fps",
    "ok": true,
-   "detail": "low 30, medium 60"
+   "detail": "low 29.8, medium 60.2"
   },
   {
    "group": "fps",

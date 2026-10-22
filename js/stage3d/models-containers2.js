@@ -19,10 +19,10 @@
     if (front) {
       x.save(); x.translate(256, 330); x.scale(3.6, 3.6); x.strokeStyle = '#f2d78c'; x.lineWidth = 2.2; x.fillStyle = 'rgba(242,215,140,.15)'; x.beginPath(); x.moveTo(0, -24); x.lineTo(8, -6); x.lineTo(24, 0); x.lineTo(8, 6); x.lineTo(0, 24); x.lineTo(-8, 6); x.lineTo(-24, 0); x.lineTo(-8, -6); x.closePath(); x.fill(); x.stroke(); x.restore();
       x.fillStyle = '#fff6dc'; x.textAlign = 'center'; x.font = '600 92px "Barlow Condensed", Impact, sans-serif'; x.letterSpacing = '10px'; x.fillText('WANDERER', 256, 560); x.font = '600 40px "Barlow Condensed", sans-serif'; x.letterSpacing = '22px'; x.fillText('PACK', 266, 614);
-      x.font = '500 22px "IBM Plex Mono", monospace'; x.letterSpacing = '3px'; x.fillStyle = '#f0e2b8'; x.fillText('3 ARCHIVE SPECIMENS', 256, 660); x.fillText('AETHERVAULT', 256, 124);
+      x.font = '500 22px "IBM Plex Mono", monospace'; x.letterSpacing = '3px'; x.fillStyle = '#f0e2b8'; x.fillText('5 ARCHIVE CARDS', 256, 660); x.fillText('AETHERVAULT', 256, 124);
     } else {
       x.fillStyle = '#fff6dc'; x.textAlign = 'center'; x.font = '600 40px "Barlow Condensed", sans-serif'; x.letterSpacing = '8px'; x.fillText('WANDERER PACK', 256, 180); x.font = '400 20px "IBM Plex Mono", monospace'; x.letterSpacing = '1px';
-      ['Assorted gear, relics, machines', 'and oddities from across the', 'realities. Contents vary.', '', 'Simulation only. No real value.'].forEach((s, i) => x.fillText(s, 256, 250 + i * 34));
+      ['Five printed Archive cards:', 'creatures, places, relics,', 'records and phenomena.', 'Cards only. Contents vary.', 'Simulation only. No real value.'].forEach((s, i) => x.fillText(s, 256, 250 + i * 34));
       x.fillStyle = '#10100e'; for (let i = 0; i < 46; i++) x.fillRect(140 + i * 5.6 + (i % 3), 560, 2 + (i % 4), 80);
     }
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
@@ -52,7 +52,7 @@
       const glowG = new THREE.Mesh(new THREE.PlaneGeometry(W * .96, .18), K.basic(ctx, th[1], 0, true, { map: L.shaftTex(), side: THREE.DoubleSide, depthWrite: false })); glowG.position.set(0, SPLIT + .02, 0); glowG.userData.noSil = true; pk.add(glowG);
       const cardTex = (() => { const c = document.createElement('canvas'); c.width = 256; c.height = 360; const x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 256, 360); g.addColorStop(0, '#2a2438'); g.addColorStop(1, '#14101c'); x.fillStyle = g; x.fillRect(0, 0, 256, 360); x.strokeStyle = '#d7b46e'; x.lineWidth = 6; x.strokeRect(10, 10, 236, 340); x.lineWidth = 2; x.strokeRect(20, 20, 216, 320); x.translate(128, 180); x.scale(2.2, 2.2); x.fillStyle = 'rgba(215,180,110,.2)'; x.beginPath(); x.moveTo(0, -24); x.lineTo(8, -6); x.lineTo(24, 0); x.lineTo(8, 6); x.lineTo(0, 24); x.lineTo(-8, 6); x.lineTo(-24, 0); x.lineTo(-8, -6); x.closePath(); x.fill(); x.stroke(); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; ctx.tex.push(t); return t; })();
       const cardM = new THREE.MeshStandardMaterial({ map: cardTex, roughness: .4, metalness: .3, envMapIntensity: 1 }); ctx.disposables.push(cardM);
-      const cards = [0, 1, 2].map(i => { const c = new THREE.Mesh(ctx.geo('pk-card', () => L.roundedBox(.5, .7, .012, .02, 2)), cardM); c.position.set((i - 1) * .02, -.02, (i - 1) * .02); c.visible = false; c.userData.noShadow = true; pk.add(c); return c; });
+      const cards = [0, 1, 2, 3, 4].map(i => { const c = new THREE.Mesh(ctx.geo('pk-card', () => L.roundedBox(.5, .7, .012, .02, 2)), cardM); c.position.set((i - 2) * .015, -.02, (i - 2) * .015); c.visible = false; c.userData.noShadow = true; pk.add(c); return c; });
       const light = new THREE.PointLight(new THREE.Color(th[1]), 0, 4.5, 1.6); light.position.set(0, SPLIT, .5); pk.add(light);
       const beam = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 3.2), K.basic(ctx, th[1], 0, true, { map: L.shaftTex(), side: THREE.DoubleSide })); beam.position.set(0, SPLIT + 1.5, 0); beam.userData.noSil = true; pk.add(beam);
       const sparks = []; for (let i = 0; i < 16; i++) { const s = L.sprite(th[1], .09, 0); s.userData.v = new THREE.Vector3(); s.userData.life = 0; pk.add(s); sparks.push(s); }
@@ -69,7 +69,7 @@
         if (inst.opened) { inst.openT += dt; const k = 1 - Math.exp(-inst.openT * 3.2); ang = 1.15 + k * 1.1; lift = .06 + k * .9; hinge.position.set(W / 2 + k * .55, SPLIT + lift, k * -.2); strip.visible = inst.openT < 1.1; hinge.rotation.z = -ang; hinge.rotation.x = k * .6; }
         else { hinge.position.set(W / 2, SPLIT + lift * .3, 0); hinge.rotation.z = -ang; hinge.rotation.x = 0; }
         glowG.material.opacity = clamp(p * .9 + (inst.opened ? .5 : 0), 0, 1) * (.75 + Math.sin(t * 7) * .1); light.intensity = p * 5 + (inst.opened ? Math.max(0, 1 - inst.openT * .5) * 22 : 0);
-        cards.forEach((c, i) => { const peek = smooth(.55, 1, p) * .12; let y = -.02 + peek, rz = 0, x = (i - 1) * .02; if (inst.opened) { const k = smooth(.1, 1.1, inst.openT); y = SPLIT * .2 + k * 1.05 + Math.sin(t * 1.4 + i) * .03 * k; rz = (i - 1) * -.28 * k; x = (i - 1) * .38 * k; c.visible = true; } else c.visible = p > .5; c.position.set(x, y + (H / 2 - SPLIT) * 0 + .35 * (inst.opened ? 0 : 1) * 0, (i - 1) * .02 + (inst.opened ? .06 * i : 0)); c.rotation.z = rz; });
+        cards.forEach((c, i) => { const peek = smooth(.55, 1, p) * .12; let y = -.02 + peek, rz = 0, x = (i - 2) * .015; if (inst.opened) { const k = smooth(.1, 1.1, inst.openT); y = SPLIT * .2 + k * (1.0 - Math.abs(i - 2) * .06) + Math.sin(t * 1.4 + i) * .03 * k; rz = (i - 2) * -.2 * k; x = (i - 2) * .27 * k; c.visible = true; } else c.visible = p > .5; c.position.set(x, y, (i - 2) * .015 + (inst.opened ? .05 * i : 0)); c.rotation.z = rz; });
         if (inst.opened) { beam.material.opacity = Math.min(1, inst.openT * 2) * (.5 + Math.sin(t * 3) * .1); sparks.forEach(s => { const u = s.userData; if (u.life > 0) { u.life -= dt; u.v.y -= 3.2 * dt; s.position.addScaledVector(u.v, dt); s.material.opacity = Math.min(1, u.life) * .9; } else s.material.opacity = 0; }); }
       };
       inst.react = k => { if (k === 'click') inst.pulse(); };

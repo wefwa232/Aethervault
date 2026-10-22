@@ -21,6 +21,8 @@
     'models-oddity.js': ['whisperjar'],
     'models-oddity3.js': ['infinitesock', 'vendingfragment', 'glitchedcursor'],
     'models-oddity2.js': ['impossiblecube', 'missingtexture', 'backwardsclock'],
+    'models-cards.js': [], // Phase Four: every card id, filled from the card catalogue below
   };
+  if (AV.cards) FILES['models-cards.js'] = AV.cards.LIST.map(i => i.id);
   Object.keys(FILES).forEach(f => FILES[f].forEach(k => { S.lazy[k] = P + f; }));
 })();

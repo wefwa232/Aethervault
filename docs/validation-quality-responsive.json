@@ -1,0 +1,59 @@
+{
+ "date": "2026-10-22T14:00:50.758Z",
+ "results": [
+  {
+   "group": "quality",
+   "name": "quality=high: 3D canvas renders",
+   "ok": true,
+   "detail": "cpu≈0.67ms/frame, rAF≈144fps"
+  },
+  {
+   "group": "quality",
+   "name": "quality=medium: 3D canvas renders",
+   "ok": true,
+   "detail": "cpu≈0.72ms/frame, rAF≈144fps"
+  },
+  {
+   "group": "quality",
+   "name": "quality=low: 3D canvas renders",
+   "ok": true,
+   "detail": "cpu≈0.56ms/frame, rAF≈144fps"
+  },
+  {
+   "group": "quality",
+   "name": "quality=off: 2D fallback renders SVG, no canvas",
+   "ok": true,
+   "detail": "cpu≈0ms/frame, rAF≈144fps"
+  },
+  {
+   "group": "quality",
+   "name": "no page errors across quality changes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "responsive",
+   "name": "desktop 1920×1080: no horizontal overflow on any screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "responsive",
+   "name": "laptop 1366×768: no horizontal overflow on any screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "responsive",
+   "name": "tablet 820×1180: no horizontal overflow on any screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "group": "responsive",
+   "name": "phone 390×844: no horizontal overflow on any screen",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

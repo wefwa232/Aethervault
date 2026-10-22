@@ -262,8 +262,8 @@
 
   // ------------------------------------------------------------------ entry point
   FM.apply = function (ctx, inst) {
-    const spec = ctx.spec, arch = spec && spec.base && PR().ARCH[spec.base]; if (!arch || !inst || !inst.root) return;
-    const lvl = ctx.level || 0, form = spec.form ? PR().form(spec.form) : null; if (!lvl && !form) return;
+    const spec = ctx.spec, arch = spec && spec.base && PR().ARCH[spec.base]; if (!arch || !inst || !inst.root || arch.fam === 'card') return; // cards render their own stages and premium forms
+    const lvl = ctx.level || 0, form = spec.form ? PR().form(spec.form) : null, fz = spec.fusion && AV.fusion ? AV.fusion.motifs(spec) : []; if (!lvl && !form && !fz.length) return;
     if (form && form.item !== spec.base) return;
     const B = bounds(inst.root); if (!B || B.h < 0.05) return;
     const g = new THREE.Group(); g.name = 'p3-forms'; inst.root.add(g);
@@ -272,10 +272,12 @@
     try {
       if (lvl) stage(c);
       if (form) form.motifs.forEach(m => { const [name, arg] = m.split(':'); const fn = M[name]; if (fn) fn(c, arg); });
+      // Phase Four: a fused specimen's mutation and rank details, in the mutation tint; the echo carries the absorbed parent's colour
+      if (fz.length) { const t0 = c.tint; fz.forEach(m => { const [name, arg] = m.split(':'); const fn = M[name]; c.tint = (name === 'echo' && spec.fusion.echo) || spec.fusion.tint || t0; if (fn) fn(c, arg); }); c.tint = t0; }
     } catch (e) { console.warn('[forms]', e); }
     g.traverse(o => { o.userData.noCast = true; }); // accessories never cast shadows: halves their draw calls on Medium/High
     if (!c.ups.length) return;
-    const u0 = inst.update; inst.update = (dt, t, st) => { if (u0) u0(dt, t, st); const calm = !!(st && st.reduced); for (let i = 0; i < c.ups.length; i++) c.ups[i](dt, t, calm); };
+    const u0 = inst.update; inst.update = (dt, t, st, view) => { if (u0) u0(dt, t, st, view); const calm = !!(st && st.reduced); for (let i = 0; i < c.ups.length; i++) c.ups[i](dt, t, calm); };
     if (inst.frame) { const f = inst.frame; f.r = Math.max(f.r, Math.min(c.ext.r, f.r * 1.45)); f.h = Math.max(f.h, Math.min(c.ext.h, f.h * 1.3)); }
   };
 })();

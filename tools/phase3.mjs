@@ -28,7 +28,7 @@ try {
   });
   await page.reload({ waitUntil: 'load' }); await page.waitForFunction(() => window.AV && AV.boot && AV.boot.done, { timeout: 30000 }); await ev(() => AV.stage.ensureAll()); await sleep(600);
   const post = await ev(() => { const S = AV.state.get(), L = AV.state.lastLoad, keep = ['id', 'base', 'variant', 'pattern', 'seed', 'palette', 'condition', 'potential', 'serial', 'level', 'size', 'aura', 'quirk', 'favorite', 'locked', 'nickname']; const fp = {}; Object.values(S.specimens).forEach(sp => { fp[sp.id] = JSON.stringify(keep.map(k => sp[k])) + '|' + (sp.history || []).length + '|' + JSON.stringify(sp.invested); }); return { n: Object.keys(S.specimens).length, version: S.version, p3: L.p3, fp, withStats: Object.values(S.specimens).filter(s => s.stats && s.sv === 1).length, backup: localStorage.getItem(AV.state.BACKUP_KEY) && localStorage.getItem(AV.state.BACKUP_KEY).length, stable: Object.values(S.specimens).every(s => JSON.stringify(s.stats) === JSON.stringify(AV.stats.snapshot(s))), wallet: S.wallet }; });
-  check('migration', 'v1 save loads and is migrated in place (version 2)', post.version === 2 && post.p3.migrated === pre.n, JSON.stringify(post.p3));
+  check('migration', 'v1 save loads and is migrated in place (current schema; v3 since Phase Four)', post.version >= 2 && post.p3.migrated === pre.n, JSON.stringify(post.p3));
   check('migration', 'collection count unchanged', post.n === pre.n, `${pre.n} → ${post.n}`);
   check('migration', 'every identity field, history and investment is unchanged', Object.keys(pre.fp).every(id => pre.fp[id] === post.fp[id]));
   check('migration', 'every specimen has deterministic stats equal to a fresh computation', post.withStats === pre.n && post.stable);
@@ -42,7 +42,7 @@ try {
 
   // ------------------------------------------------------------------ 2. catalogue coverage
   const cov = await ev(() => { const D = AV.data, S = AV.stage; const all = D.ITEM_LIST.map(i => i.id); const has = all.filter(id => !!S.models[id]); return { total: all.length, with3d: has.length, missing: all.filter(id => !S.models[id]), forms: Object.keys(AV.progress.FORMS).length }; });
-  check('catalog', 'all 40 base collectibles have a 3D model', cov.total === 40 && cov.with3d === 40, `3D ${cov.with3d}/${cov.total} missing ${cov.missing.join(',')}`);
+  check('catalog', 'every collectible (the 40 Phase Three items plus Phase Four cards) has a 3D model', cov.total >= 40 && cov.with3d === cov.total, `3D ${cov.with3d}/${cov.total} missing ${cov.missing.join(',')}`);
   const thumbs = await ev(async () => { const out = {}; for (const id of AV.data.ITEM_LIST.map(i => i.id)) { const sp = { base: id, variant: 'none', pattern: 'plain', seed: 12345, palette: 0, condition: 0, level: 0, potential: 60, serial: 421, size: 1 }; const r = await AV.stage.thumbFor(sp, 96).catch(() => null); out[id] = !!r; } return out; });
   check('catalog', 'every base model produces a cached thumbnail', Object.values(thumbs).every(Boolean), Object.keys(thumbs).filter(k => !thumbs[k]).join(','));
 

@@ -1,4 +1,4 @@
-# Aethervault — The Infinite Archive (v0.4, Phase Three)
+# Aethervault — The Infinite Archive (v0.5, Phase Four)
 
 A private, single-player collectible simulator. **Simulation only — no real transactions, no network access.**
 v0.2 is a visual redesign and a real-time 3D vertical slice; no gameplay systems were added.
@@ -16,6 +16,17 @@ node serve.mjs 5173      # then open http://127.0.0.1:5173
 `index.html` also works straight from disk (`file://`): the game uses classic scripts, bundled fonts and a vendored Three.js UMD build, so there is no build step and no install step.
 
 Requirements: a current Chromium, Firefox or Safari. WebGL is used for the 3D presentation; without it (or with 3D set to *Off*) the game falls back to its original 2D artwork.
+
+## What's new in v0.5 (Phase Four) — details in [`PHASE_FOUR.md`](PHASE_FOUR.md)
+
+- **Container identity:** the Wanderer Pack now holds 5 **Cards** only; Hatchling Eggs hatch ordinary juvenile pets, Starlit Eggs prestigious ones, the Forge Crate gear and machines, the Relic Chest relics only (now a real 3D chest), the Mythic Vault every non-card category. Nothing you own changed.
+- **Literal Cards:** 3 sets, 64 printed cards with materials Common → Anomaly, finish, foil, edition, alternate art and print condition. Cards never grant the specimen they depict. High-rarity cards project a hologram you can toggle, rotate and zoom.
+- **Openings:** a tearable Wanderer Pack with a one-by-one card reveal, a Forge Crate roulette (the reward is decided first; the reel lands exactly on it), and reworked Hatchling, Starlit, Capsule, Relic Chest and Vault rituals. All skippable; multi-open can be condensed.
+- **Fusion Chamber:** combine duplicates or compatible specimens with authored recipes, visible inheritance and a controlled mutation. The preview is exactly the result. Standard mode consumes the parents after confirmation (with a backup and automatic rollback); Unlimited is free and reversible.
+- **A much larger Vault:** combinable filters with removable chips, advanced panel, saved searches as archive tabs, comparison (2–4 specimens), collections, tags and notes (also editable from Inspect → Organise), plus Binder, Families, Duplicates, Timeline, History, Sets and Codex views. Grids only ever show cached thumbnails.
+- **Settings:** reel speed, click intensity, multi-open style, card holograms and auto-return, fusion and binder animation.
+- Saves from v0.1–v0.4 migrate in place to schema v3 (raw backups `…backup-p3`, `…backup-p4`; a fusion backup is written before each Standard-mode fusion).
+- Not in this version: quests, seasons, battle passes, events, trading, marketplace, multiplayer, accounts, Creator Mode, combat.
 
 ## What's new in v0.4 (Phase Three) — details in [`PHASE_THREE.md`](PHASE_THREE.md)
 
@@ -77,8 +88,12 @@ docs/                   screenshots (before/after/validation), validation report
 ## Tests
 
 ```bash
-node tests/logic.test.js                      # 37 rule/contract checks, no dependencies
+node tests/logic.test.js                      # 45 rule/contract checks, no dependencies
+node tests/phase3.test.js                     # 22 checks: stats, progression, transformations, migration
+node tests/phase4.test.js                     # 30 checks: cards, pools, save v3 migration, fusion, Vault queries
 cd tools && npm install && cd ..              # one-time, dev only (puppeteer-core; uses your installed Edge/Chrome)
+node tools/phase3.mjs                         # Phase Three browser checks (39)
+node tools/p4-shot.mjs all                    # Phase Four browser scenarios + screenshots (vault, organise, fusion, pack, roulette, rituals, cards…)
 node tools/phase2.mjs                         # Phase Two: startup, fallback, save compat, new models, FPS limit, loop sleeping
 node tools/perf.mjs <label>                   # performance probe (see PHASE_TWO.md)
 node tools/validate.mjs all                   # browser suite: boot, buttons, modes, protection, upgrade, evolve, reveals, leaks, quality, motion, responsive, save, audio

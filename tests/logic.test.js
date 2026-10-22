@@ -5,7 +5,7 @@ const ctx = { console, setTimeout, clearTimeout, Math, JSON, Date, localStorage:
   getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: k => delete store[k] } };
 ctx.window = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
-for (const f of ['util', 'data', 'progress', 'stats', 'state', 'specimen', 'engine'])
+for (const f of ['util', 'data', 'cards', 'progress', 'stats', 'state', 'specimen', 'engine'])
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f + '.js'), 'utf8'), ctx, { filename: f + '.js' });
 const AV = ctx.AV, D = AV.data, E = AV.engine, SP = AV.specimen;
 
@@ -15,10 +15,10 @@ const eq = (a, b, m) => { if (a !== b) throw new Error((m || 'eq') + `: expected
 const ok = (c, m) => { if (!c) throw new Error(m || 'assertion failed'); };
 
 console.log('Content');
-t('at least 25 obtainable collectibles across 5 categories', () => {
+t('at least 25 obtainable collectibles across 6 categories (Phase Four adds Cards)', () => {
   const ob = D.ITEM_LIST.filter(i => i.obtainable);
   ok(ob.length >= 25, 'obtainable ' + ob.length);
-  eq(new Set(ob.map(i => i.cat)).size, 5);
+  eq(new Set(ob.map(i => i.cat)).size, 6);
 });
 t('every item has valid rarity, palette, lore and evolutions point to real items', () => {
   D.ITEM_LIST.forEach(i => { ok(D.RARITY[i.rarity], i.id + ' rarity'); eq(i.pal.length, 4, i.id + ' pal'); ok(i.lore.length > 10, i.id + ' lore'); i.evolves.forEach(e => ok(D.ITEMS[e.to], i.id + '->' + e.to)); });
@@ -54,7 +54,7 @@ t('low potential caps upgrade stage', () => { eq(SP.maxLevel({ potential: 10 }),
 console.log('Opening & economy');
 t('opening spends currency, creates specimens, grants xp', () => {
   AV.state.reset('standard'); const w0 = E.balance('credits');
-  const r = E.open('wanderer', 1); ok(r.ok); eq(r.results.length, 3); eq(E.balance('credits'), w0 - 120 + 200 * r.levelUps.length, 'cost minus level-up gifts'); eq(E.all().length, 3);
+  const r = E.open('wanderer', 1); ok(r.ok); eq(r.results.length, 5); eq(E.balance('credits'), w0 - 120 + 200 * r.levelUps.length, 'cost minus level-up gifts'); eq(E.all().length, 5);
 });
 t('cannot open when unaffordable (standard) and nothing is created', () => {
   AV.state.reset('standard'); AV.state.get().wallet.credits = 50;
@@ -71,9 +71,9 @@ t('starlit egg only yields pets of rare+', () => {
   AV.state.reset('unlimited');
   for (let i = 0; i < 300; i++) { const sp = E.open('starlit', 1).results[0].spec; eq(SP.itemOf(sp).cat, 'pet'); ok(SP.rarityOf(sp).tier >= 2); }
 });
-t('pity guarantees a legendary within the threshold', () => {
-  AV.state.reset('unlimited'); const c = D.CONTAINER.hatchling; let since = 0, worst = 0;
-  for (let i = 0; i < 2000; i++) { const sp = E.open('hatchling', 1).results[0].spec; if (SP.rarityOf(sp).tier >= 5) since = 0; else since++; worst = Math.max(worst, since); }
+t('pity guarantees the container\'s guarantee rarity within the threshold (Hatchling: Rare since Phase Four)', () => {
+  AV.state.reset('unlimited'); const c = D.CONTAINER.hatchling, gt = D.RARITY[c.pity.rarity].tier; let since = 0, worst = 0;
+  for (let i = 0; i < 2000; i++) { const sp = E.open('hatchling', 1).results[0].spec; if (SP.rarityOf(sp).tier >= gt) since = 0; else since++; worst = Math.max(worst, since); }
   ok(worst < c.pity.after, 'worst drought ' + worst);
 });
 t('serial numbers can be low and are never unique-colliding in identity (ids unique)', () => {
@@ -90,7 +90,7 @@ t('favorited / locked / companion specimens cannot be dismantled', () => {
 });
 t('dismantle grants Essence and removes specimens', () => {
   AV.state.reset('standard'); E.open('wanderer', 1); const ids = E.all().map(s => s.id); const e0 = E.balance('essence');
-  const preview = E.essencePreview(ids); const r = E.dismantle(ids); eq(r.count, 3); eq(E.balance('essence'), e0 + preview); eq(E.all().length, 0);
+  const preview = E.essencePreview(ids); const r = E.dismantle(ids); eq(r.count, 5); eq(E.balance('essence'), e0 + preview); eq(E.all().length, 0);
 });
 t('duplicate plan keeps the best copy and skips protected ones', () => {
   AV.state.reset('unlimited');
@@ -174,7 +174,7 @@ t('specimens expose every trait the 3D shader consumes', () => {
 });
 t('upgrade stages and condition tiers cover the ranges the models switch on', () => { eq(D.UPGRADE_STAGES.length, 5); eq(D.CONDITION_MULT.length, 5); Object.values(D.CONDITION_LABELS).forEach(l => eq(l.length, 5)); });
 t('containers used by 3D rituals define a ritual kind and a two-colour theme', () => {
-  ['hatchling', 'forge', 'vault', 'starlit'].forEach(id => { const c = D.CONTAINER[id]; ok(['egg', 'crate', 'vault'].includes(c.ritual), id); eq(c.theme.length, 2, id); });
+  ['hatchling', 'forge', 'vault', 'starlit', 'reliquary'].forEach(id => { const c = D.CONTAINER[id]; ok(['egg', 'crate', 'vault', 'starlit', 'chest'].includes(c.ritual), id); eq(c.theme.length, 2, id); });
 });
 
 console.log('Phase Two contracts');
@@ -184,7 +184,7 @@ const manifestSrc = readJs('stage3d/manifest.js'), FILES = {};
 manifestSrc.replace(/'(models-[a-z0-9]+\.js)':\s*\[([^\]]*)\]/g, (_, f, list) => { FILES[f] = list.split(',').map(s => s.trim().replace(/'/g, '')).filter(Boolean); });
 const MODELLED = [].concat(...Object.values(FILES));
 t('manifest lists every lazily-loaded model file exactly once, and every file exists', () => {
-  const onDisk = fs.readdirSync(path.join(__dirname, '..', 'js', 'stage3d')).filter(f => /^models-.*\.js$/.test(f) && !/^models-(containers|crate-vault|containers2)\.js$/.test(f));
+  const onDisk = fs.readdirSync(path.join(__dirname, '..', 'js', 'stage3d')).filter(f => /^models-.*\.js$/.test(f) && !/^models-(containers|crate-vault|containers2|containers3)\.js$/.test(f));
   onDisk.forEach(f => ok(FILES[f], f + ' is missing from manifest.js'));
   Object.keys(FILES).forEach(f => ok(onDisk.includes(f), f + ' in manifest but not on disk'));
   eq(new Set(MODELLED).size, MODELLED.length, 'a model key is listed twice');
@@ -206,7 +206,7 @@ t('new pet families have evolutions that exist and a line entry for the Atlas', 
 t('new settings (fpsLimit, fastStartup) default sensibly and old saves inherit them without touching player data', () => {
   const d = AV.state.defaultSave().settings; eq(d.fpsLimit, 'auto'); eq(d.fastStartup, false);
   const old = { version: 1, profile: { name: 'Old', level: 9, xp: 5 }, wallet: { credits: 77, gems: 3, essence: 1, keys: 0 }, specimens: { 1: { id: 1, base: 'nimbit', variant: 'none', pattern: 'plain', seed: 1, palette: 0, condition: 2, potential: 50, serial: 12, level: 0, size: 1, aura: 'none' }, 2: { id: 2, base: 'removedthing' } }, nextId: 3, settings: { master: .3, quality3d: 'high' } };
-  const m = AV.state.migrate(old); eq(m.settings.quality3d, 'high'); eq(m.settings.master, .3); eq(m.settings.fpsLimit, 'auto'); eq(m.wallet.credits, 77); eq(m.profile.level, 9); eq(m.version, 2);
+  const m = AV.state.migrate(old); eq(m.settings.quality3d, 'high'); eq(m.settings.master, .3); eq(m.settings.fpsLimit, 'auto'); eq(m.wallet.credits, 77); eq(m.profile.level, 9); eq(m.version, 3);
   ok(m.specimens[1] && !m.specimens[2], 'unknown records are set aside, known ones kept');
 });
 t('loader reports what it found (used by the startup sequence): fresh, migrated, dropped, corrupt', () => {
@@ -217,7 +217,7 @@ t('loader reports what it found (used by the startup sequence): fresh, migrated,
   delete store[KEY]; Object.keys(store).forEach(k => { if (/corrupt/.test(k)) delete store[k]; });
 });
 t('version info is available for the startup screen', () => { ok(/^\d+\.\d+\.\d+$/.test(AV.VERSION.number) && AV.VERSION.build, JSON.stringify(AV.VERSION)); });
-t('save key is unchanged and the schema is v2 (Phase Three); v1 saves migrate in place', () => { eq(AV.state.SAVE_VERSION, 2); eq(AV.state.SAVE_KEY, 'aethervault.save.v1'); });
+t('save key is unchanged and the schema is v3 (Phase Four); v1/v2 saves migrate in place', () => { eq(AV.state.SAVE_VERSION, 3); eq(AV.state.SAVE_KEY, 'aethervault.save.v1'); });
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

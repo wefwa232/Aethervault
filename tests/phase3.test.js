@@ -6,7 +6,7 @@ const ctx = { console, setTimeout, clearTimeout, Math, JSON, Date, localStorage:
   getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: k => delete store[k] } };
 ctx.window = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
-for (const f of ['util', 'data', 'progress', 'stats', 'state', 'specimen', 'engine'])
+for (const f of ['util', 'data', 'cards', 'progress', 'stats', 'state', 'specimen', 'engine'])
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f + '.js'), 'utf8'), ctx, { filename: f + '.js' });
 const AV = ctx.AV, D = AV.data, E = AV.engine, SP = AV.specimen, ST = AV.stats, PR = AV.progress;
 
@@ -25,7 +25,8 @@ t('stat sets are category-appropriate: weapons, shields, pets, machines, relics,
   eq(ST.familyOf('rustblade').stats.map(x => x.k).join(), 'power,speed,precision,stability,crit,energy,growth');
   ok(!ST.familyOf('oakbuckler').byKey.power && ST.familyOf('oakbuckler').byKey.guard, 'shields use Guard, not Power');
   ok(ST.familyOf('nimbit').byKey.bond && ST.familyOf('leviathan').byKey.overdrive && ST.familyOf('moonstone').byKey.resonance && ST.familyOf('whisperjar').byKey.containment);
-  eq(new Set(D.ITEM_LIST.map(i => PR.ARCH[i.id].fam)).size, 6);
+  eq(new Set(D.ITEM_LIST.filter(i => i.cat !== 'card').map(i => PR.ARCH[i.id].fam)).size, 6, 'six non-card families');
+  ok(ST.familyOf('cfla001').byKey.print && ST.familyOf('cfla001').byKey.projection, 'Phase Four: cards use their own Card family');
   ok(ST.FAMILIES.cosmetic && ST.FAMILIES.cosmetic.stats.length === 6, 'cosmetic family defined for later');
 });
 t('stats are deterministic: same specimen → same numbers, repeatedly and after a JSON round trip', () => {
@@ -127,7 +128,7 @@ t('v1 save → v2 keeps every identity field, adds deterministic stats, writes t
   const keep = ['id', 'base', 'serial', 'seed', 'pattern', 'condition', 'variant', 'potential', 'level', 'palette', 'size', 'favorite', 'locked', 'nickname', 'invested', 'origin'];
   const before = JSON.parse(raw);
   const S1 = AV.state.load(); const L = AV.state.lastLoad;
-  eq(Object.keys(S1.specimens).length, 6, 'collection count'); eq(S1.version, 2); eq(L.p3.migrated, 6); eq(L.p3.backup, AV.state.BACKUP_KEY);
+  eq(Object.keys(S1.specimens).length, 6, 'collection count'); eq(S1.version, AV.state.SAVE_VERSION, 'v1 migrates through v2 to the current schema'); eq(L.p3.migrated, 6); eq(L.p3.backup, AV.state.BACKUP_KEY);
   eq(store[AV.state.BACKUP_KEY], raw, 'backup is the untouched raw v1 text');
   Object.keys(before.specimens).forEach(id => { const x = before.specimens[id], y = S1.specimens[id]; keep.forEach(k => eq(JSON.stringify(y[k]), JSON.stringify(x[k]), id + '.' + k)); eq(y.history.length, x.history.length); ok(y.stats && y.sv === 1 && y.form === null && y.look === 'auto'); eq(JSON.stringify(y.stats), JSON.stringify(ST.snapshot(y))); });
   ok(S1.specimens.s1.looks.includes('base:nimbit'), 'earlier species recovered from history');

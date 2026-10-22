@@ -36,6 +36,9 @@
     missingtexture: A('oddity', ['distortion', 'activity'], 'coherence'),
   };
 
+  // Cards (Phase Four): the archetype comes from the card's class (cards.js CLASSES[cls].arch)
+  if (AV.cards) AV.cards.LIST.forEach(it => { const a = AV.cards.CLASSES[it.card.cls].arch; ARCH[it.id] = A('card', a[0], a[1]); });
+
   // ------------------------------------------------------------------ stage names (display category → names)
   const STAGE_NAMES = {
     weapon:  ['Forged', 'Tempered', 'Awakened', 'Exalted', 'Signature'],
@@ -44,6 +47,7 @@
     machine: ['Standard', 'Tuned', 'Overclocked', 'Prototype', 'Apex Configuration'],
     relic:   ['Dormant', 'Restored', 'Resonant', 'Awakened', 'True Form'],
     oddity:  ['Contained', 'Active', 'Unstable', 'Manifested', 'Breached'],
+    card:    ['Raw Print', 'Sleeved', 'Graded', 'Encapsulated', 'Archive Master'],
   };
   // What each stage visibly adds (structural parts built by stage3d/forms.js, in addition to the model's own details)
   const STAGE_UNLOCKS = {
@@ -53,6 +57,7 @@
     machine: ['', 'Reinforcing braces', 'Exhaust stacks', 'Prototype frame struts', 'Apex gear crown'],
     relic:   ['', 'Restored brass mounts', 'A resonant glyph slate', 'Orbiting fragments', 'A crown of light motes'],
     oddity:  ['', 'Containment brackets', 'Flicker echoes', 'Unstable tear shards', 'A manifest rift'],
+    card:    ['', 'A clear archival sleeve', 'A grading label', 'A sealed display slab', 'A gilded master frame'],
   };
   const displayCat = itemId => { const a = ARCH[itemId]; return a ? (a.fam) : 'weapon'; };
   const stageNames = itemId => STAGE_NAMES[displayCat(itemId)];
@@ -126,6 +131,11 @@
     ['backwardsclock', 'thatwas', 'The Clock That Was', 'Manifestation', { coherence: 10, activity: 8, distortion: 6 }, null, ['echo', 'gears', 'halo'], '#7affd7', 'It remembers every hour it was right. They stand around it, a polite crowd.', 'Nostalgic; ticks towards yesterday.'],
     ['missingtexture', 'placeholder', 'Placeholder Reality', 'Breach', { distortion: 12, activity: 10 }, { coherence: 4 }, ['rift', 'echo'], '#ff00ff', 'The Archive stopped pretending. What it draws instead is a magenta plain.', 'Absent; is somewhere else being fine.'],
   ];
+  // Cards: every card offers the same two premium presentations as a branch (rendered by the card model, not by forms.js motifs)
+  if (AV.cards) AV.cards.LIST.forEach(it => {
+    ROWS.push([it.id, it.id + '_proof', 'Archive Proof', 'Reprint', { print: 8, preservation: 6, prestige: 6 }, null, ['card:proof'], '#e9d9a6', 'Re-pulled on the Archive\'s own press: borderless, gilt-edged, initialled in the margin by the printer.', 'Settles flat; the gilt edge catches every lamp.']);
+    ROWS.push([it.id, it.id + '_living', 'Living Print', 'Animation', { projection: 10, depth: 8 }, { preservation: 3 }, ['card:living'], '#9ff0ff', 'The illustration learned to move. Its subject now projects a little way out of the card, even at rest.', 'Restless; the art breathes when it is watched.']);
+  });
   const FORMS = {}, BY_ITEM = {};
   ROWS.forEach(r => {
     const f = { id: r[1], item: r[0], name: r[2], kind: r[3], lean: r[4], trade: r[5], motifs: r[6], tint: r[7], blurb: r[8], behave: r[9] };

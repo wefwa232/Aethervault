@@ -75,7 +75,9 @@
       const shards = []; const shardG = L.extrude([[0, 0], [.2, .04], [.14, .2], [.02, .16]], .018, .004, { bevelSeg: 1 }); ctx.disposables.push(shardG);
       for (let i = 0; i < 9; i++) { const m = new THREE.Mesh(shardG, shellMat); m.visible = false; m.scale.setScalar(.7 + (i % 3) * .3); m.userData.noShadow = true; root.add(m); shards.push({ m, v: new THREE.Vector3(), w: new THREE.Vector3() }); }
 
-      const inst = { root, frame: { r: .8, h: 1.74 }, float: 0, prog: 0, opened: false, openT: -1, wob: 0, wobT: 99, pulseT: 99 };
+      // light leaking through the cracks: three points on the shell that brighten as the fractures widen
+      const leaks = [[.35, 1.25], [.62, 1.62], [.86, 1.05]].map(([u, phi]) => { const a = u * TAU, r = rad(phi) + .012, s = L.sprite(th[1], .34, 0); s.position.set(Math.cos(a) * r, yy(phi), Math.sin(a) * r); s.userData.th = u; root.add(s); return s; });
+      const inst = { root, frame: { r: .8, h: 1.74 }, float: 0, prog: 0, opened: false, openT: -1, wob: 0, wobT: 99, pulseT: 99, kickAt: 1.4 };
       inst.setProgress = p => { inst.prog = p; shellMat.userData.tr.u1.value.w = Math.min(1.4, p * 1.5); };
       inst.pulse = () => { inst.wobT = 0; inst.wob = .05 + inst.prog * .06; };
       inst.open = () => {
@@ -84,6 +86,8 @@
       };
       inst.update = (dt, t, st) => {
         const p = inst.prog; inst.wobT += dt;
+        if (!inst.opened && !ctx.reduced && t > inst.kickAt) { inst.kickAt = t + 1.6 + ((t * 7.3) % 1.7); if (inst.wobT > .6) { inst.wobT = 0; inst.wob = .018 + p * .03; } } // something inside shifts
+        leaks.forEach((s, i) => { s.material.opacity = inst.opened ? Math.max(0, .9 - inst.openT * 1.5) : smooth(.15 + i * .25, .45 + i * .25, p) * (.55 + .25 * Math.sin(t * (3 + i) + i)); });
         const w = inst.wob * Math.exp(-4 * inst.wobT) * Math.sin(inst.wobT * 34), idleRock = ctx.reduced ? 0 : Math.sin(t * (1.1 + p * 5)) * (.012 + p * .05);
         eggG.rotation.z = (w + idleRock) * (inst.opened ? 0 : 1); eggG.rotation.x = Math.cos(t * 1.3) * (.006 + p * .02) * (inst.opened ? 0 : 1);
         const beat = .5 + .5 * Math.sin(t * (2.2 + p * 7)), potential = ctx.potentialTier;
