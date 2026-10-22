@@ -212,10 +212,10 @@ The validation groups were run one at a time, as separate invocations. Their rep
 4. Deck-slot text truncated its range; the rail did not light Combat while on the deck/battle screens; first camera framing cut the player Core and Pets were too small. All fixed and looked at in screenshots.
 
 ### 9.5 Decisions and deviations (read before Combat B)
-1. **All 14 Pets are `ready:true`**, not only the six in the §5 slice (those six carry `slice:true`). Reason: a deck needs 10 specimens and a new collection rarely holds six particular species. Each Pet has authored role, cost, HP, damage, range, speed, interval.
+1. **(Confirmed and refined by the user, §9.8.1.)** **All 14 Pets are `ready:true`**, not only the six in the §5 slice (those six carry `slice:true`). Reason: a deck needs 10 specimens and a new collection rarely holds six particular species. Each Pet has authored role, cost, HP, damage, range, speed, interval.
 2. **Support defs exist but are `ready:false`** (12: 3 weapons, 2 shields, 3 machines, 2 relics, 2 oddities). §5 says "16 cards" but its own table lists 6 Pets + 12 support = 18; the table is what was implemented.
 3. **"Locked-out" (§3)** was interpreted as *cards* (collectible Cards cannot enter combat). `specimen.locked` is the Vault's dismantle protection and is not a combat restriction.
-4. **Dismantle / fuse protection is a hard block, not warn-and-confirm.** `protectReason()` returns "In a combat deck", so dismantle, bulk dismantle and fusion skip such specimens (Standard **and** Unlimited) until they are taken out of the deck. Simpler and safer than touching three UI call sites; a confirm path can replace it later.
+4. **(Confirmed by the user, with extra requirements, §9.8.2.)** **Dismantle / fuse protection is a hard block, not warn-and-confirm.** `protectReason()` returns "In a combat deck", so dismantle, bulk dismantle and fusion skip such specimens (Standard **and** Unlimited) until they are taken out of the deck. Simpler and safer than touching three UI call sites; a confirm path can replace it later.
 5. **Save v4 failure path:** if `migrateP5` is rejected the original save loads at its old version (retry next load) with no `combat` block; Combat screens then show "Combat data unavailable". Every other screen is unaffected.
 6. **Defeat → recovery (12–20 s, seeded) → pool and the +1 Elixir redeploy surcharge (cap 3) are already in `hand.js` / `sim.js` and tested**, because hand eligibility needs them. B3 therefore shrinks to presentation (recall animation, HUD countdown on the card) and edge cases.
 7. **Time limit in Combat A is only "which Core has more HP left"** (equal → draw). The full resolver and sudden death are C2. There is no opponent, so the Training Arena says "Practice complete" and awards nothing.
@@ -244,7 +244,25 @@ Touch input (pointer events are used, only a mouse was driven), phone layouts of
 
 **Things Combat B must not break:** determinism (same seed + commands → same `hash`), the "no `Math.random` / `Date.now` / DOM in the pure modules" test, "combat never writes a specimen" (byte-identical test), save v4 and its backup/fault-injection tests, the leak check in `combat-arena-scenario.mjs`, and the rule that every rule lives in `sim.js` while `battle.js` only presents.
 **Known limits to plan around:** a merged unit is a frozen pose (see §9.2); the AI side does not exist (`sides.b` is unused); only Pets can be fielded; the training dummy is `kind:'dummy'`, static, and ignores everything except damage.
-**Questions for the user (none blocks B1):** keep all 14 Pets fieldable, or restrict to the six slice Pets once abilities arrive? Is the hard block on dismantling deck members acceptable, or should it become a confirm dialog?
+**Questions for the user:** both were answered on 2026-10-22; see §9.8. They change the order of work below: item 2 of §9.8 (the deck-block message) is **B0, the first task of Combat B**, and item 1 (the Limited Combat Kit label) is part of B2.
+
+### 9.8 Design decisions from the user (2026-10-22, after Combat A) — binding for Combat B and C
+**1. All 14 Pets stay fieldable in decks; only six need full Q/E/R kits.**
+- Full authored Q/E/R kits are required only for the six-Pet representative roster of §5. In the data those are the Pets flagged `slice:true`: Storm Sovereign, Pyrodrake, Mossback, Grovewarden, Glimfin, Voidling. §5 phrases several slots as "A or B" (Tempestral / Pluvia as the branching transformation of the Nimbus line, Grovewarden or Mossback, Glimfin or Pluvia, Gloomwing or Voidling), so **confirm the final six at the start of B2** rather than assuming the flags are final.
+- The other eight (Nimbit, Nimbus, Tempestral, Pluvia, Emberkit, Pebblor, Gloomwing, Sunmane) get only: their translated combat stats, the battle LOD, the automatic basic attack, move orders, priority targeting, and **at most one simple role-appropriate passive, and only if the simulation already supports it cleanly**. **No shallow generic Q/E/R abilities** invented to make all 14 look complete.
+- Those Pets are labelled **"Limited Combat Kit"**. This is a data flag on the def (derived from "has no authored Q/E/R", not a hand-kept list that can drift) and is shown in the deck editor, on the hand card, in the Numbers panel and on the hub. **Not implemented yet.**
+- Training: limited-kit Pets stay fully usable. Ranked (C3): they must not drive consequential progression until their full kits exist. Either (a) a ranked deck may not contain them, or (b) the match is shown as **Experimental — no rating change** before it starts. Choose at C3; whichever is chosen, a match with a limited-kit Pet in the deck never changes the rating, and the rule is visible in the deck editor and before the match.
+- Tests to add: B2 asserts every `ready` Pet either has a full kit or carries the limited label (so a new Pet cannot silently ship in between); C3 asserts the rating-change exclusion.
+
+**2. The hard block on dismantling or fusing deck members stays, with a proper explanation.** Today `protectReason()` only says "In a combat deck" (Combat A). Required:
+- The blocked action names **which deck or decks** hold the specimen.
+- It says the specimen **must be removed or replaced first**.
+- It offers a shortcut to **Review Decks** (open the deck editor on the first affected deck, e.g. `ui.go('deck', { id })`).
+- **No generic confirmation dialog may destroy a specimen and leave broken deck references.** Applies to every destructive path: Inspect dismantle, Vault bulk dismantle, the duplicate-cleanup plan in the opening summary, and Fusion blockers (and any later action that consumes a specimen).
+- Suggested engine support: `engine.decksContaining(id) → [{ id, name }]` (read-only), used by `protectReason` consumers so the three UI call sites and Fusion render the same message.
+- A future **"Remove from all decks and continue"** workflow is allowed only if it previews every affected deck and requires explicit confirmation. Not part of Combat B.
+- Tests: the message names the decks and the shortcut target; dismantle and fuse still refuse; removing the specimen from the deck lifts the block; a deck never ends up with a dangling id through any UI path (Chrome check).
+- **This is B0: do it before B1.** It is a gap in Combat A against this decision, not new scope.
 
 ## 10. Known risks
 1. ~~Battle LOD (§2.2) may need to degrade models noticeably~~ — retired by the C0 spike (§9.2): merged battle models cost 5× fewer draw calls with unchanged looks, at the price of a frozen pose. Remaining risk: low-end GPUs were not measured.
