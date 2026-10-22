@@ -1,4 +1,4 @@
-# Aethervault — The Infinite Archive (v0.5, Phase Four)
+# Aethervault — The Infinite Archive (v0.6.0, Phase Five · Combat A in progress)
 
 A private, single-player collectible simulator. **Simulation only — no real transactions, no network access.**
 v0.2 is a visual redesign and a real-time 3D vertical slice; no gameplay systems were added.
@@ -16,6 +16,17 @@ node serve.mjs 5173      # then open http://127.0.0.1:5173
 `index.html` also works straight from disk (`file://`): the game uses classic scripts, bundled fonts and a vendored Three.js UMD build, so there is no build step and no install step.
 
 Requirements: a current Chromium, Firefox or Safari. WebGL is used for the 3D presentation; without it (or with 3D set to *Off*) the game falls back to its original 2D artwork.
+
+## What's new in v0.6.0 (Phase Five, Combat A — in progress) — details in [`PHASE_FIVE.md`](PHASE_FIVE.md)
+
+Combat is being built in three steps; this is the first (foundations). It is a **Training Arena**, not the finished game: no opponent, no ranking, no rewards.
+
+- **Combat** in the left rail: your active deck, how a battle works, and the modes that are still to come (shown but disabled).
+- **Deck editor:** exactly 10 specimens, any mixture; several decks; a recommended starter and two other presets built from your collection; the combat numbers of every specimen with the formula behind each (Resilience → HP, Power → damage, Agility → speed, Instinct → attack tempo, Bond → cooldowns, Mutation → critical chance). Specimens that are missing or not combat-ready are flagged, never silently dropped. A specimen in a deck cannot be dismantled or fused until it is taken out.
+- **Training Arena:** a compact 3D board (river, one bridge, cover, two Archive Cores) on the same renderer as the rest of the game. A hand of 4 from your deck; every deployment deals a whole new hand; Elixir (start 5, max 10, faster from 1:15 and in the Final Surge); pick a card (click, keys 1–4, or drag it) and place it on your half; Esc or right-click cancels; Reshuffle costs 1 Elixir. Your Pet walks the bridge, picks a target and attacks a sparring post or the enemy Core. A defeated Pet recovers 12–20 s and costs +1 Elixir more each redeploy.
+- **Pets only for now:** all 14 pets can fight. Weapons, shields, machines, relics and oddities are listed as "not yet combat-ready" until Combat B; abilities, move orders, the opponent AI, ranked play and rewards come later (Combat B and C).
+- Combat never changes a specimen. Saves from v0.1–v0.5 migrate in place to **schema v4** (raw backup `…backup-p5`; a failed migration loads your original save and retries next time).
+- Combat needs the 3D renderer (Low, Medium or High). A 2D board is planned for Combat C.
 
 ## What's new in v0.5 (Phase Four) — details in [`PHASE_FOUR.md`](PHASE_FOUR.md)
 
@@ -76,7 +87,8 @@ css/open.css  vault.css  pages.css  stage.css     per-screen layout; cinematic s
 js/stage3d/lib.js       geometry builders, surface-nets cloud skins, procedural textures, shared trait shader
 js/stage3d/core.js      renderer, views, rigs/plinths, thumbnails, quality, loop
 js/stage3d/models-*.js  the vertical-slice models
-js/screens/*.js         home, open, vault, pets, forge, store, settings, inspect
+js/screens/*.js         home, open, vault, pets, forge, store, settings, inspect, combat (hub), deck (editor), battle (Training Arena)
+js/combat/*.js          Phase Five: tuning, defs, translate, deck, hand, sim (pure, Node-tested) · lod, render, input (browser)
 js/opening.js           rituals → reveals → summary
 vendor/                 three.min.js (r160, MIT) and fonts (SIL OFL)
 dev/gallery.html        model gallery and SVG-vs-3D comparison (?compare=1, ?sheet=…)
@@ -91,8 +103,11 @@ docs/                   screenshots (before/after/validation), validation report
 node tests/logic.test.js                      # 45 rule/contract checks, no dependencies
 node tests/phase3.test.js                     # 22 checks: stats, progression, transformations, migration
 node tests/phase4.test.js                     # 30 checks: cards, pools, save v3 migration, fusion, Vault queries
+node tests/combat.test.js                     # 49 checks: combat data, translation, save v4 + fault injection, decks, hand, Elixir, simulation
 cd tools && npm install && cd ..              # one-time, dev only (puppeteer-core; uses your installed Edge/Chrome)
 node tools/phase3.mjs                         # Phase Three browser checks (39)
+node tools/combat-smoke.mjs all               # Phase Five browser smoke: deck editor + Training Arena through the real UI (28 checks)
+node tools/combat-spike.mjs medium            # battle-LOD spike: 12 units, per-approach draw calls / triangles / frame cost
 node tools/p4-shot.mjs all                    # Phase Four browser scenarios + screenshots (vault, organise, fusion, pack, roulette, rituals, cards…)
 node tools/phase2.mjs                         # Phase Two: startup, fallback, save compat, new models, FPS limit, loop sleeping
 node tools/perf.mjs <label>                   # performance probe (see PHASE_TWO.md)

@@ -11,7 +11,7 @@
 
 - **Simulation only.** No real money, no real transactions, no network access, no accounts, no multiplayer.
 - Players open containers (eggs, packs, crates, capsules, chests, vaults) to receive **specimens** (collectible items), inspect them in 3D, upgrade and evolve them, fuse duplicates, and organise them in a large Vault.
-- Current version: `AV.VERSION` = **0.5.0** ("Phase Four", build `P4-20261022`), defined in `js/util.js`. Phase Four is complete and checkpointed (see section 10).
+- Current version: `AV.VERSION` = **0.6.0** ("Phase Five · Combat A (in progress)", build `P5A-20261022`), defined in `js/util.js`. Phase Four is complete and checkpointed (`phase-four-complete`); Combat A is committed on branch `phase-five` (see section 10).
 - Tone: a whimsical "archive" fiction. Collectibles are described as things the Archive "agreed to keep."
 
 ### Explicitly NOT in the game (and not planned unprompted)
@@ -198,7 +198,8 @@ Branch **`phase-four`**, tagged `phase-four-complete` (baseline tag `phase-three
 
 **Not built / dropped:** the machine "post-reveal cooldown" (no specification existed; not invented).
 
-**Next (not started):** Phase Five, the Combat Phase. The plan is in `PHASE_FIVE.md` and is blocked only on the user saying go.
+### Phase Five — "the Combat phase" (IN PROGRESS: Combat A done, B and C not started)
+Branch **`phase-five`** (from tag `phase-four-complete`). Plan, measurements, decisions and the handoff to Combat B are in `PHASE_FIVE.md` §9. Combat A delivered: battle-LOD spike, combat data (`js/combat/defs.js`, `tuning.js`), stat translation (`translate.js`), save **v4** with raw backup `…backup-p5`, deck editor (`screens/deck.js`), the pure simulation (`sim.js`, `hand.js`: fixed 30 Hz step, seeded, Elixir, 4-card hand, recently-seen queue, reshuffle, nav grid, melee/ranged basic attacks, defeat/recovery/surcharge, Cores, 2:00 timer with regen step and Final Surge) and the Training Arena (`screens/battle.js`, `combat/render.js`, `combat/lod.js`, `combat/input.js`). Only Pets fight; support cards are declared but `ready:false`. The arena is a practice mode: no opponent AI, no ranking, no rewards.
 
 ### Phase Four acceptance pillars (PHASE_FOUR.md section 2)
 1 Container identity · 2 Literal Cards · 3 Card inspection + holograms · 4 Wanderer Pack opening · 5 Forge Crate roulette · 6 Other rituals · 7 Relic Chest 3D · 8 Fusion · 9 Vault expansion · 10 Save v3 · 11 Settings/accessibility · 12 Performance.
@@ -224,7 +225,7 @@ Registries, save/load/migrate with corrupt-save backup, specimen generation (uni
 
 ## 11. Save data
 
-- **Storage key:** `aethervault.save.v1` in `localStorage`. Current schema: **`version: 3`** (v1→v2 `migrateP3`, v2→v3 `migrateP4`).
+- **Storage key:** `aethervault.save.v1` in `localStorage`. Current schema: **`version: 4`** (v1→v2 `migrateP3`, v2→v3 `migrateP4`, v3→v4 `migrateP5`; raw backups `…backup-p3`, `…backup-p4`, `…backup-p5`).
 - Migration rule: loading an older save copies the raw text to a backup key first (`aethervault.save.v1.backup-p3` for v1→v2), migrates a copy, fingerprints every specimen, and adopts it only if valid. Failure loads the original untouched. The game never silently resets a save.
 - Corrupt saves: boot shows a recovery panel with **Retry** or **Start fresh** (the backup key is kept).
 - **Export / Import / Reset** exist in Settings.
@@ -237,7 +238,8 @@ save = {
   specimens{[id]: Specimen}, nextId, discovered, variantsSeen, pity, stats{...},
   companion, daily{last, streak}, recent[], settings{master, music, sfx, opening, animSpeed,
   reducedMotion, shake, flashing, textSize, skipRituals, quality3d, ...}, flags{onboarded, seenTips},
-  ext{}   // namespaced storage for future modules
+  ext{},  // namespaced storage for future modules
+  combat{ v, decks[{id,name,entries:[{id}],preset,created,updated}], activeDeck, rating, division, games, wins, history[], tutorial{done,step}, settings{unlimited,autoPause}, unlocks{} }  // Phase Five (v4)
 }
 Specimen = {
   id, base, variant, pattern, seed, palette, condition(0..4), potential(1..100), serial(1..9999),
@@ -292,6 +294,9 @@ js/screens/inspect.js      Inspect: traits, stats, history, card print record, C
 js/screens/pets.js         Pets stage + lineage
 js/screens/forge.js        Forge chamber: upgrade, evolve, transform, awaken
 js/screens/fusion.js       Phase Four Fusion Chamber
+js/screens/combat.js       Phase Five: Combat hub (active deck, how it works, upcoming modes)
+js/screens/deck.js         Phase Five: deck editor (10 specimens, presets, validation, combat numbers)
+js/screens/battle.js       Phase Five: Training Arena (HUD, hand, placement, overlay; drives sim.js)
 js/screens/store.js        mock store: checkout simulation, exchange, bundles, daily offer
 js/screens/settings.js     settings: mode, volumes, animation, quality, FPS, reduced motion, export/import/reset
 js/screens/statsui.js      stat/tree/looks HTML builders (Phase Three)
@@ -303,6 +308,13 @@ js/stage3d/core.js         AV.stage: one shared WebGL renderer, View (drag/zoom/
 js/stage3d/kit.js          taper tubes, metaball skins, creature faces, wings, flames, sparks, gears, rune textures, stageFx
 js/stage3d/forms.js        stage details + transformation motifs applied to ANY model by one hook in View.setSpec
 js/stage3d/manifest.js     maps model keys → files; lazy loading after Home
+js/combat/tuning.js        every balance number (frozen) · defs.js: per-item combat defs (14 Pets ready, 12 support declared)
+js/combat/translate.js     specimen -> combat attributes with a formula breakdown (pure)
+js/combat/deck.js          deck validation, eligibility, presets (pure) · hand.js: 4-card hand, recently-seen queue, reshuffle, recovery (pure, seeded)
+js/combat/sim.js           fixed-step deterministic simulation (pure; no DOM, no Math.random, no clock)
+js/combat/lod.js           battle LOD: any model via a synthetic ctx, lights/glow stripped, static meshes merged per material
+js/combat/render.js        battle scene on the shared renderer (fixed 2.5D camera, board, units, picking) · input.js: pointer/keyboard abstraction
+css/combat.css  battle.css hub + deck editor; Training Arena
 js/stage3d/models-*.js     models: containers, crate/vault, pets (+pets2), gear (gear2/gear3), relic (relic/2/3),
                            machine (1/2/3), oddity (1/2/3), sword, creatures, and Phase Four containers3 (Relic Chest, Starlit Egg),
                            models-cards.js (3D card + holograms)
@@ -312,6 +324,7 @@ dev/gallery.html           model gallery and SVG-vs-3D comparison (?compare=1, ?
 tests/logic.test.js        Node: game rules, generation bounds, economy, evolution, migration (45 checks)
 tests/phase3.test.js       Node: stats, progression, transformations, migration (22 checks)
 tests/phase4.test.js       Node: cards, pools, migration + fault injection, fusion, vault queries (30 checks)
+tests/combat.test.js       Node: combat data, translation, save v4 + fault injection, decks, hand, Elixir, simulation (49 checks)
 tools/                     dev-only Puppeteer scripts (validation, screenshots, perf, smoke) — not needed to play
 docs/                      screenshots (before/after/phase2/phase3/phase4), JSON validation + perf reports, legacy v0.1 CSS
 MUSIC/background music/    4 royalty-free MP3 ambient tracks (currently not wired to a real music theme)
@@ -321,7 +334,7 @@ MUSIC/background music/    4 royalty-free MP3 ambient tracks (currently not wire
 
 ## 13. Repository state (at snapshot)
 
-- Git repo, branch **`phase-four`** (main branch **`main`**). Phase Four is committed and tagged `phase-four-complete`; `PHASE_FIVE.md` (plan only) is the only addition after it, if present in the tree. No `phase-five` branch exists yet.
+- Git repo, branch **`phase-five`** (main branch **`main`**), branched from `phase-four-complete`. Combat A is committed on it (see `PHASE_FIVE.md` §9 for hashes and the tag). `phase-four` is untouched.
 - Line endings are normalised to LF (a `.gitattributes` enforces it).
 - Background-music files exist under `MUSIC/` but the game still uses its generative ambient pad (the real-music theme is deferred).
 
@@ -333,16 +346,19 @@ MUSIC/background music/    4 royalty-free MP3 ambient tracks (currently not wire
 node tests/logic.test.js          # 45 rule/contract checks (Node, no deps)
 node tests/phase3.test.js         # 22 checks: stats, progression, transformations, migration
 node tests/phase4.test.js         # 30 checks: cards, pools, save v3 migration, fusion, vault queries
+node tests/combat.test.js         # 49 checks: Phase Five Combat A (data, translation, save v4, decks, hand, Elixir, simulation)
 cd tools && npm install && cd ..  # one-time, dev only (puppeteer-core, uses installed Chrome/Edge)
 node tools/phase2.mjs             # Phase Two browser checks (40)
 node tools/phase3.mjs             # Phase Three browser checks (39), migration of a real v1 save
 node tools/validate.mjs all       # full browser suite: boot, buttons, modes, protection, upgrade, evolve, reveals, leaks, quality, motion, responsive, save, audio
 node tools/p4-smoke.mjs baseline  # Phase Four targeted Chrome smoke test
+node tools/combat-smoke.mjs all   # Phase Five Chrome smoke: deck editor + Training Arena via the real UI (28 checks)
+node tools/combat-spike.mjs medium # C0 battle-LOD spike (12 units; calls/tris/frame cost per approach) -> docs/p5-spike-*.json
 node tools/p4-shot.mjs all        # Phase Four scenarios + screenshots (vault, organise, fusion, pack, roulette, rituals, cards3d, cards2d, chest, starlit)
 node tools/shoot-after.mjs        # regenerate docs/screenshots/after
 ```
 
-Last runs (end of Phase Four): Node logic 45/45, phase3 22/22, phase4 30/30; Chrome phase3 39/39, phase2 40/40 (details and the full-suite result in PHASE_FOUR.md §10).
+Last runs (end of Combat A): Node logic 45/45, phase3 22/22, phase4 30/30, combat 49/49; Chrome combat-smoke 28/28; validate groups 35+10+1+22+9 (all pass), phase3 39/39, phase2 40/40 (details: PHASE_FIVE.md §9). Phase Four's own record is in PHASE_FOUR.md §10.
 
 ### Conventions for working on this code
 - Everything that changes state goes through `AV.engine.*`; the UI only renders state and calls actions.
@@ -367,7 +383,7 @@ Last runs (end of Phase Four): Node logic 45/45, phase3 22/22, phase4 30/30; Chr
 | `PHASE_THREE.md` | Phase Three: 3D catalogue, stats, transformations, validation |
 | `PHASE_FOUR.md` | Phase Four: scope, audit, acceptance pillars, pools, progress log, handoff plan |
 | `VISUAL_DIRECTION.md` | Visual identity rules |
-| `PHASE_FIVE.md` | Combat Phase plan (not started) |
+| `PHASE_FIVE.md` | Combat Phase: plan, Combat A progress log with measurements, decisions, and the exact handoff to Combat B |
 | `TODO.md` | Status checklist and deferred items |
 | **`PROJECT_OVERVIEW.md`** | **This file: single-document snapshot of the whole project** |
 </content>

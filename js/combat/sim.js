@@ -139,7 +139,7 @@
       u.face = tg.x >= u.x ? 1 : -1; u.moving = false;
       if (u.cd <= 0) {
         u.cd = u.interval; const crit = u.crit > 0 && rand(s) < u.crit;
-        if (u.atk === 'ranged') s.proj.push({ uid: s.nextUid++, side: u.side, from: u.uid, x: u.x, z: u.z, tg: { kind: u.target.kind, uid: u.target.uid, side: u.target.side }, speed: 12, dmg: u.dmg, crit, hit: u.hit });
+        if (u.atk === 'ranged') s.proj.push({ uid: s.nextUid++, side: u.side, from: u.uid, x: u.x, z: u.z, px: u.x, pz: u.z, tg: { kind: u.target.kind, uid: u.target.uid, side: u.target.side }, speed: 12, dmg: u.dmg, crit, hit: u.hit });
         else damage(s, u.side, u.target, u.dmg, crit, u.uid);
         s.events.push({ t: s.t, type: 'attack', uid: u.uid, side: u.side });
       }
@@ -182,7 +182,7 @@
     SIDES.forEach(k => { const sd = s.sides[k]; if (!sd) return; const cap = E.max * ELX; if (sd.elixirM < cap) sd.elixirM = Math.min(cap, sd.elixirM + Math.round(E.regen * ELX * regenMult(s) * dt)); H().tick(sd.hand, s.t); });
     s.units.forEach(u => { u.px = u.x; u.pz = u.z; });
     s.units.forEach(u => { if (u.hp > 0) stepUnit(s, u, dt); });
-    s.proj.forEach(p => stepProj(s, p, dt)); s.proj = s.proj.filter(p => !p.dead);
+    s.proj.forEach(p => { p.px = p.x; p.pz = p.z; stepProj(s, p, dt); }); s.proj = s.proj.filter(p => !p.dead);
     separate(s);
     const gone = s.units.filter(u => u.hp <= 0);
     gone.forEach(u => {

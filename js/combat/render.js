@@ -50,9 +50,9 @@
     /** Fixed camera on the player's side: the whole arena fits the viewport at any aspect. */
     frameCamera() {
       const { w, h } = this.arena, pitch = this.opts.pitch, t = Math.tan(this.camera.fov * Math.PI / 360), asp = this.camera.aspect;
-      const halfW = w / 2 * this.opts.margin, halfD = (h / 2) * Math.sin(pitch) * this.opts.margin + 1.2 * Math.cos(pitch);
-      const d = Math.max(halfD / t, halfW / (t * asp)) + h / 2 * Math.cos(pitch) * 0.5;
-      this.camDist = d; this.camera.position.set(w / 2, Math.sin(pitch) * d, h / 2 + Math.cos(pitch) * d); this.camera.lookAt(w / 2, 0.4, h / 2); this.camera.updateMatrixWorld(true);
+      const halfW = w / 2 * this.opts.margin, halfD = (h / 2) * Math.sin(pitch) * this.opts.margin + 1.4 * Math.cos(pitch), tz = h / 2 - (this.opts.lookShift || 0);
+      const d = Math.max(halfD / t, halfW / (t * asp)) + h / 2 * Math.cos(pitch) * 0.42;
+      this.camDist = d; this.camera.position.set(w / 2, Math.sin(pitch) * d, tz + Math.cos(pitch) * d); this.camera.lookAt(w / 2, 0.4, tz); this.camera.updateMatrixWorld(true);
     }
     /** Add a built unit (see lod.build). scale = world units per model frame radius (default fits a 1-cell footprint). */
     addUnit(unit, o = {}) {

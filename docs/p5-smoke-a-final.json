@@ -1,0 +1,168 @@
+{
+ "label": "a-final",
+ "at": "2026-10-22T15:10:28.875Z",
+ "checks": [
+  {
+   "name": "nav has Combat",
+   "ok": true
+  },
+  {
+   "name": "training disabled with no deck",
+   "ok": true
+  },
+  {
+   "name": "deck screen opens with the empty state",
+   "ok": true
+  },
+  {
+   "name": "recommended starter builds a valid 10-card deck",
+   "ok": true,
+   "detail": "{\"decks\":1,\"entries\":10,\"slots\":10,\"valid\":true,\"roles\":[\"vanguard\",\"ranged\",\"striker\",\"support\",\"disruptor\"]}"
+  },
+  {
+   "name": "removing a card leaves 9 and the validator says so",
+   "ok": true
+  },
+  {
+   "name": "adding from the picker refills to 10",
+   "ok": true
+  },
+  {
+   "name": "support cards listed as Not yet combat-ready (disabled)",
+   "ok": true
+  },
+  {
+   "name": "combat numbers modal shows 7 formulas",
+   "ok": true
+  },
+  {
+   "name": "a deck member cannot be dismantled",
+   "ok": true,
+   "detail": "{\"reason\":\"In a combat deck\",\"r\":0}"
+  },
+  {
+   "name": "hub shows the active deck and enables Training",
+   "ok": true
+  },
+  {
+   "name": "375–700 px: no horizontal overflow on the deck editor",
+   "ok": true
+  },
+  {
+   "name": "arena boots: hand of 4, Elixir 5, canvas, loader hidden",
+   "ok": true,
+   "detail": "{\"cards\":4,\"elixir\":5.18,\"units\":11,\"info\":{\"calls\":26,\"triangles\":1076}}"
+  },
+  {
+   "name": "clicking a card selects it",
+   "ok": true
+  },
+  {
+   "name": "Esc cancels the selection without pausing",
+   "ok": true
+  },
+  {
+   "name": "right-click cancels the selection",
+   "ok": true
+  },
+  {
+   "name": "placing on the enemy half is refused with a message",
+   "ok": true
+  },
+  {
+   "name": "click on the board deploys the Pet, spends Elixir and deals a new hand",
+   "ok": true,
+   "detail": "{\"x\":6.5,\"z\":13.5,\"card\":\"s6\",\"elixir\":4.044,\"hand\":4,\"sel\":false,\"shown\":true}"
+  },
+  {
+   "name": "the Pet walks the bridge and attacks the sparring post (ranged Pets engage from the bridge head)",
+   "ok": true,
+   "detail": "{\"crossed\":true,\"engaged\":true,\"bad\":0,\"maxZ\":7.052000000000017,\"atk\":\"melee\"}"
+  },
+  {
+   "name": "R reshuffles (hand refreshed, Elixir charged) and the button then cools down",
+   "ok": true,
+   "detail": "{\"before\":{\"e\":5.724,\"hand\":1},\"after\":{\"e\":4.844,\"hand\":2,\"dis\":true}}"
+  },
+  {
+   "name": "pause freezes the simulation tick",
+   "ok": true,
+   "detail": "237 → 237"
+  },
+  {
+   "name": "resume continues the simulation",
+   "ok": true
+  },
+  {
+   "name": "arena frame pacing: no frame over 33 ms, average ≥ 55 fps (60 fps cap on Medium)",
+   "ok": true,
+   "detail": "{\"frames\":300,\"avgMs\":16.66,\"avgFps\":60,\"p95Ms\":20.9,\"p99Ms\":21,\"worstMs\":21,\"jsMs\":0.74,\"over33\":0,\"scene\":{\"calls\":34,\"triangles\":14170},\"heapMB\":28.4,\"programs\":17,\"geometries\":166,\"textures\":30,\"quality\":\"medium\",\"fpsLimit\":0}"
+  },
+  {
+   "name": "regen step at 1:15 shows its banner",
+   "ok": true
+  },
+  {
+   "name": "Final Surge state is shown at 1:45",
+   "ok": true,
+   "detail": "{\"cls\":true,\"ph\":\"FINAL SURGE · Elixir ×2\"}"
+  },
+  {
+   "name": "at 2:00 the match ends and the result overlay appears (no rewards)",
+   "ok": true
+  },
+  {
+   "name": "combat never changed a specimen or the wallet",
+   "ok": true
+  },
+  {
+   "name": "enter/leave ×4: no growth in geometries, textures, shader programs; no live view left",
+   "ok": true,
+   "detail": "{\"g0\":{\"g\":51,\"t\":28,\"p\":1,\"v\":0},\"g1\":{\"g\":51,\"t\":28,\"p\":1,\"v\":0,\"live\":false}}"
+  },
+  {
+   "name": "no console or page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "notes": {
+  "arenaPerf": {
+   "frames": 300,
+   "avgMs": 16.66,
+   "avgFps": 60,
+   "p95Ms": 20.9,
+   "p99Ms": 21,
+   "worstMs": 21,
+   "jsMs": 0.74,
+   "over33": 0,
+   "scene": {
+    "calls": 34,
+    "triangles": 14170
+   },
+   "heapMB": 28.4,
+   "programs": 17,
+   "geometries": 166,
+   "textures": 30,
+   "quality": "medium",
+   "fpsLimit": 0
+  },
+  "leak": {
+   "before": {
+    "g": 51,
+    "t": 28,
+    "p": 1,
+    "v": 0
+   },
+   "after": {
+    "g": 51,
+    "t": 28,
+    "p": 1,
+    "v": 0,
+    "live": false
+   }
+  }
+ },
+ "bootMs": 6162,
+ "errors": []
+}

@@ -17,7 +17,12 @@
 - [x] Validation: logic 45/45, phase3 Node 22/22, phase3 Chrome 39/39, phase2 Chrome 40/40
 - [ ] Not verified: mobile/touch layouts of the new UI, other browsers, low-end GPUs
 - [ ] Candidates next: per-form pedestal accents, a cosmetics category using the defined stat family, fusion (after stats and transformations have settled)
-- [ ] Deferred on purpose: fusion, quests, seasons, battle pass, events, trading, marketplace, multiplayer, accounts, Creator Mode, combat
+- [ ] Deferred on purpose: quests, seasons, battle pass, events, trading, marketplace, multiplayer, accounts, Creator Mode
+
+## Phase Five (Combat) — see PHASE_FIVE.md
+- [x] Combat A: C0 spikes, combat data + stat translation, save v4 + backup, deck editor, pure simulation (hand, Elixir), Training Arena with Pets
+- [ ] Combat B: move orders, abilities + aiming, defeat presentation, support cards (weapon, shield, machine, relic, oddity), pooled effects
+- [ ] Combat C: opponent AI, match flow + resolver, ELO/ladder/rewards, tutorial, audio/VFX/2D fallback, final validation
 
 
 ## Phase Two (done, see PHASE_TWO.md)

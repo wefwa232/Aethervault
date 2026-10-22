@@ -94,7 +94,8 @@
       dispose() {
         if (merged) merged.geos.forEach(g => g.dispose());
         inst.root.traverse(o => { if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose(); });
-        (inst.disposables || []).forEach(m => m.dispose && m.dispose()); try { inst.dispose && inst.dispose(); } catch (e) { /* ignore */ }
+        (inst.disposables || []).forEach(m => m.dispose && m.dispose()); (ctx.tex || []).forEach(t => t.dispose && t.dispose()); // models park per-instance canvas textures (creature faces) in ctx.tex
+        try { inst.dispose && inst.dispose(); } catch (e) { /* ignore */ }
       },
     };
     return unit;
