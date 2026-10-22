@@ -7,7 +7,7 @@ Notes on how the Aethervault repository is hosted, how to push future work, and 
 | Item | Value |
 |---|---|
 | URL | https://github.com/wefwa232/Aethervault |
-| Visibility | **Private** |
+| Visibility | **Public** (changed by the owner after the initial private publication on 2026-10-22) |
 | Remote name | `origin` (`https://github.com/wefwa232/Aethervault.git`) |
 | Default branch on GitHub | `phase-five` (current development branch, contains all Phase Four and Phase Five work) |
 | Stable older checkpoint | `main` (Phase Three checkpoint, `23c8bb2`; not the latest state) |
@@ -64,7 +64,7 @@ cd Aethervault
 git checkout phase-five
 ```
 
-GitHub requires you to be signed in to the `wefwa232` account to clone a private repository. Use the GitHub login or a personal access token stored in your own credential manager. Do not paste tokens into files, commits or chat.
+GitHub requires you to be signed in to the `wefwa232` account to clone the repository if it is made private again. Use the GitHub login or a personal access token stored in your own credential manager. Do not paste tokens into files, commits or chat.
 
 ## Restore the project from GitHub
 
