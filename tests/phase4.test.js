@@ -83,7 +83,7 @@ const v2save = () => { AV.state.reset('standard'); const s = AV.state.get(); ['n
 t('v2 save migrates to v3: identity, stats, pity, wallet and settings preserved; new structures and defaults added; backup written once', () => {
   Object.keys(store).forEach(k => delete store[k]); const raw = v2save(), text = JSON.stringify(raw); store[AV.state.SAVE_KEY] = text;
   const S1 = AV.state.load(), L = AV.state.lastLoad;
-  eq(S1.version, 3); ok(L.p4.migrated, 'migrated'); eq(store[AV.state.BACKUP_KEY_P4], text, 'raw backup');
+  eq(S1.version, 4, 'v2 save climbs to the current schema (v4 since Phase Five)'); ok(L.p4.migrated, 'migrated'); eq(store[AV.state.BACKUP_KEY_P4], text, 'raw backup');
   Object.keys(raw.specimens).forEach(id => eq(AV.state.fingerprint(S1.specimens[id]), AV.state.fingerprint(raw.specimens[id]), id));
   Object.keys(raw.specimens).forEach(id => eq(JSON.stringify(S1.specimens[id].stats), JSON.stringify(raw.specimens[id].stats), id + ' stats'));
   eq(S1.pity.wanderer, 17); eq(S1.pity.hatchling, 22); eq(S1.wallet.gems, 321); eq(S1.settings.master, .33); eq(S1.settings.multiOpen, 'condensed'); eq(S1.settings.cardHolo, true);
@@ -100,10 +100,10 @@ t('migration failure keeps the backup and loads the original save (v2) instead o
   AV.__faultP4 = true; const S2 = AV.state.load(); AV.__faultP4 = false;
   ok(AV.state.lastLoad.p4.failed, 'failure reported'); eq(S2.version, 2, 'stays v2 so the next load retries'); eq(store[AV.state.BACKUP_KEY_P4], text, 'backup kept');
   Object.keys(raw.specimens).forEach(id => eq(AV.state.fingerprint(S2.specimens[id]), AV.state.fingerprint(raw.specimens[id]), id)); eq(S2.wallet.gems, 321);
-  const S3 = AV.state.load(); eq(S3.version, 3, 'next load migrates'); ok(AV.state.lastLoad.p4.migrated);
+  const S3 = AV.state.load(); eq(S3.version, 4, 'next load migrates (to v4 since Phase Five)'); ok(AV.state.lastLoad.p4.migrated);
 });
 t('imported v2 files get the same v3 fields', () => {
-  const raw = v2save(); const S3 = AV.state.importJSON(JSON.stringify(raw)); eq(S3.version, 3); ok(Array.isArray(S3.fusions) && S3.org && Array.isArray(S3.org.folders)); eq(Object.keys(S3.specimens).length, Object.keys(raw.specimens).length);
+  const raw = v2save(); const S3 = AV.state.importJSON(JSON.stringify(raw)); eq(S3.version, 4); ok(Array.isArray(S3.fusions) && S3.org && Array.isArray(S3.org.folders)); eq(Object.keys(S3.specimens).length, Object.keys(raw.specimens).length);
 });
 
 console.log('Fusion');

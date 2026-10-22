@@ -153,8 +153,11 @@
     if (spec.locked) return 'Locked';
     if (spec.favorite) return 'Favorited';
     if (S().companion === spec.id) return 'Active companion';
+    if (inDeck(spec.id)) return 'In a combat deck';
     return null;
   }
+  /** Phase Five: is this specimen referenced by any saved combat deck? (decks hold ids only; removing it from the deck frees it) */
+  function inDeck(id) { const c = S().combat; return !!(c && c.decks.some(k => k.entries.some(e => e.id === id))); }
   function toggleFavorite(id) { const sp = get(id); if (!sp) return; sp.favorite = !sp.favorite; bus.emit('specimens'); tick(); return sp.favorite; }
   function toggleLock(id) { const sp = get(id); if (!sp) return; sp.locked = !sp.locked; bus.emit('specimens'); tick(); return sp.locked; }
   function setFlags(ids, flag, value) {
@@ -333,7 +336,7 @@
   /** Why the given inputs cannot be consumed (Standard rules; Unlimited when consuming). Locked/favorited never; a companion only as the primary. */
   function fuseBlockers(p, ds) {
     const out = [];
-    [p, ...ds].forEach((x, i) => { if (!x) return; if (x.locked) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is locked`); else if (x.favorite) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is favorited`); else if (i > 0 && S().companion === x.id) out.push(`${SP.displayName(x)} is your companion`); });
+    [p, ...ds].forEach((x, i) => { if (!x) return; if (x.locked) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is locked`); else if (x.favorite) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is favorited`); else if (i > 0 && S().companion === x.id) out.push(`${SP.displayName(x)} is your companion`); else if (inDeck(x.id)) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is in a combat deck`); });
     return out;
   }
   /** Read-only: the exact result, cost, protection blockers and consequences of a fusion. */
@@ -485,7 +488,30 @@
     };
   }
 
-  AV.engine = { isUnlimited, balance, canAfford, spend, grant, price, poolItems, rarityTable, oddsReport, addSpecimen, xpNeeded, addXp,
+  // ------------------------------------------------------------------ Phase Five: combat decks (the only writers of save.combat)
+  // Combat reads collection data and never changes a specimen. Deck entries are specimen ids; validation lives in combat/deck.js.
+  const CB = () => S().combat;
+  const deckName = n => String(n || '').replace(/\s+/g, ' ').trim().slice(0, 28);
+  const cleanEntries = ids => { const seen = new Set(); return (ids || []).map(x => String(x && x.id != null ? x.id : x)).filter(id => id && !seen.has(id) && seen.add(id)).slice(0, AV.combat.tuning.hand.deck).map(id => ({ id })); };
+  function combatChanged() { bus.emit('combat'); tick(); }
+  function deckCreate(name, ids, preset) {
+    const c = CB(); if (!c) return null; if (c.decks.length >= 20) return null;
+    const now = Date.now(), k = { id: 'd' + now.toString(36) + (c.decks.length + 1), name: deckName(name) || 'Deck ' + (c.decks.length + 1), entries: cleanEntries(ids), preset: preset || null, created: now, updated: now };
+    c.decks.push(k); if (!c.activeDeck) c.activeDeck = k.id; combatChanged(); return k;
+  }
+  /** patch: { name?, ids? } — ids replaces the whole entry list (max 10, unique). Unknown ids are kept: the editor flags them, nothing is silently dropped. */
+  function deckUpdate(id, patch) {
+    const c = CB(), k = c && c.decks.find(x => x.id === id); if (!k) return null;
+    if (patch.name != null && deckName(patch.name)) k.name = deckName(patch.name);
+    if (patch.ids) { k.entries = cleanEntries(patch.ids); k.preset = patch.preset !== undefined ? patch.preset : null; }
+    k.updated = Date.now(); combatChanged(); return k;
+  }
+  function deckDelete(id) { const c = CB(); if (!c) return false; const n = c.decks.length; c.decks = c.decks.filter(x => x.id !== id); if (c.activeDeck === id) c.activeDeck = c.decks.length ? c.decks[0].id : null; if (c.decks.length !== n) combatChanged(); return c.decks.length < n; }
+  function deckSetActive(id) { const c = CB(); if (!c || !c.decks.some(x => x.id === id)) return false; c.activeDeck = id; combatChanged(); return true; }
+  function deckDuplicate(id) { const c = CB(), k = c && c.decks.find(x => x.id === id); return k ? deckCreate(k.name + ' copy', k.entries.map(e => e.id), null) : null; }
+  function combatSetting(key, val) { const c = CB(); if (!c || !(key in c.settings)) return false; c.settings[key] = val; combatChanged(); return true; }
+
+  AV.engine = { inDeck, deckCreate, deckUpdate, deckDelete, deckSetActive, deckDuplicate, combatSetting, isUnlimited, balance, canAfford, spend, grant, price, poolItems, rarityTable, oddsReport, addSpecimen, xpNeeded, addXp,
     fusePreview, fuse, unfuse, fuseBlockers,
     folderCreate, folderRename, folderDelete, folderAdd, folderRemove, setTags, addTag, removeTag, setNote, searchSave, searchUpdate, searchDelete, pruneOrg,
     open, giveStarter, get, all, protectReason, toggleFavorite, toggleLock, setFlags, rename, setCompanion,

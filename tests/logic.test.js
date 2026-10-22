@@ -206,7 +206,7 @@ t('new pet families have evolutions that exist and a line entry for the Atlas', 
 t('new settings (fpsLimit, fastStartup) default sensibly and old saves inherit them without touching player data', () => {
   const d = AV.state.defaultSave().settings; eq(d.fpsLimit, 'auto'); eq(d.fastStartup, false);
   const old = { version: 1, profile: { name: 'Old', level: 9, xp: 5 }, wallet: { credits: 77, gems: 3, essence: 1, keys: 0 }, specimens: { 1: { id: 1, base: 'nimbit', variant: 'none', pattern: 'plain', seed: 1, palette: 0, condition: 2, potential: 50, serial: 12, level: 0, size: 1, aura: 'none' }, 2: { id: 2, base: 'removedthing' } }, nextId: 3, settings: { master: .3, quality3d: 'high' } };
-  const m = AV.state.migrate(old); eq(m.settings.quality3d, 'high'); eq(m.settings.master, .3); eq(m.settings.fpsLimit, 'auto'); eq(m.wallet.credits, 77); eq(m.profile.level, 9); eq(m.version, 3);
+  const m = AV.state.migrate(old); eq(m.settings.quality3d, 'high'); eq(m.settings.master, .3); eq(m.settings.fpsLimit, 'auto'); eq(m.wallet.credits, 77); eq(m.profile.level, 9); eq(m.version, AV.state.SAVE_VERSION);
   ok(m.specimens[1] && !m.specimens[2], 'unknown records are set aside, known ones kept');
 });
 t('loader reports what it found (used by the startup sequence): fresh, migrated, dropped, corrupt', () => {
@@ -217,7 +217,7 @@ t('loader reports what it found (used by the startup sequence): fresh, migrated,
   delete store[KEY]; Object.keys(store).forEach(k => { if (/corrupt/.test(k)) delete store[k]; });
 });
 t('version info is available for the startup screen', () => { ok(/^\d+\.\d+\.\d+$/.test(AV.VERSION.number) && AV.VERSION.build, JSON.stringify(AV.VERSION)); });
-t('save key is unchanged and the schema is v3 (Phase Four); v1/v2 saves migrate in place', () => { eq(AV.state.SAVE_VERSION, 3); eq(AV.state.SAVE_KEY, 'aethervault.save.v1'); });
+t('save key is unchanged and the schema is v4 (Phase Five); v1/v2/v3 saves migrate in place', () => { eq(AV.state.SAVE_VERSION, 4); eq(AV.state.SAVE_KEY, 'aethervault.save.v1'); });
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
