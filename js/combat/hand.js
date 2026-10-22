@@ -45,6 +45,8 @@
   }
   /** A Pet was defeated: it recovers (not drawable) until `until`, then returns to the pool. */
   function defeat(h, id, until) { const c = h.st[id]; if (!c) return false; c.s = 'rec'; c.until = until; return true; }
+  /** A recovering Pet comes back to the pool at once (Heart of Eternity). */
+  function revive(h, id) { const c = h.st[id]; if (!c || c.s !== 'rec') return false; c.s = 'pool'; c.until = 0; draw(h); return true; }
   /** A Pet left the field without being defeated (e.g. the match ended); it returns to the pool at once. */
   function recall(h, id) { const c = h.st[id]; if (c && c.s === 'field') c.s = 'pool'; }
   /** Advance recovery. Cards whose time has come return to the pool, and any empty hand slots are topped up. Returns the ids that came back. */
@@ -60,5 +62,5 @@
   }
   const canReshuffle = (h, now) => now >= h.lockUntil;
 
-  AV.combat.hand = { init, draw, refresh, play, defeat, recall, tick, reshuffle, canReshuffle, inPool, rand };
+  AV.combat.hand = { init, draw, refresh, play, defeat, revive, recall, tick, reshuffle, canReshuffle, inPool, rand };
 })();

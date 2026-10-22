@@ -11,7 +11,7 @@
 
 - **Simulation only.** No real money, no real transactions, no network access, no accounts, no multiplayer.
 - Players open containers (eggs, packs, crates, capsules, chests, vaults) to receive **specimens** (collectible items), inspect them in 3D, upgrade and evolve them, fuse duplicates, and organise them in a large Vault.
-- Current version: `AV.VERSION` = **0.6.0** ("Phase Five · Combat A (in progress)", build `P5A-20261022`), defined in `js/util.js`. Phase Four is complete and checkpointed (`phase-four-complete`); Combat A is committed on branch `phase-five` (see section 10).
+- Current version: `AV.VERSION` = **0.6.1** ("Phase Five · Combat B (in progress)", build `P5B-20261022`), defined in `js/util.js`. Phase Four is complete and checkpointed (`phase-four-complete`); Combat A and B are committed on branch `phase-five` (tags `phase-five-combat-a`, `phase-five-combat-b`; see section 10).
 - Tone: a whimsical "archive" fiction. Collectibles are described as things the Archive "agreed to keep."
 
 ### Explicitly NOT in the game (and not planned unprompted)
@@ -198,8 +198,11 @@ Branch **`phase-four`**, tagged `phase-four-complete` (baseline tag `phase-three
 
 **Not built / dropped:** the machine "post-reveal cooldown" (no specification existed; not invented).
 
-### Phase Five — "the Combat phase" (IN PROGRESS: Combat A done, B and C not started)
-Branch **`phase-five`** (from tag `phase-four-complete`). Plan, measurements, decisions and the handoff to Combat B are in `PHASE_FIVE.md` §9. Combat A delivered: battle-LOD spike, combat data (`js/combat/defs.js`, `tuning.js`), stat translation (`translate.js`), save **v4** with raw backup `…backup-p5`, deck editor (`screens/deck.js`), the pure simulation (`sim.js`, `hand.js`: fixed 30 Hz step, seeded, Elixir, 4-card hand, recently-seen queue, reshuffle, nav grid, melee/ranged basic attacks, defeat/recovery/surcharge, Cores, 2:00 timer with regen step and Final Surge) and the Training Arena (`screens/battle.js`, `combat/render.js`, `combat/lod.js`, `combat/input.js`). Only Pets fight; support cards are declared but `ready:false`. The arena is a practice mode: no opponent AI, no ranking, no rewards.
+### Phase Five — "the Combat phase" (IN PROGRESS: Combat A and B done, C not started)
+Branch **`phase-five`** (from tag `phase-four-complete`), tags `phase-five-combat-a` and `phase-five-combat-b`. Plan, measurements, decisions and the exact handoff to Combat C are in `PHASE_FIVE.md` §9 (9.9–9.14).
+- **Combat A** (foundations): battle-LOD spike, combat data (`defs.js`, `tuning.js`), stat translation (`translate.js`), save **v4** with raw backup `…backup-p5`, deck editor, the pure simulation (`sim.js`, `hand.js`: fixed 30 Hz, seeded, Elixir, 4-card hand), Training Arena.
+- **Combat B** (control, abilities, support): the deck-block explanation (B0: dismantle/fuse of a deck member names the decks, says remove/replace first, offers Review Decks, on every path); move orders (5 s cooldown per Pet, walk not teleport), priority targets (soft, with defined interrupts), selection; the ability framework (`abil.js`: Q/E automatic or one queued manual use, R manual only, charge from time and damage) and the aiming framework (`aim.js`: seven aim models sharing one geometry between preview and effect, three ways to cancel); full Q/E/R kits for the six-Pet roster and a **data-derived "Limited Combat Kit" label** for the other eight; defeat presentation (recall effect, countdown chips, redeploy surcharge); all twelve support cards (`support.js`) including the Leviathan Engine with its hard rules; pooled projectiles and effects (`fx.js`). Pure modules are still free of DOM, clock and `Math.random`.
+- Not yet: the opponent AI, ranked/ELO, rewards, tutorial, audio set, 3D-Off board (Combat C). Combat never changes a specimen.
 
 ### Phase Four acceptance pillars (PHASE_FOUR.md section 2)
 1 Container identity · 2 Literal Cards · 3 Card inspection + holograms · 4 Wanderer Pack opening · 5 Forge Crate roulette · 6 Other rituals · 7 Relic Chest 3D · 8 Fusion · 9 Vault expansion · 10 Save v3 · 11 Settings/accessibility · 12 Performance.
@@ -296,7 +299,7 @@ js/screens/forge.js        Forge chamber: upgrade, evolve, transform, awaken
 js/screens/fusion.js       Phase Four Fusion Chamber
 js/screens/combat.js       Phase Five: Combat hub (active deck, how it works, upcoming modes)
 js/screens/deck.js         Phase Five: deck editor (10 specimens, presets, validation, combat numbers)
-js/screens/battle.js       Phase Five: Training Arena (HUD, hand, placement, overlay; drives sim.js)
+js/screens/battle.js       Phase Five: Training Arena (HUD, hand, selection panel, orders, aim previews; drives sim.js)
 js/screens/store.js        mock store: checkout simulation, exchange, bundles, daily offer
 js/screens/settings.js     settings: mode, volumes, animation, quality, FPS, reduced motion, export/import/reset
 js/screens/statsui.js      stat/tree/looks HTML builders (Phase Three)
@@ -308,12 +311,16 @@ js/stage3d/core.js         AV.stage: one shared WebGL renderer, View (drag/zoom/
 js/stage3d/kit.js          taper tubes, metaball skins, creature faces, wings, flames, sparks, gears, rune textures, stageFx
 js/stage3d/forms.js        stage details + transformation motifs applied to ANY model by one hook in View.setSpec
 js/stage3d/manifest.js     maps model keys → files; lazy loading after Home
-js/combat/tuning.js        every balance number (frozen) · defs.js: per-item combat defs (14 Pets ready, 12 support declared)
+js/combat/tuning.js        every balance number (frozen) · defs.js: per-item combat defs (14 Pets; 6 with full Q/E/R kits, 8 derived "Limited Combat Kit"; 12 support cards, all fielded)
 js/combat/translate.js     specimen -> combat attributes with a formula breakdown (pure)
 js/combat/deck.js          deck validation, eligibility, presets (pure) · hand.js: 4-card hand, recently-seen queue, reshuffle, recovery (pure, seeded)
-js/combat/sim.js           fixed-step deterministic simulation (pure; no DOM, no Math.random, no clock)
+js/combat/sim.js           fixed-step deterministic simulation (pure; no DOM, no Math.random, no clock): units, orders, priority, damage, projectiles, deaths, clock
+js/combat/aim.js           aiming geometry shared by previews and effects: seven aim models + placement point (pure)
+js/combat/abil.js          statuses, abilities (Q/E auto + queue, R manual), zones, walls, passives (pure; extends sim)
+js/combat/support.js       the twelve support cards, objects, Leviathan Engine, carry watchdog, rewind history (pure; extends sim)
 js/combat/lod.js           battle LOD: any model via a synthetic ctx, lights/glow stripped, static meshes merged per material
-js/combat/render.js        battle scene on the shared renderer (fixed 2.5D camera, board, units, picking) · input.js: pointer/keyboard abstraction
+js/combat/render.js        battle scene on the shared renderer (fixed 2.5D camera, board, units, picking) · input.js: pointer/keyboard abstraction (select, order, drag-order, aim, cancel)
+js/combat/fx.js            pooled projectiles, ground decals, flashes, beams, recall columns, wall slabs (render only; no per-frame allocation)
 css/combat.css  battle.css hub + deck editor; Training Arena
 js/stage3d/models-*.js     models: containers, crate/vault, pets (+pets2), gear (gear2/gear3), relic (relic/2/3),
                            machine (1/2/3), oddity (1/2/3), sword, creatures, and Phase Four containers3 (Relic Chest, Starlit Egg),
@@ -324,7 +331,7 @@ dev/gallery.html           model gallery and SVG-vs-3D comparison (?compare=1, ?
 tests/logic.test.js        Node: game rules, generation bounds, economy, evolution, migration (45 checks)
 tests/phase3.test.js       Node: stats, progression, transformations, migration (22 checks)
 tests/phase4.test.js       Node: cards, pools, migration + fault injection, fusion, vault queries (30 checks)
-tests/combat.test.js       Node: combat data, translation, save v4 + fault injection, decks, hand, Elixir, simulation (49 checks)
+tests/combat.test.js       Node: combat data, translation, save v4 + fault injection, decks, hand, Elixir, simulation, B0 deck-block, orders, abilities, defeat, support cards, Leviathan (99 checks)
 tools/                     dev-only Puppeteer scripts (validation, screenshots, perf, smoke) — not needed to play
 docs/                      screenshots (before/after/phase2/phase3/phase4), JSON validation + perf reports, legacy v0.1 CSS
 MUSIC/background music/    4 royalty-free MP3 ambient tracks (currently not wired to a real music theme)
@@ -346,19 +353,19 @@ MUSIC/background music/    4 royalty-free MP3 ambient tracks (currently not wire
 node tests/logic.test.js          # 45 rule/contract checks (Node, no deps)
 node tests/phase3.test.js         # 22 checks: stats, progression, transformations, migration
 node tests/phase4.test.js         # 30 checks: cards, pools, save v3 migration, fusion, vault queries
-node tests/combat.test.js         # 49 checks: Phase Five Combat A (data, translation, save v4, decks, hand, Elixir, simulation)
+node tests/combat.test.js         # 99 checks: Phase Five Combat A + B (data, translation, save v4, decks, hand, Elixir, simulation, deck-block, orders, abilities, support, Leviathan)
 cd tools && npm install && cd ..  # one-time, dev only (puppeteer-core, uses installed Chrome/Edge)
 node tools/phase2.mjs             # Phase Two browser checks (40)
 node tools/phase3.mjs             # Phase Three browser checks (39), migration of a real v1 save
 node tools/validate.mjs all       # full browser suite: boot, buttons, modes, protection, upgrade, evolve, reveals, leaks, quality, motion, responsive, save, audio
 node tools/p4-smoke.mjs baseline  # Phase Four targeted Chrome smoke test
-node tools/combat-smoke.mjs all   # Phase Five Chrome smoke: deck editor + Training Arena via the real UI (28 checks)
+node tools/combat-smoke.mjs all   # Phase Five Chrome smoke via the real UI: deck editor, Training Arena, B0 deck-block paths, Combat B battle (scenarios: deck, arena, b0, b)
 node tools/combat-spike.mjs medium # C0 battle-LOD spike (12 units; calls/tris/frame cost per approach) -> docs/p5-spike-*.json
 node tools/p4-shot.mjs all        # Phase Four scenarios + screenshots (vault, organise, fusion, pack, roulette, rituals, cards3d, cards2d, chest, starlit)
 node tools/shoot-after.mjs        # regenerate docs/screenshots/after
 ```
 
-Last runs (end of Combat A): Node logic 45/45, phase3 22/22, phase4 30/30, combat 49/49; Chrome combat-smoke 28/28; validate groups 35+10+1+22+9 (all pass), phase3 39/39, phase2 40/40 (details: PHASE_FIVE.md §9). Phase Four's own record is in PHASE_FOUR.md §10.
+Last runs (end of Combat B): Node logic 45/45, phase3 22/22, phase4 30/30, combat 99/99; Chrome combat-smoke 68/68; validate groups 35+10+1+22+9 (all pass), phase3 39/39, phase2 40/40 (details: PHASE_FIVE.md §9). Phase Four's own record is in PHASE_FOUR.md §10.
 
 ### Conventions for working on this code
 - Everything that changes state goes through `AV.engine.*`; the UI only renders state and calls actions.

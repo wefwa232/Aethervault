@@ -77,7 +77,7 @@
           <button class="btn primary" data-act="forge">${A.icon(evoReady ? 'evolve' : 'upgrade')}${evoReady ? 'Upgrade / evolve' : cost ? 'Upgrade' : 'Forge'}</button>
           <button class="btn ghost" data-act="fuse">${A.icon('fuse')}Fuse</button>
           ${E.isUnlimited() ? `<button class="btn ghost" data-act="dup">${A.icon('copy')}Duplicate</button>` : ''}
-          <button class="btn ${prot ? 'ghost disabled' : 'danger'}" data-act="dis" aria-disabled="${!!prot}" title="${prot ? prot + ' — protected from dismantling' : 'Dismantle into essence'}">${A.icon(prot ? 'lock' : 'trash')}${prot ? 'Protected · ' + prot : 'Dismantle · +' + U.fmt(SP.essenceYield(s))}</button>
+          <button class="btn ${prot ? 'ghost disabled' : 'danger'}" data-act="dis" aria-disabled="${!!prot}" title="${prot ? prot + ' — protected from dismantling' + (prot === 'In a combat deck' ? ' (remove or replace it in the deck first)' : '') : 'Dismantle into essence'}">${A.icon(prot ? 'lock' : 'trash')}${prot ? 'Protected · ' + prot : 'Dismantle · +' + U.fmt(SP.essenceYield(s))}</button>
         </div>
         ${orgHTML(s)}
         ${progressHTML(s)}
@@ -170,6 +170,7 @@
         case 'dup': { const r = E.duplicateSpecimen(cur); if (r.ok) { au.play('confirm'); ui.toast('Duplicated (Unlimited Mode)', { kind: 'good', icon: 'copy' }); } break; }
         case 'dis': {
           const prot = E.protectReason(s);
+          if (prot === 'In a combat deck') { ui.modal({ title: 'In a combat deck', html: `<p class="muted">${esc(SP.displayName(s))} cannot be dismantled while a deck holds it.</p>${ui.deckBlockNote(E.deckBlock([cur], 'dismantle'))}`, buttons: [{ label: 'Close', kind: 'ghost', value: 0 }] }); return; }
           if (prot) { ui.toast(`${prot} specimens cannot be dismantled. ${prot === 'Active companion' ? 'Choose another companion first.' : 'Remove the ' + prot.toLowerCase().replace('ed', '') + ' flag first.'}`, { kind: 'bad', icon: 'lock' }); return; }
           const ok = await ui.confirm({ title: 'Dismantle this specimen?', danger: true, confirmText: 'Dismantle', icon: 'trash', message: `<b>${esc(SP.displayName(s))}</b> (${SP.rarityOf(s).name}, <span class="mono">${ui.serial(s.serial)}</span>) will be destroyed for <b class="mono">${U.fmt(SP.essenceYield(s))} essence</b>. This cannot be undone.`, extra: `<div class="mini-list">${ui.mini(s)}</div>` });
           if (!ok) return;

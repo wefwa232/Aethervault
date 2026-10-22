@@ -197,9 +197,10 @@
         case 'sellock': { const ids = [...V.selected], all = ids.every(id => E.get(id).locked); E.setFlags(ids, 'locked', !all); au.play('lockset'); ui.toast(all ? 'Unlocked' : `Locked ${ids.length}`, { kind: 'good', icon: 'lock', silent: true }); break; }
         case 'seldis': await dismantleFlow([...V.selected], 'Dismantle selected?'); break;
         case 'dupes': {
-          const plan = E.duplicatePlan();
+          const plan = E.duplicatePlan(), held = E.deckBlock(E.duplicateDeckHeld(), 'dismantle');
+          if (!plan.length && held.blocked) { ui.modal({ title: 'No duplicates to dismantle', html: `<p class="muted">Your best copy of each item is always kept.</p>${ui.deckBlockNote(held)}`, buttons: [{ label: 'Close', kind: 'ghost', value: 0 }] }); break; }
           if (!plan.length) { ui.toast('No duplicates to dismantle — your best copies are always kept, and favorites/locks are protected.', { icon: 'info' }); break; }
-          await dismantleFlow(plan, 'Dismantle duplicates?', 'The best copy of each item is kept.'); break;
+          await dismantleFlow(plan, 'Dismantle duplicates?', 'The best copy of each item is kept.', held); break;
         }
       }
     });
@@ -221,12 +222,16 @@
         onOpen(api) { api.el.addEventListener('click', ev => { const b = ev.target.closest('[data-fp]'); if (b) { const n = E.folderAdd(b.dataset.fp, ids); ui.toast(`Added ${n} to ${esc(folderOf(b.dataset.fp).name)}`, { icon: 'folder', kind: 'good', silent: true }); api.close('done'); } }); } });
       const v = await m.promise; if (v === 'new') { const name = m.el.querySelector('[data-fpnew]').value; if (name.trim()) { const f = E.folderCreate(name); E.folderAdd(f.id, ids); ui.toast(`Created “${esc(f.name)}”`, { icon: 'folder', kind: 'good', silent: true }); } }
     }
-    async function dismantleFlow(ids, title, extraNote) {
+    async function dismantleFlow(ids, title, extraNote, heldBlock) {
       const live = ids.filter(id => E.get(id)), prot = live.filter(id => E.protectReason(E.get(id))), go = live.filter(id => !E.protectReason(E.get(id)));
-      if (!go.length) { ui.toast(prot.length ? `All ${prot.length} selected item(s) are protected (favorited, locked or your companion).` : 'Nothing to dismantle', { kind: 'bad', icon: 'lock' }); return; }
+      const db = E.deckBlock(prot, 'dismantle');
+      if (!go.length) {
+        if (db.blocked) { ui.modal({ title: 'Cannot dismantle', html: `<p class="muted">${prot.length} selected item${prot.length > 1 ? 's are' : ' is'} protected (favorited, locked, your companion or in a combat deck).</p>${ui.deckBlockNote(db)}`, buttons: [{ label: 'Close', kind: 'ghost', value: 0 }] }); return; }
+        ui.toast(prot.length ? `All ${prot.length} selected item(s) are protected (favorited, locked or your companion).` : 'Nothing to dismantle', { kind: 'bad', icon: 'lock' }); return;
+      }
       const ok = await ui.confirm({ title, danger: true, confirmText: `Dismantle ${go.length}`, icon: 'trash',
         message: `Dismantle <b>${go.length}</b> specimen${go.length > 1 ? 's' : ''} into <b class="mono">${U.fmt(E.essencePreview(go))} essence</b>? This cannot be undone.${extraNote ? ' ' + extraNote : ''}${prot.length ? `<br><span class="good-txt">${prot.length} protected item${prot.length > 1 ? 's' : ''} will be skipped.</span>` : ''}`,
-        extra: `<div class="mini-list">${go.slice(0, 5).map(id => ui.mini(E.get(id))).join('')}${go.length > 5 ? `<p class="muted">…and ${go.length - 5} more</p>` : ''}</div>` });
+        extra: `${ui.deckBlockNote(db) || ui.deckBlockNote(heldBlock)}<div class="mini-list">${go.slice(0, 5).map(id => ui.mini(E.get(id))).join('')}${go.length > 5 ? `<p class="muted">…and ${go.length - 5} more</p>` : ''}</div>` });
       if (!ok) return;
       const r = E.dismantle(go); au.play('dismantle'); fx.flash('#a99ac8', 260, .18);
       go.forEach(id => V.selected.delete(id));

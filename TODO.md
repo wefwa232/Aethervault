@@ -21,9 +21,8 @@
 
 ## Phase Five (Combat) — see PHASE_FIVE.md
 - [x] Combat A: C0 spikes, combat data + stat translation, save v4 + backup, deck editor, pure simulation (hand, Elixir), Training Arena with Pets
-- [ ] B0 (first): deck-block message names the decks, says remove/replace first, links to Review Decks (PHASE_FIVE.md §9.8.2)
-- [ ] Combat B (six Pets get full Q/E/R; the other eight are labelled Limited Combat Kit, §9.8.1): move orders, abilities + aiming, defeat presentation, support cards (weapon, shield, machine, relic, oddity), pooled effects
-- [ ] Combat C: opponent AI, match flow + resolver, ELO/ladder/rewards, tutorial, audio/VFX/2D fallback, final validation
+- [x] Combat B: B0 deck-block message + Review Decks · B1 move orders, priority target, selection · B2 ability framework, seven aim models, safe cancel, six full kits, Limited Combat Kit label · B3 defeat presentation · B4 all twelve support cards incl. the Leviathan Engine · B5 pooled effects
+- [ ] Combat C: opponent AI (view-limited), match flow and resolver, ELO/ladder/rewards (decide the Limited-kit ranked rule, §9.8.1), tutorial, audio set, VFX polish, 3D-Off board, final profiling and validation
 
 
 ## Phase Two (done, see PHASE_TWO.md)

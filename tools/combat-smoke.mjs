@@ -1,5 +1,5 @@
 // Phase Five targeted Chrome smoke. usage: node tools/combat-smoke.mjs <scenario|all> [label]  → docs/p5-smoke-<label>.json + docs/screenshots/phase5/*.png
-// Scenarios: deck (hub + deck editor), arena (training battle). One browser at a time; the server is started and stopped here.
+// Scenarios: deck (hub + deck editor), arena (training battle), b0 (deck-block explanations), b (Combat B battle). One browser at a time; the server is started and stopped here.
 import { launch, loadSeeded, shot, go, sleep, ensureServer, root } from './harness.mjs';
 import fs from 'node:fs'; import path from 'node:path';
 const which = process.argv[2] || 'all', label = process.argv[3] || 'run';
@@ -31,10 +31,10 @@ try {
     await page.click('.prow [data-add]:not([disabled])'); await sleep(300);
     check('adding from the picker refills to 10', await ev(() => AV.state.get().combat.decks[0].entries.length === 10));
     // not-ready section and cards are shown but cannot be added
-    check('support cards listed as Not yet combat-ready (disabled)', await ev(() => { const d = document.querySelector('.nr'); if (!d) return false; d.open = true; return d.querySelectorAll('.prow button:not([disabled])').length === 0 && d.querySelectorAll('.prow').length > 0; }));
+    check('Combat B: support specimens are now listed as addable cards; Pets without Q/E/R carry the Limited Combat Kit badge', await ev(() => { const rows = [...document.querySelectorAll('.plist .prow')]; return rows.some(r => /Weapon|Shield|Machine|Relic|Oddity/.test(r.textContent) && r.querySelector('[data-add]')) && /Limited Combat Kit/.test(document.querySelector('.plist').textContent); }));
     // numbers modal
     await page.click('.dslot .ds-txt'); await sleep(400);
-    check('combat numbers modal shows 7 formulas', await ev(() => document.querySelectorAll('.cb-rows li').length === 7)); await shot(page, OUT, 'deck-numbers');
+    check('combat numbers modal shows 7 formulas, the kit rows and the Limited badge where it applies', await ev(() => document.querySelectorAll('.cb-rows:not(.kit-rows) li').length === 7 && !!document.querySelector('.cb-num-modal .kit-rows, .cb-num-modal .kit, .cb-num-modal .tiny'))); await shot(page, OUT, 'deck-numbers');
     await ev(() => AV.ui.closeTop()); await sleep(300);
     // dismantle protection
     const prot = await ev(() => { const id = AV.state.get().combat.decks[0].entries[0].id; return { reason: AV.engine.protectReason(AV.state.get().specimens[id]), r: AV.engine.dismantle([id]).count }; });
@@ -47,6 +47,8 @@ try {
     check('375–700 px: no horizontal overflow on the deck editor', await ev(() => document.documentElement.scrollWidth <= window.innerWidth + 1 && document.getElementById('stage').scrollWidth <= document.getElementById('stage').clientWidth + 1));
     await shot(page, OUT, 'deck-narrow'); await page.setViewport({ width: 1600, height: 900 });
   }
+  if (which === 'b0' || which === 'all') { const { b0 } = await import('./combat-b-scenario.mjs'); await b0({ page, ev, check, shot, go, sleep, OUT, out }); }
+  if (which === 'b' || which === 'all') { const { battleB } = await import('./combat-b-scenario.mjs'); await battleB({ page, ev, check, shot, go, sleep, OUT, out }); }
   if (which === 'arena' || which === 'all') { const { arena } = await import('./combat-arena-scenario.mjs').catch(() => ({})); if (arena) await arena({ page, ev, check, shot, go, sleep, OUT, out }); else console.log('arena scenario not present yet'); }
   out.errors = logs.filter(l => /pageerror|\[error\]/.test(l) && !/Failed to load resource/.test(l));
   check('no console or page errors', out.errors.length === 0, out.errors.slice(0, 3).join(' | '));

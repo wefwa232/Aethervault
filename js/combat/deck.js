@@ -29,7 +29,7 @@
     Object.keys(save.specimens || {}).forEach(id => {
       const sp = save.specimens[id], v = DF().readiness(sp); if (!v.ok) return;
       const t = AV.combat.translate(sp), def = DF().get(sp.base);
-      out.push({ id, spec: sp, def, t, rating: t.hp * t.dps / 100 });
+      out.push({ id, spec: sp, def, t, rating: t.kind === 'pet' ? t.hp * t.dps / 100 : 8 + def.cost }); // support cards rank after Pets in the presets
     });
     return out.sort((a, b) => b.rating - a.rating || (a.id < b.id ? -1 : 1));
   }

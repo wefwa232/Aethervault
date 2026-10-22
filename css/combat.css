@@ -50,3 +50,8 @@
 .cb-rows { list-style: none; margin: .6rem 0; padding: 0; display: grid; gap: 4px; } .cb-rows li { display: grid; grid-template-columns: 9.5rem 7rem minmax(0, 1fr); gap: .6rem; align-items: baseline; padding: .35rem .6rem; background: var(--ink-0); } .cb-rows b { font: 600 .9rem var(--f-head); } .cb-rows small { color: var(--ivory-3); font-size: .78rem; }
 @media (max-width: 1100px) { .deck-grid { grid-template-columns: minmax(0, 1fr); } .deck-pick { max-height: none; } .plist { max-height: 420px; } }
 @media (max-width: 640px) { .deck-slots { grid-template-columns: minmax(0, 1fr); } .cb-rows li { grid-template-columns: minmax(0, 1fr) auto; } .cb-rows small { grid-column: 1 / -1; } .hd-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); } .cbhub, .deck { padding: 1rem; } }
+
+/* ---- Combat B: the Limited Combat Kit badge and the kit rows ---- */
+.kit { display: inline-block; font: 600 .66rem var(--f-label); letter-spacing: .1em; text-transform: uppercase; padding: .12em .55em; color: var(--brass-hi); border: 1px solid var(--brass-lo); background: rgba(180, 141, 76, .08); white-space: nowrap; }
+.ds-txt .kit, .pr-txt .kit { margin-top: 2px; align-self: start; justify-self: start; }
+.kit-rows li { grid-template-columns: 10rem 8rem minmax(0, 1fr); }

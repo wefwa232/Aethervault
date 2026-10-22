@@ -158,6 +158,24 @@
   }
   /** Phase Five: is this specimen referenced by any saved combat deck? (decks hold ids only; removing it from the deck frees it) */
   function inDeck(id) { const c = S().combat; return !!(c && c.decks.some(k => k.entries.some(e => e.id === id))); }
+  /** Read-only: the saved decks that hold a specimen, as [{ id, name }] in deck order. */
+  function decksContaining(id) { const c = S().combat; return c ? c.decks.filter(k => k.entries.some(e => e.id === id)).map(k => ({ id: k.id, name: k.name })) : []; }
+  const BLOCKED_VERB = { dismantle: 'dismantled', fuse: 'fused', reverse: 'removed' };
+  /** Read-only: why a destructive action on `ids` is stopped by combat decks. Every UI path (Inspect, Vault, duplicate plan, Fusion) renders this one answer.
+   *  { blocked, rows: [{ id, name, decks }], decks: [{ id, name }] (unique, first-found order), review (deck id for "Review Decks"), text (plain, escape before HTML) } */
+  function deckBlock(ids, verb = 'dismantle') {
+    const rows = [], map = new Map();
+    [...new Set(ids)].forEach(id => {
+      const d = decksContaining(id); if (!d.length) return;
+      const sp = get(id); rows.push({ id, name: sp ? `${SP.displayName(sp)} (#${U.pad(sp.serial, 4)})` : id, decks: d });
+      d.forEach(k => { if (!map.has(k.id)) map.set(k.id, k); });
+    });
+    const decks = [...map.values()], list = decks.map(k => `“${k.name}”`).join(', '), what = BLOCKED_VERB[verb] || verb;
+    let text = '';
+    if (rows.length === 1) text = `${rows[0].name} is in the combat deck${decks.length > 1 ? 's' : ''} ${list}, so it cannot be ${what} yet. Remove or replace it there first.`;
+    else if (rows.length) text = `${rows.length} of these specimens are in combat decks (${list}), so they cannot be ${what} yet. Remove or replace them there first.`;
+    return { blocked: rows.length > 0, rows, decks, review: decks.length ? decks[0].id : null, text };
+  }
   function toggleFavorite(id) { const sp = get(id); if (!sp) return; sp.favorite = !sp.favorite; bus.emit('specimens'); tick(); return sp.favorite; }
   function toggleLock(id) { const sp = get(id); if (!sp) return; sp.locked = !sp.locked; bus.emit('specimens'); tick(); return sp.locked; }
   function setFlags(ids, flag, value) {
@@ -194,17 +212,20 @@
   }
 
   /** Plan: keep the single most valuable copy of each base item; everything else unprotected is a candidate. */
-  function duplicatePlan() {
+  function duplicateExtras() {
     const groups = {};
     all().forEach(sp => (groups[sp.base] = groups[sp.base] || []).push(sp));
     const ids = [];
     for (const base of Object.keys(groups)) {
       const g = groups[base].slice().sort((a, b) => SP.value(b) - SP.value(a));
       // The best copy is always kept, even if it is the only unprotected one.
-      g.slice(1).forEach(sp => { if (!protectReason(sp)) ids.push(sp.id); });
+      g.slice(1).forEach(sp => ids.push(sp.id));
     }
     return ids;
   }
+  function duplicatePlan() { return duplicateExtras().filter(id => !protectReason(get(id))); }
+  /** Read-only: duplicates that would be in the plan but are kept only because a combat deck holds them (a lock or favorite is a different, visible reason). */
+  function duplicateDeckHeld() { return duplicateExtras().filter(id => protectReason(get(id)) === 'In a combat deck'); }
   function essencePreview(ids) { return ids.reduce((a, id) => a + (get(id) ? SP.essenceYield(get(id)) : 0), 0); }
 
   function duplicateSpecimen(id) {
@@ -336,15 +357,18 @@
   /** Why the given inputs cannot be consumed (Standard rules; Unlimited when consuming). Locked/favorited never; a companion only as the primary. */
   function fuseBlockers(p, ds) {
     const out = [];
-    [p, ...ds].forEach((x, i) => { if (!x) return; if (x.locked) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is locked`); else if (x.favorite) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is favorited`); else if (i > 0 && S().companion === x.id) out.push(`${SP.displayName(x)} is your companion`); else if (inDeck(x.id)) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is in a combat deck`); });
+    [p, ...ds].forEach((x, i) => { if (!x) return; if (x.locked) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is locked`); else if (x.favorite) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is favorited`); else if (i > 0 && S().companion === x.id) out.push(`${SP.displayName(x)} is your companion`); else if (inDeck(x.id)) out.push(`${SP.displayName(x)} (#${U.pad(x.serial, 4)}) is in the combat deck${decksContaining(x.id).length > 1 ? 's' : ''} ${decksContaining(x.id).map(k => '“' + k.name + '”').join(', ')} — remove or replace it there first`); });
     return out;
   }
+  /** Is any fusion input held by a lock, a favorite or (as a donor) the companion? Those are cleared by the Unlock button; deck membership is not. */
+  function fuseFlagBlocked(p, ds) { return [p, ...ds].some((x, i) => x && (x.locked || x.favorite || (i > 0 && S().companion === x.id))); }
   /** Read-only: the exact result, cost, protection blockers and consequences of a fusion. */
   function fusePreview(pid, dids, opts = {}) {
     const p = get(pid), ds = (dids || []).map(get).filter(Boolean), pl = FU().plan(p, ds);
     if (!pl.ok) return pl;
     const sim = isUnlimited() && !opts.consume;
     pl.sim = sim; pl.cost = isUnlimited() ? {} : pl.cost; pl.affordable = canAfford(pl.cost); pl.blocked = sim ? [] : fuseBlockers(p, ds);
+    pl.deckBlock = sim ? deckBlock([], 'fuse') : deckBlock([p, ...ds].map(x => x.id), 'fuse'); pl.flagBlocked = fuseFlagBlocked(p, ds);
     pl.consequences = sim ? ['Simulated (Unlimited Mode): every input stays in your Vault.', 'A new fused specimen is added with its own identifier.', 'It can be reversed later; nothing is lost.']
       : ['The primary and every donor are consumed (removed from the Vault).', 'A new fused specimen is created with a new identifier and the primary\'s ownership history.', 'The fusion ledger keeps a full record of every parent.', 'A safety backup of your save is written first. This cannot be undone in Standard Mode.'];
     return pl;
@@ -354,7 +378,7 @@
     const p = get(pid), ds = (dids || []).map(get).filter(Boolean), pl = FU().plan(p, ds);
     if (!pl.ok) return { ok: false, err: pl.reason };
     const sim = isUnlimited() && !opts.consume, blocked = sim ? [] : fuseBlockers(p, ds);
-    if (blocked.length) return { ok: false, err: blocked.join('; ') + '. Unlock or un-favorite first.', blocked };
+    if (blocked.length) { const db = deckBlock([p, ...ds].map(x => x.id), 'fuse'); return { ok: false, err: blocked.join('; ') + '.' + (fuseFlagBlocked(p, ds) ? ' Unlock or un-favorite first.' : ''), blocked, deckBlock: db }; }
     const cost = isUnlimited() ? {} : pl.cost; if (!canAfford(cost)) return { ok: false, err: 'Not enough resources' };
     const s = S(), snapshot = JSON.stringify(s);
     if (!sim) { try { localStorage.setItem(AV.state.BACKUP_KEY_FUSION, snapshot); } catch (e) { return { ok: false, err: 'The safety backup could not be written, so nothing was fused.' }; } }
@@ -390,6 +414,7 @@
     if (!isUnlimited()) return { ok: false, err: 'Reversing a fusion is an Unlimited Mode power.' };
     const s = S(), r = get(rid); if (!r || !r.fusion) return { ok: false, err: 'Not a fused specimen' };
     const rec = (s.fusions || []).find(f => f.result === rid); if (!rec) return { ok: false, err: 'No fusion record' };
+    const db = deckBlock([rid], 'reverse'); if (db.blocked) return { ok: false, err: db.text, deckBlock: db };
     let restored = 0; rec.parents.forEach(ps => { if (!s.specimens[ps.id] && rec.consumed.includes(ps.id)) { s.specimens[ps.id] = ps; restored++; } });
     delete s.specimens[rid]; rec.reversed = Date.now(); if (s.companion === rid) s.companion = rec.parents[0].id;
     s.recent = (s.recent || []).filter(i => i !== rid);
@@ -511,7 +536,7 @@
   function deckDuplicate(id) { const c = CB(), k = c && c.decks.find(x => x.id === id); return k ? deckCreate(k.name + ' copy', k.entries.map(e => e.id), null) : null; }
   function combatSetting(key, val) { const c = CB(); if (!c || !(key in c.settings)) return false; c.settings[key] = val; combatChanged(); return true; }
 
-  AV.engine = { inDeck, deckCreate, deckUpdate, deckDelete, deckSetActive, deckDuplicate, combatSetting, isUnlimited, balance, canAfford, spend, grant, price, poolItems, rarityTable, oddsReport, addSpecimen, xpNeeded, addXp,
+  AV.engine = { inDeck, decksContaining, deckBlock, duplicateDeckHeld, deckCreate, deckUpdate, deckDelete, deckSetActive, deckDuplicate, combatSetting, isUnlimited, balance, canAfford, spend, grant, price, poolItems, rarityTable, oddsReport, addSpecimen, xpNeeded, addXp,
     fusePreview, fuse, unfuse, fuseBlockers,
     folderCreate, folderRename, folderDelete, folderAdd, folderRemove, setTags, addTag, removeTag, setNote, searchSave, searchUpdate, searchDelete, pruneOrg,
     open, giveStarter, get, all, protectReason, toggleFavorite, toggleLock, setFlags, rename, setCompanion,

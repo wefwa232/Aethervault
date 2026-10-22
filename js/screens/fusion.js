@@ -82,7 +82,7 @@
         <h4 class="sect">${esc(fam.name)} statistics</h4><table class="fz-stats"><thead><tr><th></th><th>Now</th><th>After</th><th></th></tr></thead><tbody>${rows}</tbody></table>
         <h4 class="sect">Cost</h4><p>${costHTML}</p>
         <h4 class="sect">Consequences</h4><ul class="plain fz-li ${pv.sim ? '' : 'warn'}">${pv.consequences.map(c => `<li>${esc(c)}</li>`).join('')}</ul>
-        ${pv.blocked.length ? `<div class="note bad">${A.icon('lock')}<span>${pv.blocked.map(esc).join('<br>')}<br><button class="btn ghost small" data-act="unprotect">Unlock / un-favorite these inputs…</button></span></div>` : ''}
+        ${pv.blocked.length ? `<div class="note bad">${A.icon('lock')}<span>${pv.blocked.map(esc).join('<br>')}${pv.flagBlocked ? `<br><button class="btn ghost small" data-act="unprotect">Unlock / un-favorite these inputs…</button>` : ''}${pv.deckBlock && pv.deckBlock.blocked ? `<br><button class="btn ghost small" data-review-decks="${esc(pv.deckBlock.review)}">${A.icon('layers')}Review Decks</button>` : ''}</span></div>` : ''}
         ${E.isUnlimited() ? `<label class="toggle row"><input type="checkbox" data-act="consume" ${F.consume ? 'checked' : ''}><span></span><div>Consume inputs, as in Standard<small>Off: a simulated, reversible fusion that keeps every input</small></div></label><button class="btn ghost small" data-act="dupe">${A.icon('copy')}Duplicate the inputs first</button>` : ''}
         <button class="btn primary major fz-go" data-act="fuse" ${!pv.blocked.length && pv.affordable ? '' : 'disabled'}>${A.icon('fuse')}${pv.sim ? 'Fuse (simulated)' : 'Fuse'}</button>`;
       mountResult(pv);
@@ -106,7 +106,7 @@
         await U.sleep(dur(900));
       }
       const r = E.fuse(F.primary, F.donors, { consume: F.consume });
-      if (!r.ok) { core.classList.remove('fusing'); layer.innerHTML = ''; if (view) view.setSilhouette(false); ui.toast(esc(r.err), { kind: 'bad', icon: 'close', ms: 5200 }); return; }
+      if (!r.ok) { core.classList.remove('fusing'); layer.innerHTML = ''; if (view) view.setSilhouette(false); ui.toast(esc(r.err), { kind: 'bad', icon: 'close', ms: 5200 }); if (r.deckBlock) draw(); return; }
       if (anim !== 'off') { fx.flash(tint, 300, .28); const b = core.getBoundingClientRect(); fx.burst(b.left + b.width / 2, b.top + b.height / 2, { count: red ? 8 : 26, colors: [tint, '#ece3cf'], speed: 4.5, life: 40 }); }
       core.classList.remove('fusing'); layer.innerHTML = '';
       F.primary = r.spec.id; F.donors = [];
@@ -134,7 +134,7 @@
       const a = e.target.closest('[data-act]'); if (!a) return;
       if (a.dataset.act === 'fuse') commit();
       else if (a.dataset.act === 'inspect') AV.inspect(a.dataset.id);
-      else if (a.dataset.act === 'unfuse') { const r = E.unfuse(a.dataset.id); if (r.ok) { ui.toast(`Fusion reversed${r.restored ? ` — ${r.restored} input(s) restored` : ''}`, { kind: 'good', icon: 'check' }); F.primary = null; F.donors = []; draw(); } else ui.toast(esc(r.err), { kind: 'bad' }); }
+      else if (a.dataset.act === 'unfuse') { const r = E.unfuse(a.dataset.id); if (r.ok) { ui.toast(`Fusion reversed${r.restored ? ` — ${r.restored} input(s) restored` : ''}`, { kind: 'good', icon: 'check' }); F.primary = null; F.donors = []; draw(); } else if (r.deckBlock) ui.modal({ title: 'In a combat deck', html: ui.deckBlockNote(r.deckBlock), buttons: [{ label: 'Close', kind: 'ghost', value: 0 }] }); else ui.toast(esc(r.err), { kind: 'bad' }); }
       else if (a.dataset.act === 'dupe') { const ids = [F.primary, ...F.donors].map(id => E.duplicateSpecimen(id)).filter(r => r.ok).map(r => r.spec.id); if (ids.length) { F.primary = ids[0]; F.donors = ids.slice(1); ui.toast('Fusing the duplicates — the originals stay untouched', { icon: 'copy' }); draw(); } }
       else if (a.dataset.act === 'unprotect') {
         const ids = [F.primary, ...F.donors]; const ok = await ui.confirm({ title: 'Remove protection?', confirmText: 'Unlock and un-favorite', message: 'These specimens will lose their lock and favorite marks so they can be used in this fusion. Nothing is fused yet.' });

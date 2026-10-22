@@ -65,6 +65,8 @@
     shadowMat() { return this._blobMat || (this._blobMat = this.own(new THREE.MeshBasicMaterial({ map: S.lib.shadowTex(), transparent: true, opacity: 0.6, depthWrite: false }))); }
     /** Project an arena point to canvas CSS pixels (HUD/aim helpers). */
     toScreen(x, y, z) { const v = new THREE.Vector3(x, y, z).project(this.camera); return { x: (v.x + 1) / 2 * this.w, y: (1 - v.y) / 2 * this.h }; }
+    /** Allocation-free toScreen: writes into `out` (per-frame overlay code uses this one). */
+    project(x, y, z, out) { const v = this._pv || (this._pv = new THREE.Vector3()); v.set(x, y, z).project(this.camera); out.x = (v.x + 1) / 2 * this.w; out.y = (1 - v.y) / 2 * this.h; return out; }
     /** Pointer → arena cell coordinates on the ground plane (null if the ray misses). */
     pick(clientX, clientY) {
       const b = this.canvas.getBoundingClientRect(), ndc = new THREE.Vector2((clientX - b.left) / b.width * 2 - 1, -((clientY - b.top) / b.height * 2 - 1)), rc = new THREE.Raycaster();

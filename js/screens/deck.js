@@ -8,13 +8,22 @@
 
   const S = () => AV.state.get(), cb = () => S().combat;
   const roleName = r => (C.defs.ROLES[r] || {}).name || r;
-  const ROLE_ORDER = ['ranged', 'vanguard', 'striker', 'support', 'disruptor'];
+  const ROLE_ORDER = ['ranged', 'vanguard', 'striker', 'support', 'disruptor', 'weapon', 'shield', 'machine', 'relic', 'oddity'];
+  /** The data-derived badge: shown wherever a Pet is listed (deck slot, picker, numbers). */
+  const kitChip = base => { const k = C.defs.kitLabel(base); return k ? `<span class="kit" title="Only its basic attack, orders and targeting; no authored Q/E/R yet. It is fully usable in training.">${k}</span>` : ''; };
+  const gist = (d, f) => (f && f.hp ? `${f.hp} HP · ${f.dps} DPS` : d ? d.blurb : '');
 
+  /** Abilities of a full-kit Pet, or the passive of a Limited one; support cards show how they are played. */
+  function kitBlock(d) {
+    if (d.abilities) return `<ul class="cb-rows kit-rows">${['q', 'e', 'r'].map(k => { const a = d.abilities[k]; return `<li><b>${k.toUpperCase()} · ${esc(a.name)}</b><span class="mono">${esc(C.aim.NAMES[a.aim])}</span><small>${esc(a.text)} ${k === 'r' ? 'Manual only; charges with time and damage.' : a.auto === 'none' ? 'Manual only.' : 'Used automatically when its rule fires, or cast by you.'}</small></li>`; }).join('')}</ul>`;
+    if (d.cat === 'pet') return `<p class="tiny dim">No Q/E/R yet. ${d.passive ? `Passive <b>${esc(d.passive.name)}</b>: ${esc(d.passive.text)}` : 'Basic attack, orders and targeting only.'}</p>`;
+    return `<p class="tiny dim">A support card: played from your hand onto the field (${esc(C.aim.NAMES[d.aim] || d.aim)}); it does not use Q/E/R.${d.elixir ? ' This one also returns Elixir.' : ''}</p>`;
+  }
   function numbersModal(spec) {
     const t = C.translate(spec), d = C.defs.get(spec.base); if (!t.ok) return;
     ui.modal({
       title: esc(SP.displayName(spec)) + ' · combat numbers', cls: 'cb-num-modal',
-      html: `<p class="muted">${esc(d.blurb || '')} <b>${esc(roleName(d.role))}</b> · costs <b class="cb-elx">${d.cost}</b> Elixir (authored, not from rarity).</p>
+      html: `<p class="muted">${esc(d.blurb || '')} <b>${esc(roleName(d.role))}</b> · costs <b class="cb-elx">${d.cost}</b> Elixir (authored, not from rarity). ${kitChip(spec.base)}</p>${kitBlock(d)}
         <ul class="cb-rows">${t.rows.map(w => `<li><b>${esc(w.label)}</b><span class="mono">${w.value}${w.unit ? ' ' + esc(w.unit) : ''}</span><small>${esc(w.text.replace(w.label + ' ' + w.value + (w.unit ? ' ' + w.unit : '') + ' = ', ''))}</small></li>`).join('')}</ul>
         <p class="tiny dim">Every number is read from this specimen’s stats (upgrade level, form, variant, condition and fusion included). Combat never changes the specimen.</p>`,
       buttons: [{ label: 'Close', kind: 'primary', value: 1 }],
@@ -39,7 +48,7 @@
         return `<div class="dslot r-${R.id} ${r.ok ? '' : 'bad'}" data-num="${r.id}" tabindex="0" role="button" aria-label="${esc(SP.displayName(r.spec))}, show combat numbers">
           <i class="plate-bar"></i><div class="ds-art">${A.render(r.spec)}</div>
           <div class="ds-txt"><b>${esc(SP.displayName(r.spec))}</b><small>${r.def ? esc(roleName(r.def.role)) : esc(SP.itemOf(r.spec).cat)}${r.spec.level ? ' · ' + esc(SP.stageName(r.spec)) : ''}</small>
-          ${r.ok ? `<small class="mono" title="range ${f.range} · speed ${f.speed}">${f.hp} HP · ${f.dps} DPS</small>` : `<small class="why">${esc(r.reason)}</small>`}</div>
+          ${r.ok ? `<small class="mono" ${f.hp ? `title="range ${f.range} · speed ${f.speed}"` : ''}>${esc(gist(r.def, f))}</small>${r.def && r.def.cat === 'pet' ? kitChip(r.spec.base) : ''}` : `<small class="why">${esc(r.reason)}</small>`}</div>
           ${r.def ? `<span class="cb-cost" title="Elixir cost">${r.cost}</span>` : ''}
           <button class="icon-btn ds-x" data-rm="${r.id}" aria-label="Remove from deck">${A.icon('close')}</button></div>`;
       };
@@ -49,11 +58,11 @@
       // collection picker
       const q = text.trim().toLowerCase(), all = Object.values(s.specimens).map(sp => ({ sp, v: C.defs.readiness(sp), d: C.defs.get(sp.base) }));
       const match = x => { const it = SP.itemOf(x.sp); return (!q || SP.displayName(x.sp).toLowerCase().includes(q) || it.name.toLowerCase().includes(q)) && (role === 'all' || (x.d && x.d.role === role)); };
-      const elig = all.filter(x => x.v.ok && match(x)).map(x => ({ x, t: C.translate(x.sp) })).sort((a, b) => b.t.hp * b.t.dps - a.t.hp * a.t.dps || (a.x.sp.id < b.x.sp.id ? -1 : 1));
+      const elig = all.filter(x => x.v.ok && match(x)).map(x => ({ x, t: C.translate(x.sp) })).sort((a, b) => (b.t.hp ? b.t.hp * b.t.dps : 0) - (a.t.hp ? a.t.hp * a.t.dps : 0) || (a.x.sp.id < b.x.sp.id ? -1 : 1));
       const notReady = all.filter(x => !x.v.ok && x.v.code !== 'card' && match(x) && role === 'all').sort((a, b) => (a.sp.base < b.sp.base ? -1 : 1));
       const cards = all.filter(x => x.v.code === 'card').length;
       const row = ({ x, t }) => { const R = SP.rarityOf(x.sp), used = inDeck.has(x.sp.id), full = !!deck && deck.entries.length >= want;
-        return `<div class="prow r-${R.id}" data-num="${x.sp.id}"><span class="pr-art">${A.render(x.sp)}</span><span class="pr-txt"><b>${esc(SP.displayName(x.sp))}</b><small>${esc(roleName(x.d.role))}${x.sp.level ? ' · ' + esc(SP.stageName(x.sp)) : ''} · <span class="mono">${t.hp} HP · ${t.dps} DPS</span></small></span>
+        return `<div class="prow r-${R.id}" data-num="${x.sp.id}"><span class="pr-art">${A.render(x.sp)}</span><span class="pr-txt"><b>${esc(SP.displayName(x.sp))}</b><small>${esc(roleName(x.d.role))}${x.sp.level ? ' · ' + esc(SP.stageName(x.sp)) : ''} · <span class="mono">${esc(gist(x.d, t))}</span> ${x.d.cat === 'pet' ? kitChip(x.sp.base) : ''}</small></span>
           <span class="cb-cost" title="Elixir cost">${x.d.cost}</span><button class="btn small ${used ? 'ghost' : 'primary'}" data-add="${x.sp.id}" ${!deck || used || full ? 'disabled' : ''}>${used ? 'In deck' : full ? 'Deck full' : 'Add'}</button></div>`; };
       const nrow = x => { const R = SP.rarityOf(x.sp); return `<div class="prow dim r-${R.id}"><span class="pr-art">${A.render(x.sp)}</span><span class="pr-txt"><b>${esc(SP.displayName(x.sp))}</b><small>${esc(x.v.reason)}</small></span><button class="btn small ghost" disabled>Not ready</button></div>`; };
       root.innerHTML = `<div class="deck">

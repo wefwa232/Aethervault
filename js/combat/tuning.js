@@ -9,7 +9,9 @@
     match: { duration: 120, surgeAt: 105, regenStepAt: 75, suddenDeath: 30 }, // 2:00; Final Surge 1:45–2:00; regen step at 1:15 (elapsed seconds)
     elixir: { max: 10, start: 5, regen: 0.36, regenStepMult: 1.25, surgeMult: 2 }, // regen = Elixir per second at base; the multipliers apply from the times above
     hand: { deck: 10, size: 4, recentRefreshes: 1, reshuffleCost: 1, reshuffleLockout: 3 }, // recently-seen cards are deprioritised for one refresh, never locked out
-    pet: { moveCooldown: 5, recover: [12, 20], redeploySurcharge: 1, redeployCap: 3, deployDelay: 0.8 },
+    pet: { moveCooldown: 5, recover: [12, 20], redeploySurcharge: 1, redeployCap: 3, deployDelay: 0.8, priorityHold: 12, priorityLeash: 12, orderArrive: 0.3, recallTime: 0.7 },
+    ability: { windup: 0.3, chargeTime: 45, chargeDamage: 700, slowFloor: 0.3, queueMax: 1, autoMinGap: 0.4 }, // R charge = time/chargeTime + damage dealt/chargeDamage (both scaled by the Bond cooldown factor)
+    support: { hold: 4, grappleMax: 3, grappleRegrab: 10, spinUp: 1.5, historyEvery: 0.5, rewind: 2.5, dummyStrike: { dmg: 24, interval: 1.4, range: 2.2 } }, // hold = hard watchdog on any carried unit
     arena: {
       w: 12, h: 18, cell: 1,
       core: { hp: 2400, radius: 1.1, offset: 1.6 },           // each side has one Archive Core near its back edge

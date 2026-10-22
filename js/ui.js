@@ -148,6 +148,10 @@
   }
   function closeTop() { const m = modalStack[modalStack.length - 1]; if (m && !m.noClose) { m.close(); return true; } return !!m; }
   const hasModal = () => modalStack.length > 0;
+  /** Phase Five: the one explanation every destructive path shows when a combat deck holds the specimen (names the decks, says remove/replace first, offers Review Decks). */
+  function deckBlockNote(b) { return b && b.blocked ? `<div class="note bad deck-block">${A.icon('lock')}<span>${esc(b.text)}<br><button class="btn ghost small" data-review-decks="${esc(b.review)}">${A.icon('layers')}Review Decks</button></span></div>` : ''; }
+  /** Close any dialogs and open the deck editor on a deck. */
+  function reviewDecks(id) { let n = 0; while (hasModal() && n++ < 8) { const m = modalStack[modalStack.length - 1]; if (m.noClose) break; m.close(); } go('deck', id ? { id } : {}); }
 
   // ---------- Renderers ----------
   const rtag = rid => `<span class="rtag r-${rid}">${A.rarityGlyph(rid)}<b>${D.RARITY[rid].name}</b></span>`;
@@ -208,6 +212,7 @@
     });
     // Top bar + nav delegation
     document.addEventListener('click', e => {
+      const rv = e.target.closest('[data-review-decks]'); if (rv && !(AV.opening && AV.opening.busy())) { AV.audio.play('nav'); reviewDecks(rv.dataset.reviewDecks); return; }
       const nav = e.target.closest('[data-nav]'); if (nav) { AV.audio.play('nav'); if (AV.opening && AV.opening.busy()) return; go(nav.dataset.nav); return; }
       const act = e.target.closest('#topbar [data-act]'); if (!act) return;
       if (act.dataset.act === 'settings') go('settings');
@@ -251,6 +256,6 @@
   /** Announce level-ups gained by an action. */
   function levelToasts(ups) { (ups || []).forEach((lv, i) => setTimeout(() => { AV.audio.play('levelup'); toast(`Level ${lv} reached — +10 gems, +200 credits`, { kind: 'rare', icon: 'star', ms: 4200, silent: true }); AV.fx.burst(window.innerWidth / 2, 60, { count: 22, colors: ['#d7b46e', '#ece3cf'], speed: 5 }); }, i * 700)); }
 
-  AV.ui = { register, go, refresh, currentScreen, sub, onLeave, renderTopbar, updateWallet, toast, modal, confirm, prompt, closeTop, hasModal,
+  AV.ui = { register, go, refresh, currentScreen, sub, onLeave, renderTopbar, updateWallet, toast, modal, confirm, prompt, closeTop, hasModal, deckBlockNote, reviewDecks,
     rtag, cost, costOnly, serial, pips, card, mini, bar, empty, applySettings, boot, dur, speed, reduced, levelToasts, sweep };
 })();

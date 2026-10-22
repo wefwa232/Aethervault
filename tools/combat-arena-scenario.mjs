@@ -1,6 +1,7 @@
 // Combat A5 arena scenario, driven through the real UI (clicks and keys), used by tools/combat-smoke.mjs.
 export async function arena({ page, ev, check, shot, go, sleep, OUT, out }) {
   console.log('arena');
+  const base0 = await ev(() => { const S = AV.state.get(); return { c: S.wallet.credits, d: S.stats.dismantled, n: Object.keys(S.specimens).length }; }); // earlier scenarios in the same run may have changed the collection on purpose
   // a valid active deck from the starter preset
   await ev(() => { const S = AV.state.get(); const p = AV.combat.deck.presets(S)[0]; const k = AV.engine.deckCreate('Starter', p.ids, p.id); AV.engine.deckSetActive(k.id); });
   await go(page, 'combat'); await sleep(300);
@@ -38,9 +39,9 @@ export async function arena({ page, ev, check, shot, go, sleep, OUT, out }) {
   await sleep(1200); await shot(page, OUT, 'arena-fight');
   // reshuffle through the UI (R key), refused while cooling down
   const before = await ev(() => ({ e: AV.combat.sim.elixirOf(AV.combat.live.sim, 'a'), hand: AV.combat.live.sim.sides.a.hand.refreshes }));
-  await page.keyboard.press('r'); await sleep(300);
+  await page.keyboard.press('x'); await sleep(300);
   const after = await ev(() => ({ e: AV.combat.sim.elixirOf(AV.combat.live.sim, 'a'), hand: AV.combat.live.sim.sides.a.hand.refreshes, dis: document.getElementById('btShuffle').disabled }));
-  check('R reshuffles (hand refreshed, Elixir charged) and the button then cools down', after.hand === before.hand + 1 && after.dis, JSON.stringify({ before, after }));
+  check('X reshuffles (hand refreshed, Elixir charged) and the button then cools down', after.hand === before.hand + 1 && after.dis, JSON.stringify({ before, after }));
   // pause freezes the simulation
   await page.keyboard.press('p'); await sleep(200); const t1 = await ev(() => AV.combat.live.sim.tick); await sleep(700); const t2 = await ev(() => AV.combat.live.sim.tick);
   check('pause freezes the simulation tick', t1 === t2 && await ev(() => !document.getElementById('btPaused').hidden), `${t1} → ${t2}`);
@@ -59,7 +60,7 @@ export async function arena({ page, ev, check, shot, go, sleep, OUT, out }) {
   await ev(() => { const s = AV.combat.live.sim; s.tick = 119 * 30 + 20; s.t = 119.66; }); await sleep(1500);
   check('at 2:00 the match ends and the result overlay appears (no rewards)', await ev(() => !document.getElementById('btEnd').hidden && /Practice complete/.test(document.getElementById('btEnd').textContent) && AV.combat.live.sim.over && AV.combat.live.sim.over.reason !== undefined));
   await shot(page, OUT, 'arena-result');
-  check('combat never changed a specimen or the wallet', await ev(() => { const S = AV.state.get(); return S.wallet.credits === 24000 && S.stats.dismantled === 0; }));
+  check('combat never changed a specimen or the wallet', await ev(b => { const S = AV.state.get(); return S.wallet.credits === b.c && S.stats.dismantled === b.d && Object.keys(S.specimens).length === b.n; }, base0));
   // leak check: leave and re-enter the arena several times
   await page.click('#btBack'); await sleep(600);
   const g0 = await ev(() => { const s = AV.stage.stats(); return { g: s.memory.geometries, t: s.memory.textures, p: s.programs, v: s.views }; });

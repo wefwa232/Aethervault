@@ -65,6 +65,7 @@
     ui.levelToasts(res.levelUps);
     AV.bus.emit('openingDone', { container: c, results });
     if (again === 'again') return start(containerId, count, opts);
+    if (typeof again === 'string' && again.startsWith('review:')) ui.go('deck', { id: again.slice(7) });
     return { ok: true, results };
   }
 
@@ -324,6 +325,7 @@
         const alive = sorted.filter(r => E.get(r.spec.id));
         const ids = new Set(alive.map(r => r.spec.id));
         const plan = E.duplicatePlan().filter(id => ids.has(id));
+        const held = E.deckBlock(E.duplicateDeckHeld().filter(id => ids.has(id)), 'dismantle');
         const ess = E.essencePreview(plan);
         const p = cont ? E.price(cont) : null;
         const canAgain = !opts.starter && cont && E.canAfford({ [p.cur]: p.amt * count });
@@ -335,7 +337,7 @@
             ${opts.starter ? '' : `<button class="btn ghost" data-a="dup" ${plan.length ? '' : 'disabled'}>${A.icon('trash')}<span>${plan.length ? `Dismantle ${plan.length} duplicate${plan.length > 1 ? 's' : ''} (+${U.fmt(ess)})` : 'No duplicates to dismantle'}</span></button>`}
             ${!opts.starter && cont ? `<button class="btn ghost" data-a="again" ${canAgain ? '' : 'disabled'}>${A.icon('open')}<span>Open again</span>${ui.cost(p.cur, p.amt * count, canAgain)}</button>` : ''}
             <button class="btn primary major" data-a="done">${opts.starter ? 'Enter the Archive' : 'Done'}</button>
-          </div></div>`;
+          </div>${held.blocked ? `<div class="note bad deck-block">${A.icon('lock')}<span>${esc(held.text.replace(' these specimens', ' these duplicates'))}<br><button class="btn ghost small" data-a="review" data-deck="${esc(held.review)}">${A.icon('layers')}Review Decks</button></span></div>` : ''}</div>`;
       };
       render();
       fx.flash(bestR.tier >= 3 ? bestR.color : '#fff', 260, .14);
@@ -344,6 +346,7 @@
         const b = e.target.closest('[data-a]'); if (!b) return;
         if (b.dataset.a === 'done') resolve('done');
         else if (b.dataset.a === 'again') resolve('again');
+        else if (b.dataset.a === 'review') resolve('review:' + b.dataset.deck);
         else if (b.dataset.a === 'dup') {
           const ids = new Set(results.map(r => r.spec.id)), plan = E.duplicatePlan().filter(id => ids.has(id));
           if (!plan.length) return;

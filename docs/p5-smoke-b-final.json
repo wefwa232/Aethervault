@@ -1,0 +1,393 @@
+{
+ "label": "b-final",
+ "at": "2026-10-22T16:32:25.554Z",
+ "checks": [
+  {
+   "name": "nav has Combat",
+   "ok": true
+  },
+  {
+   "name": "training disabled with no deck",
+   "ok": true
+  },
+  {
+   "name": "deck screen opens with the empty state",
+   "ok": true
+  },
+  {
+   "name": "recommended starter builds a valid 10-card deck",
+   "ok": true,
+   "detail": "{\"decks\":1,\"entries\":10,\"slots\":10,\"valid\":true,\"roles\":[\"vanguard\",\"ranged\",\"striker\",\"support\",\"disruptor\"]}"
+  },
+  {
+   "name": "removing a card leaves 9 and the validator says so",
+   "ok": true
+  },
+  {
+   "name": "adding from the picker refills to 10",
+   "ok": true
+  },
+  {
+   "name": "Combat B: support specimens are now listed as addable cards; Pets without Q/E/R carry the Limited Combat Kit badge",
+   "ok": true
+  },
+  {
+   "name": "combat numbers modal shows 7 formulas, the kit rows and the Limited badge where it applies",
+   "ok": true
+  },
+  {
+   "name": "a deck member cannot be dismantled",
+   "ok": true,
+   "detail": "{\"reason\":\"In a combat deck\",\"r\":0}"
+  },
+  {
+   "name": "hub shows the active deck and enables Training",
+   "ok": true
+  },
+  {
+   "name": "375–700 px: no horizontal overflow on the deck editor",
+   "ok": true
+  },
+  {
+   "name": "B0 Inspect: the blocked dismantle names the deck, says remove/replace first, and offers Review Decks",
+   "ok": true,
+   "detail": "{\"text\":\"Mossback cannot be dismantled while a deck holds it.Mossback (#4581) is in the combat deck “Frontline”, so it cannot be dismantled yet. Remove or replace it there first.Review Decks\",\"btn\":true}"
+  },
+  {
+   "name": "B0 Review Decks closes the dialogs and opens the deck editor on that deck",
+   "ok": true,
+   "detail": "{\"screen\":\"deck\",\"sel\":\"Frontline10/10\",\"open\":0}"
+  },
+  {
+   "name": "B0 Vault bulk dismantle (only deck members): names the deck, remove/replace first, Review Decks",
+   "ok": true,
+   "detail": "{\"text\":\"1 selected item is protected (favorited, locked, your companion or in a combat deck).Mossback (#4581) is in the combat deck “Frontline”, so it cannot be dismantled yet. Remove or replace it there first.Review Decks\",\"btn\":true}"
+  },
+  {
+   "name": "B0 Vault bulk dismantle (mixed): the confirm also explains what was skipped and why",
+   "ok": true,
+   "detail": "{\"text\":\"Dismantle 1 specimen into 27 essence? This cannot be undone.1 protected item will be skipped.Mossback (#4581) is in the combat deck “Frontline”, so it cannot be dismantled yet. Remove or replace it there first.Review Decks\\n      \\n    \\n    \\n    \\n    \\n    \\n    \\n      \\n      \\n      \\n      MoonstoneRare · #0777\\n      \\n    \",\"btn\":true}"
+  },
+  {
+   "name": "B0 duplicate cleanup: the copy kept only because of a deck is explained, with Review Decks",
+   "ok": true,
+   "detail": "{\"text\":\"Dismantle 2 specimens into 105 essence? This cannot be undone. The best copy of each item is kept.Mossback (#4581) is in the combat deck “Frontline”, so it cannot be dismantled yet. Remove or replace it there first.Review Decks\\n      \\n    \\n    \\n    \\n    \\n    \\n      \\n      \\n      \\n      RustbladeCommon · #2468\\n      \\n    \\n      \\n    \\n    \\n    \\n    \\n    \\n    \\n      \\n      \\n      \\n      Whisper JarEpic · #0666\\n      \\n    \",\"btn\":true}"
+  },
+  {
+   "name": "B0 Fusion: the blocker names the deck, offers Review Decks (not the unlock button), and Fuse stays disabled",
+   "ok": true,
+   "detail": "{\"text\":\"Mossback (#4581) is in the combat deck “Frontline” — remove or replace it there firstMossback (#9799) is in the combat deck “Starter” — remove or replace it there firstReview Decks\",\"review\":true,\"unlock\":false,\"fuseDisabled\":true}"
+  },
+  {
+   "name": "B0 Fusion → Review Decks opens the deck editor",
+   "ok": true
+  },
+  {
+   "name": "B0 no deck was left holding a missing specimen; the specimen is still owned",
+   "ok": true,
+   "detail": "{\"dangling\":false,\"still\":true,\"deck\":10}"
+  },
+  {
+   "name": "B0 removing it from the deck lifts the block (dismantle now works)",
+   "ok": true
+  },
+  {
+   "name": "the hub says how many Pets have a Limited Combat Kit",
+   "ok": true
+  },
+  {
+   "name": "Storm Sovereign deploys by click",
+   "ok": true
+  },
+  {
+   "name": "clicking a Pet selects it: ring + panel with Q, E, R (a full kit has no Limited label)",
+   "ok": true,
+   "detail": "{\"shown\":true,\"abilities\":3,\"kit\":false,\"text\":\"Storm SovereignRanged\\n        653 / 653\\n        QStormboltDirectional charge · auto6sEStatic ChainChain target · autoRTempestArea · manual14%\\n        MMoveTTarg\"}"
+  },
+  {
+   "name": "Q enters aim mode with a banner naming the aim model and a visible Cancel button",
+   "ok": true,
+   "detail": "{\"mode\":\"aim\",\"banner\":true,\"cancelBtn\":true,\"txt\":\"Stormbolt (Q) — Directional charge: Aim a direction, click to fire · will be queued until ready\"}"
+  },
+  {
+   "name": "the aim preview is drawn on the ground by the pooled decals (a lane for the directional charge)",
+   "ok": true,
+   "detail": "{\"rect\":1,\"disc\":0,\"ring\":2}"
+  },
+  {
+   "name": "Esc cancels the aim first (the Pet stays selected, the game does not pause)",
+   "ok": true,
+   "detail": "{\"mode\":null,\"sel\":4,\"paused\":false}"
+  },
+  {
+   "name": "right-click cancels the aim",
+   "ok": true
+  },
+  {
+   "name": "the Cancel button cancels the aim",
+   "ok": true
+  },
+  {
+   "name": "clicking to confirm casts Stormbolt: the cooldown runs and the dummy on the lane is hit",
+   "ok": true,
+   "detail": "{\"hp0\":513,\"cd\":4.593333000000001,\"hp\":426}"
+  },
+  {
+   "name": "R without a full charge is refused (message, no aiming)",
+   "ok": true
+  },
+  {
+   "name": "E (chain target) shows a link to the unit under the pointer",
+   "ok": true,
+   "detail": "{\"ring\":5,\"rect\":1,\"mode\":\"aim\"}"
+  },
+  {
+   "name": "R (circle) shows the area it will hit",
+   "ok": true,
+   "detail": "{\"disc\":1,\"mode\":\"aim\"}"
+  },
+  {
+   "name": "right-click on the ground sends the selected Pet walking and starts the 5 s cooldown",
+   "ok": true,
+   "detail": "{\"e0\":{\"x\":6.5,\"z\":12.386133333333259},\"has\":true,\"x\":5.304529597923954,\"z\":13.695470402076046,\"wait\":4.066667000000001}"
+  },
+  {
+   "name": "a second order inside the cooldown is refused with a message",
+   "ok": true
+  },
+  {
+   "name": "S stops the walk",
+   "ok": true
+  },
+  {
+   "name": "right-click on an enemy sets a priority target (marked in the panel)",
+   "ok": true,
+   "detail": "{\"uid\":1}"
+  },
+  {
+   "name": "the hand shows \"Limited Combat Kit\" on Pets without an authored kit, and the role on the others",
+   "ok": true,
+   "detail": "[\"NimbusLimited Combat Kit\",\"Storm SovereignRanged\",\"PyrodrakeStriker\",\"GlimfinSupport\"]"
+  },
+  {
+   "name": "a Limited Pet shows the label, no Q/E/R buttons, and keeps move/target/stop",
+   "ok": true,
+   "detail": "{\"kit\":true,\"abil\":0,\"note\":true,\"text\":\"NimbusRangedLimited Combat Kit\\n        256 / 256\\n        Limited Combat Kit — automatic basic attack, orders and targeting only.\\n        MMoveTTargetS\"}"
+  },
+  {
+   "name": "pressing Q on a Limited Pet starts nothing (it says why)",
+   "ok": true
+  },
+  {
+   "name": "dragging a Pet to the ground gives it a walk order",
+   "ok": true
+  },
+  {
+   "name": "a weapon card previews its circle on any ground",
+   "ok": true
+  },
+  {
+   "name": "Gravehammer: a telegraph, then the slam hurts the dummy; the card cost Elixir and went back to the pool",
+   "ok": true,
+   "detail": "{\"hb\":275,\"hp\":35,\"stun\":16.4,\"tele\":0,\"deploys\":{\"s5\":1,\"s1\":1,\"s32\":1}}"
+  },
+  {
+   "name": "Leviathan Engine deploys into your zone, spins up, then follows its lane",
+   "ok": true,
+   "detail": "{\"uid\":13,\"spin\":1.5,\"z\":13.5,\"lane\":\"C\"}"
+  },
+  {
+   "name": "and it has moved up the lane on open ground, drawn on the board",
+   "ok": true,
+   "detail": "{\"lev\":{\"uid\":13,\"spin\":1.5,\"z\":13.5,\"lane\":\"C\"},\"lev2\":{\"z\":7.746684339552561,\"shown\":true,\"walkable\":true}}"
+  },
+  {
+   "name": "Oak Buckler raises a barrier: its cells block the board and are drawn as slabs",
+   "ok": true,
+   "detail": "{\"cells\":3,\"slabs\":3,\"obj\":true}"
+  },
+  {
+   "name": "a defeated Pet is recalled (rise-and-fade + light column) and its deck chip counts down 12–20 s",
+   "ok": true,
+   "detail": "{\"dying\":0.43590000000000134,\"state\":\"rec\",\"wait\":12.599258824473978,\"chips\":1,\"col\":1}"
+  },
+  {
+   "name": "the recalled Pet leaves the field",
+   "ok": true
+  },
+  {
+   "name": "redeploying costs +1 Elixir and the card shows the raised cost",
+   "ok": true,
+   "detail": "{\"cost\":8,\"base\":7,\"up\":true}"
+  },
+  {
+   "name": "with units, effects and hostile dummies: no frame over 33 ms and ≥ 55 fps average",
+   "ok": true,
+   "detail": "{\"frames\":361,\"avgMs\":16.66,\"avgFps\":60,\"p95Ms\":20.9,\"p99Ms\":21,\"worstMs\":21,\"jsMs\":0.76,\"over33\":0,\"scene\":{\"calls\":60,\"triangles\":55000},\"heapMB\":35.4,\"fx\":{\"disc\":1,\"ring\":7,\"rect\":3,\"sector\":0,\"proj\":0,\"flash\":6,\"beam\":1,\"column\":1,\"slab\":3}}"
+  },
+  {
+   "name": "the effect pools stop growing once warm (no new meshes made in the last 6 s of fighting)",
+   "ok": true,
+   "detail": "{\"warm\":{\"disc\":1,\"ring\":7,\"rect\":3,\"sector\":0,\"proj\":0,\"flash\":6,\"beam\":1,\"column\":1,\"slab\":3},\"later\":{\"disc\":1,\"ring\":7,\"rect\":3,\"sector\":0,\"proj\":0,\"flash\":6,\"beam\":1,\"column\":1,\"slab\":3}}"
+  },
+  {
+   "name": "the Training Arena changed no specimen and no wallet value",
+   "ok": true
+  },
+  {
+   "name": "arena boots: hand of 4, Elixir 5, canvas, loader hidden",
+   "ok": true,
+   "detail": "{\"cards\":4,\"elixir\":5.204,\"units\":13,\"info\":{\"calls\":34,\"triangles\":2336}}"
+  },
+  {
+   "name": "clicking a card selects it",
+   "ok": true
+  },
+  {
+   "name": "Esc cancels the selection without pausing",
+   "ok": true
+  },
+  {
+   "name": "right-click cancels the selection",
+   "ok": true
+  },
+  {
+   "name": "placing on the enemy half is refused with a message",
+   "ok": true
+  },
+  {
+   "name": "click on the board deploys the Pet, spends Elixir and deals a new hand",
+   "ok": true,
+   "detail": "{\"x\":6.5,\"z\":13.5,\"card\":\"s28\",\"elixir\":2.056,\"hand\":4,\"sel\":false,\"shown\":true}"
+  },
+  {
+   "name": "the Pet walks the bridge and attacks the sparring post (ranged Pets engage from the bridge head)",
+   "ok": true,
+   "detail": "{\"crossed\":true,\"engaged\":true,\"bad\":0,\"maxZ\":7.849333333333377,\"atk\":\"melee\"}"
+  },
+  {
+   "name": "X reshuffles (hand refreshed, Elixir charged) and the button then cools down",
+   "ok": true,
+   "detail": "{\"before\":{\"e\":4.804,\"hand\":1},\"after\":{\"e\":3.912,\"hand\":2,\"dis\":true}}"
+  },
+  {
+   "name": "pause freezes the simulation tick",
+   "ok": true,
+   "detail": "326 → 326"
+  },
+  {
+   "name": "resume continues the simulation",
+   "ok": true
+  },
+  {
+   "name": "arena frame pacing: no frame over 33 ms, average ≥ 55 fps (60 fps cap on Medium)",
+   "ok": true,
+   "detail": "{\"frames\":301,\"avgMs\":16.65,\"avgFps\":60,\"p95Ms\":20.9,\"p99Ms\":20.9,\"worstMs\":21,\"jsMs\":0.56,\"over33\":0,\"scene\":{\"calls\":48,\"triangles\":19402},\"heapMB\":41.7,\"programs\":21,\"geometries\":146,\"textures\":30,\"quality\":\"medium\",\"fpsLimit\":0}"
+  },
+  {
+   "name": "regen step at 1:15 shows its banner",
+   "ok": true
+  },
+  {
+   "name": "Final Surge state is shown at 1:45",
+   "ok": true,
+   "detail": "{\"cls\":true,\"ph\":\"FINAL SURGE · Elixir ×2\"}"
+  },
+  {
+   "name": "at 2:00 the match ends and the result overlay appears (no rewards)",
+   "ok": true
+  },
+  {
+   "name": "combat never changed a specimen or the wallet",
+   "ok": true
+  },
+  {
+   "name": "enter/leave ×4: no growth in geometries, textures, shader programs; no live view left",
+   "ok": true,
+   "detail": "{\"g0\":{\"g\":21,\"t\":28,\"p\":3,\"v\":0},\"g1\":{\"g\":21,\"t\":28,\"p\":3,\"v\":0,\"live\":false}}"
+  },
+  {
+   "name": "no console or page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "notes": {
+  "battleBPerf": {
+   "f0": {
+    "disc": 1,
+    "ring": 7,
+    "rect": 3,
+    "sector": 0,
+    "proj": 0,
+    "flash": 2,
+    "beam": 1,
+    "column": 1,
+    "slab": 3
+   },
+   "perf": {
+    "frames": 361,
+    "avgMs": 16.66,
+    "avgFps": 60,
+    "p95Ms": 20.9,
+    "p99Ms": 21,
+    "worstMs": 21,
+    "jsMs": 0.76,
+    "over33": 0,
+    "scene": {
+     "calls": 60,
+     "triangles": 55000
+    },
+    "heapMB": 35.4,
+    "fx": {
+     "disc": 1,
+     "ring": 7,
+     "rect": 3,
+     "sector": 0,
+     "proj": 0,
+     "flash": 6,
+     "beam": 1,
+     "column": 1,
+     "slab": 3
+    }
+   }
+  },
+  "arenaPerf": {
+   "frames": 301,
+   "avgMs": 16.65,
+   "avgFps": 60,
+   "p95Ms": 20.9,
+   "p99Ms": 20.9,
+   "worstMs": 21,
+   "jsMs": 0.56,
+   "over33": 0,
+   "scene": {
+    "calls": 48,
+    "triangles": 19402
+   },
+   "heapMB": 41.7,
+   "programs": 21,
+   "geometries": 146,
+   "textures": 30,
+   "quality": "medium",
+   "fpsLimit": 0
+  },
+  "leak": {
+   "before": {
+    "g": 21,
+    "t": 28,
+    "p": 3,
+    "v": 0
+   },
+   "after": {
+    "g": 21,
+    "t": 28,
+    "p": 3,
+    "v": 0,
+    "live": false
+   }
+  }
+ },
+ "bootMs": 5920,
+ "errors": []
+}
