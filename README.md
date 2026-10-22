@@ -1,7 +1,17 @@
-# Aethervault — The Infinite Archive (v0.6.1, Phase Five · Combat B in progress)
+# Aethervault — The Infinite Archive (v0.6.1, Phase Five · Combat B complete)
 
-A private, single-player collectible simulator. **Simulation only — no real transactions, no network access.**
-v0.2 is a visual redesign and a real-time 3D vertical slice; no gameplay systems were added.
+A private, single-player collectible simulator. **Simulation only — no real money, no real transactions, no accounts.** The game runs entirely in your browser and uses no network connection.
+
+## Status
+
+- **Version:** 0.6.1 (Phase Five, build `P5B`). Tags: `phase-four-complete`, `phase-five-combat-a`, `phase-five-combat-b`.
+- **Development status:** private and single-player. Phases Two to Four are complete; Phase Five Combat A and Combat B are complete. **Combat C is not started.**
+- **Main features:** a 3D collection vault with 40 collectibles, a Pets and Forge loop, Wanderer Pack and Relic Chest openings, Literal Cards, a Fusion Chamber, deck building and a Training Arena with commandable Pets and abilities.
+- **Recommended browser:** Google Chrome. Other Chromium browsers, Firefox and Safari are supported but less tested.
+- **Known limitations:** Combat is a Training Arena only (no opponent AI, ranking, rewards or tutorial yet). Mobile and touch behaviour is not fully verified. A machine post-reveal cooldown was not built. Combat audio is not yet written.
+- **Save-data warning:** your save lives in this browser's local storage for this address. Clearing site data, using a private window, or switching browsers or computers will lose it. Schema migrations keep raw backups under `…backup-p3`, `…backup-p4`, `…backup-p5` and `…backup-fusion` keys; do not delete them while testing.
+- **Development documentation:** [`PROJECT_OVERVIEW.md`](PROJECT_OVERVIEW.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`TODO.md`](TODO.md), the phase logs ([`PHASE_TWO.md`](PHASE_TWO.md), [`PHASE_THREE.md`](PHASE_THREE.md), [`PHASE_FOUR.md`](PHASE_FOUR.md), [`PHASE_FIVE.md`](PHASE_FIVE.md)), and [`GITHUB_PUBLISHING.md`](GITHUB_PUBLISHING.md) for repository and publishing notes.
+- **License:** none. All rights are reserved by default; the repository is private.
 
 ## Launch
 
@@ -15,11 +25,11 @@ node serve.mjs 5173      # then open http://127.0.0.1:5173
 
 `index.html` also works straight from disk (`file://`): the game uses classic scripts, bundled fonts and a vendored Three.js UMD build, so there is no build step and no install step.
 
-Requirements: a current Chromium, Firefox or Safari. WebGL is used for the 3D presentation; without it (or with 3D set to *Off*) the game falls back to its original 2D artwork.
+Requirements: Google Chrome is recommended; a current Chromium, Firefox or Safari also works. WebGL is used for the 3D presentation; without it (or with 3D set to *Off*) the game falls back to its original 2D artwork.
 
-## What's new in v0.6.1 (Phase Five, Combat B — in progress) — details in [`PHASE_FIVE.md`](PHASE_FIVE.md)
+## What's new in v0.6.1 (Phase Five, Combat B — complete) — details in [`PHASE_FIVE.md`](PHASE_FIVE.md)
 
-Combat is being built in three steps; two are done (foundations, then control/abilities/support). It is still a **Training Arena**, not the finished game: no opponent, no ranking, no rewards.
+Combat is being built in three steps; Combat A (foundations) and Combat B (control, abilities, support) are done. It is still a **Training Arena**, not the finished game: Combat C (opponent, ranking, rewards, tutorial) is not started.
 
 **Combat B adds:**
 - **Commands.** Click a Pet to select it. Right-click the ground to walk it (5 s between orders per Pet) or an enemy to make it a *priority target*; drag a Pet to the ground, or use the Move / Target / Stop buttons (M, T, S). Tab cycles Pets.
@@ -113,7 +123,7 @@ docs/                   screenshots (before/after/validation), validation report
 node tests/logic.test.js                      # 45 rule/contract checks, no dependencies
 node tests/phase3.test.js                     # 22 checks: stats, progression, transformations, migration
 node tests/phase4.test.js                     # 30 checks: cards, pools, save v3 migration, fusion, Vault queries
-node tests/combat.test.js                     # 99 checks: combat data, translation, save v4 + fault injection, decks, hand, Elixir, sim, deck-block, orders, abilities, support cards, Leviathanulation
+node tests/combat.test.js                     # 99 checks: combat data, translation, save v4 + fault injection, decks, hand, Elixir, sim, deck-block, orders, abilities, support cards, Leviathan Engine
 cd tools && npm install && cd ..              # one-time, dev only (puppeteer-core; uses your installed Edge/Chrome)
 node tools/phase3.mjs                         # Phase Three browser checks (39)
 node tools/combat-smoke.mjs all               # Phase Five browser smoke through the real UI: deck editor, Training Arena, deck-block paths, Combat B battle
