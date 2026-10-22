@@ -13,9 +13,10 @@
     { id: 'pets', label: 'Pets', icon: 'paw' },
     { id: 'forge', label: 'Forge', icon: 'upgrade' },
     { id: 'fusion', label: 'Fusion', icon: 'fuse' },
+    { id: 'combat', label: 'Combat', icon: 'sword' },
     { id: 'store', label: 'Store', icon: 'store' },
   ];
-  const WHERE = { home: 'Archive Chamber', open: 'Containment Hall', vault: 'Specimen Catalogue', pets: 'Living Specimen Wing', forge: 'Transformation Chamber', fusion: 'Fusion Chamber', store: 'The Exchange', settings: 'Archive Controls' };
+  const WHERE = { combat: 'Archive Trials', deck: 'Deck Registry', battle: 'Training Arena', home: 'Archive Chamber', open: 'Containment Hall', vault: 'Specimen Catalogue', pets: 'Living Specimen Wing', forge: 'Transformation Chamber', fusion: 'Fusion Chamber', store: 'The Exchange', settings: 'Archive Controls' };
 
   const settings = () => AV.state.get().settings;
   const reduced = () => !!settings().reducedMotion;
@@ -81,9 +82,10 @@
       (function step(now) { const k = Math.min(1, (now - t0) / D_), e = 1 - Math.pow(1 - k, 3); el.textContent = U.fmt(from + (to - from) * e); if (k < 1) requestAnimationFrame(step); })(t0);
     });
   }
+  const NAV_OF = { deck: 'combat', battle: 'combat' }; // sub-screens keep their parent lit in the rail
   function renderNav() {
-    const nav = $('#nav');
-    nav.innerHTML = `<div class="rail-mark" aria-hidden="true">${A.icon('star')}</div>` + NAV.map(n => `<button class="nav-btn ${n.hero ? 'hero' : ''} ${current === n.id ? 'active' : ''}" data-nav="${n.id}" aria-label="${n.label}" ${current === n.id ? 'aria-current="page"' : ''}>
+    const nav = $('#nav'), cur = NAV_OF[current] || current;
+    nav.innerHTML = `<div class="rail-mark" aria-hidden="true">${A.icon('star')}</div>` + NAV.map(n => `<button class="nav-btn ${n.hero ? 'hero' : ''} ${cur === n.id ? 'active' : ''}" data-nav="${n.id}" aria-label="${n.label}" ${cur === n.id ? 'aria-current="page"' : ''}>
       <span class="nav-ico">${A.icon(n.icon)}</span><span class="nav-lb">${n.label}</span></button>`).join('') +
       `<span class="nav-spacer"></span><button class="nav-btn ${current === 'settings' ? 'active' : ''}" data-nav="settings" aria-label="Settings"><span class="nav-ico">${A.icon('settings')}</span><span class="nav-lb">Settings</span></button>`;
     const w = $('#where'); if (w) w.textContent = WHERE[current] || '';

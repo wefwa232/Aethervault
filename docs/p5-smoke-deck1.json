@@ -1,0 +1,60 @@
+{
+ "label": "deck1",
+ "at": "2026-10-22T14:34:24.645Z",
+ "checks": [
+  {
+   "name": "nav has Combat",
+   "ok": true
+  },
+  {
+   "name": "training disabled with no deck",
+   "ok": true
+  },
+  {
+   "name": "deck screen opens with the empty state",
+   "ok": true
+  },
+  {
+   "name": "recommended starter builds a valid 10-card deck",
+   "ok": true,
+   "detail": "{\"decks\":1,\"entries\":10,\"slots\":10,\"valid\":true,\"roles\":[\"vanguard\",\"ranged\",\"striker\",\"support\",\"disruptor\"]}"
+  },
+  {
+   "name": "removing a card leaves 9 and the validator says so",
+   "ok": true
+  },
+  {
+   "name": "adding from the picker refills to 10",
+   "ok": true
+  },
+  {
+   "name": "support cards listed as Not yet combat-ready (disabled)",
+   "ok": true
+  },
+  {
+   "name": "combat numbers modal shows 7 formulas",
+   "ok": true
+  },
+  {
+   "name": "a deck member cannot be dismantled",
+   "ok": true,
+   "detail": "{\"reason\":\"In a combat deck\",\"r\":0}"
+  },
+  {
+   "name": "hub shows the active deck and enables Training",
+   "ok": true
+  },
+  {
+   "name": "375–700 px: no horizontal overflow on the deck editor",
+   "ok": true
+  },
+  {
+   "name": "no console or page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "notes": {},
+ "bootMs": 6152,
+ "errors": []
+}

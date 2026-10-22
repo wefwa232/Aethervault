@@ -1,0 +1,52 @@
+/* AETHERVAULT — Phase Five: Combat hub, deck editor and the battle screen. Matte archive surfaces; Elixir is the only cyan; brass stays for prestige. */
+.cbhub, .deck { padding: 1.2rem 1.6rem 2.2rem; max-width: 1280px; margin: 0 auto; display: grid; gap: 1rem; align-content: start; }
+.cb-cost { flex: none; width: 28px; height: 28px; display: grid; place-items: center; font: 600 .95rem var(--f-num); color: #06201f; background: var(--spectral); clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); }
+.cb-elx { color: var(--spectral); }
+.ok { color: var(--moss); }
+.issues { margin: .5rem 0 0; padding-left: 1.1rem; color: var(--rust); font-size: .85rem; display: grid; gap: .15rem; }
+
+/* ---- hub ---- */
+.hub-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.hub-deck { grid-row: span 2; display: grid; gap: .7rem; align-content: start; }
+.hd-top { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; } .hd-name { font: 600 1.7rem var(--f-display); }
+.hd-strip { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; }
+.hd-strip .hs { aspect-ratio: 1; display: block; background: var(--ink-0); border-bottom: 3px solid var(--rc, var(--hair)); overflow: hidden; } .hd-strip .hs.bad { outline: 1px solid var(--rust); outline-offset: -1px; opacity: .8; }
+.hd-strip .hs > * { width: 100%; height: 100%; }
+.hub-actions { display: flex; gap: .7rem; flex-wrap: wrap; margin-top: .4rem; }
+.how { margin: 0; padding-left: 1.1rem; display: grid; gap: .45rem; color: var(--ivory-2); font-size: .92rem; line-height: 1.45; } .how b { color: var(--ivory); }
+.soon { display: grid; gap: .2rem; margin-bottom: .7rem; } .soon small { color: var(--ivory-3); }
+@media (max-width: 960px) { .hub-grid { grid-template-columns: minmax(0, 1fr); } .hub-deck { grid-row: auto; } }
+
+/* ---- deck editor ---- */
+.deck-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.dtab { display: inline-flex; align-items: center; gap: .55rem; padding: .5em 1em; background: var(--ink-1); border: 1px solid var(--hair); border-bottom: 2px solid var(--hair); color: var(--ivory-2); font: 600 .9rem var(--f-head); }
+.dtab small { font: 500 .75rem var(--f-num); color: var(--ivory-3); } .dtab small.ok { color: var(--moss); } .dtab i { width: 14px; height: 14px; color: var(--brass-hi); display: inline-grid; } .dtab i svg { width: 100%; height: 100%; }
+.dtab:hover { background: var(--ink-3); } .dtab.on { background: var(--ink-3); border-bottom-color: var(--brass-hi); color: var(--ivory); } .dtab.add { border-style: dashed; color: var(--brass-hi); }
+.deck-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.deck-main { display: grid; gap: .9rem; align-content: start; }
+.deck-bar { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.deck-name { flex: 1 1 180px; min-width: 0; background: var(--ink-0); border: 1px solid var(--hair-2); color: var(--ivory); padding: .5em .7em; font: 600 1.25rem var(--f-display); }
+.deck-slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.dslot { position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr) auto auto; align-items: center; gap: .6rem; padding: .4rem .5rem .4rem .55rem; min-height: 68px; background: var(--ink-2); border-left: 3px solid var(--rc, var(--hair)); cursor: pointer; text-align: left; transition: background .12s; }
+.dslot:hover { background: var(--ink-3); } .dslot .plate-bar { display: none; }
+.ds-art { width: 56px; height: 56px; background: var(--ink-0); display: block; overflow: hidden; } .ds-art > * { width: 100%; height: 100%; }
+.ds-txt { display: grid; line-height: 1.25; min-width: 0; } .ds-txt b { font: 600 .98rem var(--f-head); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-txt small { color: var(--ivory-3); font: 500 .74rem var(--f-num); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-txt .why { color: var(--rust); white-space: normal; font-family: var(--f-body); }
+.ds-x { width: 28px; height: 28px; opacity: .6; } .dslot:hover .ds-x { opacity: 1; }
+.dslot.empty { cursor: default; border-left-color: var(--hair); background: transparent; border: 1px dashed var(--hair); display: grid; grid-template-columns: 1fr; place-content: center; text-align: center; color: var(--ivory-3); } .dslot.empty span { font: 600 .8rem var(--f-label); letter-spacing: .12em; text-transform: uppercase; } .dslot.empty small { font-size: .74rem; }
+.dslot.bad { border-left-color: var(--rust); background: #1d1512; grid-template-columns: minmax(0, 1fr) auto; }
+.deck-sum { display: grid; gap: .45rem; padding: .7rem .8rem; background: var(--ink-0); }
+.ds-line { display: flex; gap: .8rem; align-items: baseline; flex-wrap: wrap; } .ds-line b { font: 600 1.5rem var(--f-num); } .ds-line span { color: var(--ivory-2); }
+.rolepips { display: flex; gap: .4rem; flex-wrap: wrap; } .rolepip { font: 600 .74rem var(--f-label); letter-spacing: .08em; text-transform: uppercase; padding: .15em .6em; background: var(--ink-2); border: 1px solid var(--hair); color: var(--ivory-2); } .rolepip b { color: var(--ivory); margin-left: .25em; }
+.deck-presets { display: grid; gap: .45rem; } .deck-presets > .label small { color: var(--ivory-3); font-weight: 500; letter-spacing: 0; text-transform: none; }
+.preset { display: grid; gap: .1rem; text-align: left; padding: .55rem .8rem; background: var(--ink-1); border: 1px solid var(--hair); color: var(--ivory); } .preset:hover { background: var(--ink-3); border-color: var(--brass-lo); } .preset b { font: 600 .95rem var(--f-head); } .preset small { color: var(--ivory-3); font-size: .78rem; }
+.deck-pick { display: grid; gap: .7rem; align-content: start; max-height: calc(100dvh - 190px); min-height: 360px; grid-template-rows: auto minmax(0, 1fr) auto auto; }
+.pick-bar { display: grid; gap: .5rem; } .deck-search { width: 100%; background: var(--ink-0); border: 1px solid var(--hair-2); color: var(--ivory); padding: .55em .75em; font: 500 .92rem var(--f-body); }
+.plist { display: grid; gap: 3px; align-content: start; overflow-y: auto; min-height: 0; padding-right: .2rem; }
+.prow { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto; align-items: center; gap: .6rem; padding: .25rem .5rem .25rem .3rem; background: var(--ink-1); border-left: 3px solid var(--rc, var(--hair)); cursor: pointer; } .prow:hover { background: var(--ink-3); } .prow.dim { opacity: .6; cursor: default; }
+.pr-art { width: 44px; height: 44px; background: var(--ink-0); display: block; overflow: hidden; } .pr-art > * { width: 100%; height: 100%; }
+.pr-txt { display: grid; line-height: 1.2; min-width: 0; } .pr-txt b { font: 600 .9rem var(--f-head); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .pr-txt small { color: var(--ivory-3); font: 500 .72rem var(--f-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nr summary { cursor: pointer; font: 600 .82rem var(--f-label); letter-spacing: .1em; text-transform: uppercase; color: var(--ivory-2); padding: .3rem 0; } .nr summary b { color: var(--ivory); } .nr .plist { max-height: 240px; margin-top: .4rem; }
+.pad-s { padding: 1rem .2rem; }
+.cb-rows { list-style: none; margin: .6rem 0; padding: 0; display: grid; gap: 4px; } .cb-rows li { display: grid; grid-template-columns: 9.5rem 7rem minmax(0, 1fr); gap: .6rem; align-items: baseline; padding: .35rem .6rem; background: var(--ink-0); } .cb-rows b { font: 600 .9rem var(--f-head); } .cb-rows small { color: var(--ivory-3); font-size: .78rem; }
+@media (max-width: 1100px) { .deck-grid { grid-template-columns: minmax(0, 1fr); } .deck-pick { max-height: none; } .plist { max-height: 420px; } }
+@media (max-width: 640px) { .deck-slots { grid-template-columns: minmax(0, 1fr); } .cb-rows li { grid-template-columns: minmax(0, 1fr) auto; } .cb-rows small { grid-column: 1 / -1; } .hd-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); } .cbhub, .deck { padding: 1rem; } }
