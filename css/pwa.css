@@ -1,0 +1,18 @@
+/* AETHERVAULT — PWA: update banner and safe-area insets (notches, rounded corners, home indicator). */
+:root { --sa-t: env(safe-area-inset-top, 0px); --sa-r: env(safe-area-inset-right, 0px); --sa-b: env(safe-area-inset-bottom, 0px); --sa-l: env(safe-area-inset-left, 0px); --sa-y: calc(var(--sa-t) + var(--sa-b)); }
+
+/* The backdrop (#bg, #fx, #grain, …) stays full-bleed; interactive layers sit inside the safe area. */
+#app { inset: var(--sa-t) var(--sa-r) var(--sa-b) var(--sa-l); }
+#toasts { top: calc(var(--sa-t) + var(--top-h) + 10px); right: calc(var(--sa-r) + clamp(.5rem, 2vw, 1.4rem)); width: min(360px, calc(100vw - var(--sa-l) - var(--sa-r) - 1.5rem)); }
+.modal-wrap { padding: max(1rem, var(--sa-t)) max(1rem, var(--sa-r)) max(1rem, var(--sa-b)) max(1rem, var(--sa-l)); }
+.boot-foot { padding-bottom: calc(.9rem + var(--sa-b)); padding-left: calc(1.3rem + var(--sa-l)); padding-right: calc(1.3rem + var(--sa-r)); }
+.fz { height: calc(100dvh - var(--top-h, 56px) - var(--sa-y)); }
+.filters { height: calc(100vh - var(--top-h) - var(--sa-y)); }
+.bench .mini-list.tall { max-height: calc(100vh - 290px - var(--sa-y)); }
+.deck-pick { max-height: calc(100dvh - 190px - var(--sa-y)); }
+@media (max-width: 860px) { .adv-modal .modal, .inspect .modal { height: calc(100dvh - var(--sa-y)); } }
+
+#pwaUpdate { position: fixed; z-index: 92; left: 50%; bottom: calc(var(--sa-b) + 14px); transform: translateX(-50%); width: min(520px, calc(100vw - var(--sa-l) - var(--sa-r) - 1.5rem)); display: flex; align-items: center; gap: .6rem; padding: .7rem .9rem; background: var(--ink-2); border: 1px solid var(--brass-hi); box-shadow: 0 8px 30px rgba(0, 0, 0, .55); color: var(--ivory); }
+#pwaUpdate > div { flex: 1; min-width: 0; display: grid; } #pwaUpdate b { font-family: var(--f-head, inherit); letter-spacing: .04em; } #pwaUpdate span { font-size: .82rem; color: var(--ivory-2); }
+#pwaUpdate .btn { flex: none; } #pwaUpdate .btn:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 480px) { #pwaUpdate { flex-wrap: wrap; } #pwaUpdate > div { flex-basis: 100%; } }

@@ -5,8 +5,16 @@
   const QUALITY = [['off', 'Off · 2D art', 'Pure 2D. No WebGL is used.'], ['low', 'Low', 'Lighter materials, no shadow maps, 30 fps, small render scale.'], ['medium', 'Medium', 'Shadows, clearcoat materials, 60 fps target. Recommended.'], ['high', 'High', 'Full-resolution render, 2K shadows, 60 fps.']];
 
   const FPS = [['auto', 'Auto', 'Per preset: 30 on Low, 60 on Medium/High'], [30, '30', 'Smoothest on battery'], [60, '60', 'Normal target'], ['max', 'Uncapped', 'Display refresh rate']];
+  const P = () => AV.pwa || {};
+  function pwaText() {
+    const p = P(); if (!p.supported) return 'Install and offline play are available when Aethervault is opened from a web address (https).';
+    if (!p.enabled) return 'Offline caching is off on this local development server (add ?sw=1 to the address to test it).';
+    const mode = p.standalone() ? 'Running as an installed app. ' : (p.ios() ? 'To install: Share → Add to Home Screen. ' : '');
+    return mode + (p.updateReady ? 'A new version is ready — your progress is saved.' : (p.ready ? 'Offline-ready. You are on the latest version.' : 'Preparing offline copy…'));
+  }
   function render(root) {
     const draw = () => {
+      const P = AV.pwa || {};
       const s = AV.state.get(), st = s.settings, unl = s.mode === 'unlimited';
       const glOk = AV.stage && !AV.stage.failed && !(AV.stage.stats().quality === 'off' && st.quality3d !== 'off');
       const q = st.quality3d || 'medium';
@@ -52,6 +60,9 @@
             <div class="seg" role="group" aria-label="Fusion animation">${[['full', 'Full'], ['short', 'Short'], ['off', 'Off']].map(([v, l]) => `<button class="${(st.fusionAnim || 'full') === v ? 'on' : ''}" data-opt4="fusionAnim" data-v="${v}">${l}</button>`).join('')}</div>
             ${tog('binderAnim', 'Binder page turns', 'Animate pages in the card binder')}
             <p class="muted tiny">Reduced motion shortens the reel, replaces the pack tear with a simple reveal, and simplifies holograms and fusion — nothing is hidden.</p></section>
+          <section class="s-matte pad"><h3 class="sect">${A.icon('download')} Install &amp; updates</h3>
+            <p class="muted" id="pwaState">${pwaText()}</p>
+            <div class="btn-row">${P.installEvent ? `<button class="btn" data-act="pwa-install">${A.icon('download')}Install app</button>` : ''}${P.enabled ? `<button class="btn ghost" data-act="pwa-check">Check for updates</button>${P.updateReady ? '<button class="btn" data-act="pwa-apply">Update now</button>' : ''}` : ''}</div></section>
           <section class="s-matte pad"><h3 class="sect">${A.icon('download')} Your data</h3>
             <p class="muted">Your save lives in this browser's local storage. Export a backup file any time.</p>
             <div class="btn-row"><button class="btn ghost" data-act="export">${A.icon('download')}Export save</button><button class="btn ghost" data-act="import">${A.icon('upload')}Import save</button><input type="file" id="impFile" accept=".json,application/json" hidden></div>
@@ -79,6 +90,9 @@
       const ts = e.target.closest('[data-ts]'); if (ts) { E.setSetting('textSize', +ts.dataset.ts); draw(); return; }
       const a = e.target.closest('[data-act]'); if (!a) return;
       if (a.dataset.act === 'test') au.sting(5);
+      else if (a.dataset.act === 'pwa-install') await AV.pwa.install();
+      else if (a.dataset.act === 'pwa-check') { const ok = await AV.pwa.check(); ui.toast(ok ? (AV.pwa.updateReady ? 'A new version is ready' : 'Checked — you are up to date') : 'Could not check for updates (offline?)', { icon: 'info', silent: true }); draw(); }
+      else if (a.dataset.act === 'pwa-apply') { if (!AV.pwa.applyUpdate()) ui.toast('Finish your battle first', { kind: 'bad', icon: 'info' }); }
       else if (a.dataset.act === 'export') {
         const blob = new Blob([AV.state.exportJSON()], { type: 'application/json' }), url = URL.createObjectURL(blob), link = document.createElement('a');
         link.href = url; link.download = `aethervault-save-${U.dateKey()}.json`; document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);

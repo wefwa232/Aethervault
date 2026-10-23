@@ -70,13 +70,19 @@ Per the phase brief: each subphase committed, pushed, documented, app runnable, 
 
 - 2026-10-23 — Vercel login done. Project `aethervault` created and linked to `wefwa232/Aethervault`; SSO protection disabled; Git deployments enabled. Production deployed: https://aethervault-six.vercel.app. Verified in the built-in Chromium pane (Chrome extension was offline); details in `VERCEL_DEPLOYMENT.md`. Production Branch could not be set via API; the owner set it to `phase-five` in the dashboard and it was confirmed via API. A push to `phase-five` now deploys to Production.
 
+- 2026-10-23 — Subphase B built: manifest, icons, hash-versioned service worker (`sw.js` stamped by `tools/pwa-stamp.mjs`), controlled updates, offline relaunch, safe-area insets, Settings → Install & updates. Locally verified; see `PWA.md`.
+
 ## Subphase A status
 
 Deployed and verified, with one open item: repeat the screen walk in desktop Chrome.
 
-## Next-session opener (Subphase B)
+## Subphase B status
 
-> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphase A is complete (Vercel: https://aethervault-six.vercel.app). Begin Subphase B only: installable PWA (manifest, icons, versioned service worker, controlled updates, offline relaunch, safe-area handling). Do not start Subphase C.
+Built and verified locally; production verification and device install checks recorded in `PWA.md`.
+
+## Next-session opener (Subphase C)
+
+> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphases A (Vercel) and B (PWA, see PWA.md) are complete. Begin Subphase C only: optional Supabase Auth with Google sign-in. Manual gates apply (Supabase project, Google OAuth client). Do not start Subphase D.
 
 ## Known risks
 
