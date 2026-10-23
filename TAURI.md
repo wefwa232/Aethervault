@@ -70,8 +70,11 @@ Tauri serves embedded assets without `Range` support, so `<audio>` could play bu
 - Web regressions: logic 45, phase3 22, phase4 30, combat 99, `cloud-test` 70 (Chrome, mock Supabase), `pwa-stamp --check` OK.
 - Installer built: `src-tauri/target/release/bundle/nsis/Aethervault_0.6.1_x64-setup.exe` (~30 MB). **Not installed or run** (manual gate). Do not run the verify script while a build is bundling: the bundler holds the EXE.
 
+## Owner acceptance (2026-10-23)
+
+The owner added the Supabase redirect `http://127.0.0.1:*/**`, installed `Aethervault_0.6.1_x64-setup.exe` and tested the installed app: Google sign-in opened in the system browser and returned to the EXE, the account email is shown, cloud saves work, local saves persist across restarts, and the 3D and combat flows work. **Subphase E accepted.** The manual gates above are closed.
+
 ## Limitations
 
 - Unsigned installer: Windows SmartScreen will warn on first run (manual gate, expected until a certificate exists).
-- Real browser sign-in on desktop is untested until the Supabase allow-list entry above is added.
-- Windows only. Installer was built but installing it on a machine is a manual gate (the EXE itself was exercised directly).
+- Windows only. The installer is unsigned (SmartScreen warning expected).
