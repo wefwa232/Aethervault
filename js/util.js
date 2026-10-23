@@ -63,5 +63,22 @@
     return t.content.firstElementChild;
   }
 
-  AV.util = { mulberry32, newSeed, clamp, lerp, rand, randInt, pick, pickWeighted, fmt, fmtFull, pad, esc, dateKey, sleep, uid, deepClone, timeAgo, $, $$, h };
+  /** Performance presets over the two settings that decide 3D cost. Balanced is the long-standing default (Medium, auto fps). */
+  const PRESETS = [
+    { id: 'saver', name: 'Battery Saver', quality3d: 'low', fpsLimit: 30, hint: 'Low 3D, 30 fps. Coolest and longest on battery.' },
+    { id: 'balanced', name: 'Balanced', quality3d: 'medium', fpsLimit: 'auto', hint: 'Medium 3D, shadows, 60 fps target.' },
+    { id: 'quality', name: 'Quality', quality3d: 'high', fpsLimit: 60, hint: 'High 3D, full-resolution, 60 fps.' },
+  ];
+  const perf = {
+    PRESETS,
+    of(st) { const f = st.fpsLimit || 'auto'; const p = PRESETS.find(x => x.quality3d === st.quality3d && x.fpsLimit === f); return p ? p.id : 'custom'; },
+    /** First-run default from what the device exposes: a touch phone (short side < 600 px) starts on Battery Saver unless it reports 8 GB or more. */
+    defaultFor(env) {
+      env = env || (typeof window !== 'undefined' ? { coarse: !!(window.matchMedia && matchMedia('(pointer: coarse)').matches), short: Math.min(screen.width, screen.height), mem: navigator.deviceMemory } : {});
+      return env.coarse && env.short < 600 && !(env.mem >= 8) ? 'saver' : 'balanced';
+    },
+    apply(st, id) { const p = PRESETS.find(x => x.id === id); if (!p) return false; st.quality3d = p.quality3d; st.fpsLimit = p.fpsLimit; return true; },
+  };
+
+  AV.util = { mulberry32, newSeed, clamp, lerp, rand, randInt, pick, pickWeighted, fmt, fmtFull, pad, esc, dateKey, sleep, uid, deepClone, timeAgo, $, $$, h, perf };
 })();

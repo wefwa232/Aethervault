@@ -395,5 +395,7 @@ Last runs (end of Combat B): Node logic 45/45, phase3 22/22, phase4 30/30, comba
 | **`PROJECT_OVERVIEW.md`** | **This file: single-document snapshot of the whole project** |
 </content>
 
-## Mobile Phase (in progress)
+## Mobile Phase (A, B and C done; real-device check pending)
 Mobile A is done: `css/mobile.css` adds a coarse-pointer sizing layer, a phone bottom bar (Home · Open · Vault · Combat · More) with a More bottom sheet, phone Home/Open Hall compositions and a Vault toolbar with a filter bottom sheet. Mobile B (done) adds phone layouts for Inspect + Organise (full-bleed sheet, floating close, docked Forge/Fuse/Favorite/Lock actions), Forge and Fusion (chamber first, specimen picker as a bottom sheet), the Binder/Families/Duplicates/Timeline/History/Sets/Compare views and the Deck editor (compact slots, Add/Swap picker sheet, status dock). Mobile C (combat touch, settings, performance presets) remains; see `MOBILE_PHASE.md`.
+
+Mobile C (done) makes Combat playable by touch (tap-select, tap-to-move/target, Q/E/R buttons, press-drag-release aiming with a lifted preview, Cancel), gives the battle a portrait and a landscape HUD, extends the phone shell to wide landscape phones (touch + height <= 500), groups Settings into four phone tabs, adds Battery Saver / Balanced / Quality presets (new touch-phone profiles start on Battery Saver) and fixes the top-bar balance clip. Details, tests and the iPhone checklist are in `MOBILE_PHASE.md`.

@@ -16,6 +16,8 @@
   const fmtTime = t => { const s = Math.max(0, Math.ceil(t)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
   const TEAL = 0x7fd0d2, RED = 0xbf5a45, MOSS = 0x86b07c, GOLD = 0xe0a24a, IVORY = 0xece3cf, VIOLET = 0xb79bff;
   const HIT_COL = { bolt: 0xffe066, static: 0xcfe6ff, drop: 0x7fd0ff, shadow: 0xb79bff, flame: 0xff9a3c, claw: 0xffe9c8, thud: 0xcdb892, root: 0x9be08a };
+  const touchUi = () => !!(window.matchMedia && matchMedia('(pointer: coarse)').matches), tw = t => touchUi() ? t.replace(/\bClick\b/g, 'Tap').replace(/\bclick\b/g, 'tap') : t;
+  const fat = e => (e && e.pointerType && e.pointerType !== 'mouse') ? 14 : 0; // touch picks get a wider radius around a unit
   const AIM_NAME = k => C.aim.NAMES[k] || k, AIM_HELP = k => C.aim.HELP[k] || '';
 
   /** Board texture: stone, deployment rows, the river with its one bridge, cover. Drawn once from the simulation's own arena data. */
@@ -44,7 +46,8 @@
           <div class="bt-core a"><span class="label">Your Core</span><div class="bt-hp"><i id="btHpA"></i></div></div>
           <div class="bt-tools"><button class="btn small ghost" id="btHostile" title="Make the sparring dummies fight back">Dummies: passive</button><button class="btn small ghost" id="btPause" aria-label="Pause">${A.icon('timer')}Pause</button></div></div>
         <div class="bt-msg" id="btMsg" role="status" aria-live="polite"></div>
-        <div class="bt-aim" id="btAim" hidden><span id="btAimTxt"></span><button class="btn small ghost" id="btAimCancel">Cancel · Esc</button></div>
+        <div class="bt-rot" id="btRot" hidden><span>Landscape gives the arena more room.</span><button class="btn small ghost" id="btRotX" aria-label="Dismiss tip">Got it</button></div>
+        <div class="bt-aim" id="btAim" hidden><span id="btAimTxt"></span><button class="btn small ghost" id="btAimCancel">Cancel<span class="k-esc"> · Esc</span></button></div>
         <aside class="bt-info" id="btInfo" hidden></aside>
         <aside class="bt-sel" id="btSel" hidden aria-label="Selected Pet"></aside>
         <div class="bt-banner" id="btBanner" hidden></div>
@@ -57,7 +60,7 @@
         <div class="bt-side2"><button class="btn small ghost" id="btShuffle" title="Reshuffle (X)">${A.icon('sort')}<span>Reshuffle</span><span class="cb-cost sm">${T().hand.reshuffleCost}</span></button><div class="bt-deck" id="btDeck" aria-label="Deck status"></div></div>
       </div></div>`;
     const $ = id => root.querySelector('#' + id), field = $('btField'), over = $('btOver'), oc = over.getContext('2d');
-    let disposed = false, scene = null, sim = null, input = null, fx = null, handKey = '', selCard = null, mode = null, selUid = 0, hover = null, acc = 0, paused = false, ended = false, lastPhase = 'normal', msgT = 0, infoOn = false, elxShown = -1, frameNo = 0, selKey = '', deckKey = '', dragCell = null;
+    let fatPtr = 0, disposed = false, scene = null, sim = null, input = null, fx = null, handKey = '', selCard = null, mode = null, selUid = 0, hover = null, acc = 0, paused = false, ended = false, lastPhase = 'normal', msgT = 0, infoOn = false, elxShown = -1, frameNo = 0, selKey = '', deckKey = '', dragCell = null;
     const cache = {}, cards = [], cleanups = [], ptr = { x: 0, y: 0 }, P = { x: 0, y: 0 }, P2 = { x: 0, y: 0 }, lastPos = new Map(), state = { steps: 0 };
     const floats = Array.from({ length: 48 }, () => ({ on: false, x: 0, z: 0, amt: 0, crit: false, kind: 0, t: 0 })), rings = Array.from({ length: 10 }, () => ({ on: false, x: 0, z: 0, t: 0, hex: TEAL }));
     const specs = () => AV.state.get().specimens, defOf = id => C.defs.get(specs()[id].base);
@@ -93,8 +96,8 @@
       }
       scene.renderer.compile(scene.scene, scene.camera); scene.render();
       cards.forEach(v => { v.h.group.visible = false; }); cache.dummies.forEach(d => { d.group.visible = false; });
-      input = new C.input.BattleInput({ canvas: scene.canvas, pick: (x, y) => scene.pick(x, y), callbacks: { hover: c => { hover = c; }, confirm: (c, e) => onConfirm(c, e), cancel: () => cancelMode(), key: k => onKey(k), select: (e, c) => onSelect(e, c), order: (e, c) => onOrder(e, c), dragOrder: (e, c) => onDragOrder(e, c), dragMove: (e, c) => { dragCell = c; } } });
-      scene.canvas.addEventListener('pointermove', e => { ptr.x = e.clientX; ptr.y = e.clientY; });
+      input = new C.input.BattleInput({ canvas: scene.canvas, pick: (x, y) => scene.pick(x, y), callbacks: { hover: c => { hover = c; }, point: (x, y) => { ptr.x = x; ptr.y = y; fatPtr = 14; }, confirm: (c, e) => onConfirm(c, e), cancel: () => cancelMode(), key: k => onKey(k), select: (e, c) => onSelect(e, c), order: (e, c) => onOrder(e, c), dragOrder: (e, c) => onDragOrder(e, c), dragMove: (e, c) => { dragCell = c; } } });
+      scene.canvas.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { ptr.x = e.clientX; ptr.y = e.clientY; fatPtr = 0; } });
       scene.onFrame(frame); scene.start(); $('btLoad').hidden = true; buildHand(true);
       AV.combat.live = { sim, scene, fx, api: { select: i => selectSlot(i), deployAt: (x, z) => onConfirm({ x, z }), screenOf: (x, z) => scene.toScreen(x, 0.4, z), screenOfUnit: uid => { const u = sim.units.find(q => q.uid === uid); return u ? scene.toScreen(u.x, topOf(u) * .5, u.z) : null; }, reshuffle: () => doReshuffle(), pause: v => setPause(v),
         summary: () => scene.summary(), resetStats: () => scene.resetStats(), cache, state, selectPet: uid => selectPet(uid), key: k => onKey(k), mode: () => mode && mode.kind, selUid: () => selUid, fxStats: () => fx.stats(), setHostile: v => setHostile(v), cancel: () => cancelMode() } };
@@ -139,7 +142,7 @@
       if (!selUid) { el.hidden = true; el.innerHTML = ''; return; }
       const u = petUnit(selUid); if (!u) { selUid = 0; el.hidden = true; return; } const d = C.defs.get(u.base), sp = specs()[u.card], kit = C.defs.kitLabel(u.base);
       el.hidden = false;
-      el.innerHTML = `<div class="bs-head"><b>${esc(SP.displayName(sp))}</b><small>${esc(d.roleName)}</small>${kit ? `<span class="kit" title="Only its basic attack, orders and targeting are available; Q/E/R are not authored for this Pet yet.">${kit}</span>` : ''}</div>
+      el.innerHTML = `<div class="bs-head"><b>${esc(SP.displayName(sp))}</b><small>${esc(d.roleName)}</small><button class="bs-x" data-desel aria-label="Deselect Pet">${A.icon('close')}</button>${kit ? `<span class="kit" title="Only its basic attack, orders and targeting are available; Q/E/R are not authored for this Pet yet.">${kit}</span>` : ''}</div>
         <div class="bs-hp"><i id="bsHp"></i><span id="bsHpN"></span></div>
         <div class="bs-abil">${d.abilities ? ['q', 'e', 'r'].map(k => { const a = d.abilities[k]; return `<button class="ab" data-slot="${k}" title="${esc(a.text)} — ${esc(AIM_NAME(a.aim))}${a.auto === 'none' ? ' · manual only' : k === 'r' ? ' · manual only' : ' · automatic when its rule fires'}"><kbd>${k.toUpperCase()}</kbd><b>${esc(a.name)}</b><small>${esc(AIM_NAME(a.aim))}${k === 'r' ? ' · manual' : a.auto === 'none' ? ' · manual' : ' · auto'}</small><i class="cdf"></i><em class="tg"></em></button>`; }).join('') :
           `<p class="kit-note"><b>${kit || 'No abilities'}</b> — automatic basic attack, orders and targeting only.${d.passive ? ` Passive <b>${esc(d.passive.name)}</b>: ${esc(d.passive.text)}` : ''}</p>`}</div>
@@ -154,11 +157,12 @@
         b.querySelector('.tg').textContent = a.queued ? 'queued' : a.slot === 'r' ? (a.ready ? 'ready' : Math.floor(a.charge * 100) + '%') : a.wait > 0 ? Math.ceil(a.wait) + 's' : ''; });
       const mv = el.querySelector('[data-ord="move"]'); if (mv) { mv.classList.toggle('on', !!mode && mode.kind === 'move'); mv.lastChild.textContent = p.moveWait > 0 ? 'Move ' + Math.ceil(p.moveWait) + 's' : 'Move'; }
       const tg = el.querySelector('[data-ord="target"]'); if (tg) tg.classList.toggle('on', !!mode && mode.kind === 'target');
-      const note = el.querySelector('#bsNote'), nk = (p.prio ? 'p' : '') + (p.order ? 'o' : ''); if (note && nk !== selKey) { selKey = nk; note.textContent = p.prio ? 'Priority target set — right-click it again or press T to change it.' : p.order ? 'Walking to the marked spot.' : 'Right-click: walk (ground) or priority (enemy).'; }
+      const note = el.querySelector('#bsNote'), nk = (p.prio ? 'p' : '') + (p.order ? 'o' : ''); if (note && nk !== selKey) { selKey = nk; note.textContent = touchUi() ? (p.prio ? 'Priority target set — tap another enemy to change it.' : p.order ? 'Walking to the marked spot.' : 'Tap the ground to walk, an enemy to prioritise it.') : p.prio ? 'Priority target set — right-click it again or press T to change it.' : p.order ? 'Walking to the marked spot.' : 'Right-click: walk (ground) or priority (enemy).'; }
     }
 
     // ------------------------------------------------------------------ modes
-    const modeText = () => {
+    const modeText = () => tw(modeText0());
+    const modeText0 = () => {
       if (!mode) return ''; if (mode.kind === 'card') { const sp = specs()[mode.id], d = defOf(mode.id); return `Placing ${SP.displayName(sp)} — ${d.cat === 'pet' ? 'click your deployment zone' : AIM_HELP(d.aim)}`; }
       if (mode.kind === 'aim') { const u = petUnit(mode.uid), a = u && u.abil[mode.slot]; return a ? `${a.name} (${mode.slot.toUpperCase()}) — ${AIM_NAME(a.aim)}: ${AIM_HELP(a.aim)}${u.cdq[mode.slot] > sim.t + 1e-6 && mode.slot !== 'r' ? ' · will be queued until ready' : ''}` : ''; }
       if (mode.kind === 'move') return 'Move — click where the Pet should walk'; return 'Priority target — click an enemy (or its Core)';
@@ -183,14 +187,14 @@
     function cycle(dir) { const v = C.sim.view(sim, 'a'); if (!v.pets.length) return; let i = v.pets.findIndex(p => p.uid === selUid); i = (i + dir + v.pets.length) % v.pets.length; if (i < 0) i = 0; selectPet(v.pets[i].uid); }
 
     // ------------------------------------------------------------------ picking
-    function pickUnit(cx, cy, pred) {
+    function pickUnit(cx, cy, pred, extra) {
       const r = scene.canvas.getBoundingClientRect(); let best = null, bd = 1e9;
-      for (let i = 0; i < sim.units.length; i++) { const u = sim.units[i]; if (u.hp <= 0 || u.spawn > 0 || !pred(u)) continue; scene.project(u.x, topOf(u) * .5, u.z, P); const d = Math.hypot(r.left + P.x - cx, r.top + P.y - cy), lim = 22 + (u.radius || .5) * 34; if (d < lim && d < bd) { bd = d; best = u; } }
+      for (let i = 0; i < sim.units.length; i++) { const u = sim.units[i]; if (u.hp <= 0 || u.spawn > 0 || !pred(u)) continue; scene.project(u.x, topOf(u) * .5, u.z, P); const d = Math.hypot(r.left + P.x - cx, r.top + P.y - cy), lim = 22 + (extra == null ? fatPtr : extra) + (u.radius || .5) * 34; if (d < lim && d < bd) { bd = d; best = u; } }
       return best;
     }
     const coreAt = c => { if (!c) return null; for (const k of ['a', 'b']) { const co = sim.cores[k]; if (Math.hypot(c.x - co.x, c.z - co.z) < co.r + 0.5) return k; } return null; };
-    const enemyAt = e => pickUnit(e.clientX, e.clientY, u => u.side === 'b');
-    const myPetAt = e => pickUnit(e.clientX, e.clientY, u => u.side === 'a' && u.kind === 'pet');
+    const enemyAt = e => pickUnit(e.clientX, e.clientY, u => u.side === 'b', fat(e));
+    const myPetAt = e => pickUnit(e.clientX, e.clientY, u => u.side === 'a' && u.kind === 'pet', fat(e));
 
     // ------------------------------------------------------------------ intents
     /** The aim for a pending Pet ability / support card from the pointer: a unit for chain/ally/enemy picks, else the ground point. */
@@ -224,6 +228,7 @@
     function onSelect(e, cell) {
       if (ended || paused) return null; const p = myPetAt(e);
       if (p) { if (selUid !== p.uid) { selectPet(p.uid); au.play('toast'); } return 'pet'; }
+      if (selUid && fat(e)) { orderAt(e, cell); return null; } // touch: with a Pet selected, a tap on the ground walks it, a tap on an enemy prioritises it; deselect with the × in its panel
       if (selUid) selectPet(0); return null;
     }
     function orderAt(e, cell) {
@@ -391,6 +396,8 @@
     root.addEventListener('pointerdown', e => { const b = e.target.closest('.bt-card[data-slot]'); if (!b || e.button !== 0) return; selectSlotKeep(+b.dataset.slot); input && input.beginDrag(e); });
     root.addEventListener('click', e => {
       const b = e.target.closest('.bt-card[data-slot]'); if (b && e.detail === 0) { selectSlot(+b.dataset.slot); return; } // keyboard activation
+      if (e.target.closest('[data-desel]')) { selectPet(0); return; }
+      if (e.target.closest('#btRotX')) { try { sessionStorage.setItem('av.rotTip', '1'); } catch (_) { } $('btRot').hidden = true; return; }
       const ab = e.target.closest('.ab[data-slot]'); if (ab) { startAim(ab.dataset.slot); return; }
       const od = e.target.closest('[data-ord]'); if (od) { if (od.dataset.ord === 'stop') stopSel(); else startOrder(od.dataset.ord); return; }
       const w = e.target.closest('button'); if (!w) return;
@@ -400,6 +407,7 @@
     const vis2 = () => { if (document.hidden && C && AV.state.get().combat.settings.autoPause && sim && !ended) setPause(true); };
     document.addEventListener('visibilitychange', vis2); cleanups.push(() => document.removeEventListener('visibilitychange', vis2));
     const infoBtn = document.createElement('button'); infoBtn.className = 'btn small ghost bt-infobtn'; infoBtn.innerHTML = A.icon('info') + 'Numbers'; infoBtn.onclick = () => { infoOn = !infoOn; $('btInfo').hidden = !infoOn; if (infoOn) { $('btInfo').dataset.k = ''; updateInfo(); } }; field.appendChild(infoBtn);
+    { let seen = false; try { seen = sessionStorage.getItem('av.rotTip') === '1'; } catch (_) { } $('btRot').hidden = seen; const tt = setTimeout(() => { const r = $('btRot'); if (r) r.hidden = true; }, 9000); cleanups.push(() => clearTimeout(tt)); }
     boot().catch(err => { console.error('[battle] failed to start', err); $('btLoad').innerHTML = `<b>The arena could not start.</b><small>${esc(err && err.message || err)}</small>`; });
     return () => {
       disposed = true; cleanups.forEach(f => f()); if (input) input.dispose(); if (scene) scene.dispose(); AV.combat.live = null; clearTimeout(msgT);

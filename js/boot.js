@@ -67,7 +67,7 @@
         if (!ok || !S.ensureGL()) { c.fallback('WebGL unavailable'); return; }
         const gl = S.glInfo() || {}, soft = /swiftshader|llvmpipe|software|basic render|microsoft basic/i.test(gl.renderer || '');
         // First run of a brand-new profile only: choose a preset from what the browser exposes. An explicit player choice is never overridden.
-        if (!s.flags.onboarded && !s.flags.autoQuality) { s.flags.autoQuality = true; if (soft) { s.settings.quality3d = 'low'; c.note('software renderer detected — Low preset applied'); } }
+        if (!s.flags.onboarded && !s.flags.autoQuality) { s.flags.autoQuality = true; if (soft) { AV.util.perf.apply(s.settings, 'saver'); c.note('software renderer detected — Battery Saver preset applied'); } else if (AV.util.perf.defaultFor() === 'saver') { AV.util.perf.apply(s.settings, 'saver'); c.note('touch phone detected — Battery Saver preset applied'); } }
         c.progress(.45);
         // compile the shaders Home needs (same quality, same light rig as the live view) off the critical thread
         const comp = s.companion ? AV.engine.get(s.companion) : null;

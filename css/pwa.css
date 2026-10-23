@@ -10,7 +10,7 @@
 .filters { height: calc(100vh - var(--top-h) - var(--sa-y)); }
 .bench .mini-list.tall { max-height: calc(100vh - 290px - var(--sa-y)); }
 .deck-pick { max-height: calc(100dvh - 190px - var(--sa-y)); }
-@media (max-width: 860px) { .adv-modal .modal, .inspect .modal { height: calc(100dvh - var(--sa-y)); } }
+@media (max-width: 860px), (hover: none) and (pointer: coarse) and (max-height: 500px) { .adv-modal .modal, .inspect .modal { height: calc(100dvh - var(--sa-y)); } }
 
 #pwaUpdate { position: fixed; z-index: 92; left: 50%; bottom: calc(var(--sa-b) + 14px); transform: translateX(-50%); width: min(520px, calc(100vw - var(--sa-l) - var(--sa-r) - 1.5rem)); display: flex; align-items: center; gap: .6rem; padding: .7rem .9rem; background: var(--ink-2); border: 1px solid var(--brass-hi); box-shadow: 0 8px 30px rgba(0, 0, 0, .55); color: var(--ivory); }
 #pwaUpdate > div { flex: 1; min-width: 0; display: grid; } #pwaUpdate b { font-family: var(--f-head, inherit); letter-spacing: .04em; } #pwaUpdate span { font-size: .82rem; color: var(--ivory-2); }
@@ -33,4 +33,10 @@
 #syncPill[data-key="syncing"] i { animation: syncPulse 1s ease-in-out infinite; }
 @keyframes syncPulse { 50% { opacity: .15; } }
 @media (prefers-reduced-motion: reduce) { #syncPill[data-key="syncing"] i { animation: none; } }
-@media (max-width: 860px) { #syncPill { left: auto; right: calc(var(--sa-r) + 10px); bottom: calc(var(--sa-b) + 66px); } }
+@media (max-width: 860px), (hover: none) and (pointer: coarse) and (max-height: 500px) { #syncPill { left: auto; right: calc(var(--sa-r) + 10px); bottom: calc(var(--sa-b) + 66px); } }
+
+/* dvh where supported: the URL bar / on-screen keyboard no longer push sticky panels past the visible viewport (100vh above stays as the fallback) */
+@supports (height: 100dvh) {
+  .filters { height: calc(100dvh - var(--top-h) - var(--sa-y)); }
+  .bench .mini-list.tall { max-height: calc(100dvh - 290px - var(--sa-y)); }
+}

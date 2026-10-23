@@ -1,6 +1,6 @@
 # MOBILE PHASE — Mobile Experience and Responsive UI
 
-Status: **Mobile A and B complete (checkpoints); Mobile C not started.** Branch `phase-five`, base commit `704b499`, app version 0.6.3. Mobile A checkpoint `a80855b`.
+Status: **Mobile A, B and C complete (checkpoints); the phase is closed pending the real-iPhone check.** Branch `phase-five`, base commit `704b499`, app version 0.6.3. Checkpoints: A `a80855b`, B `6f4b59a`, C is the commit after it.
 Out of scope: Combat C, ranked AI/ELO, new content/systems, Supabase/auth/cloud/updater/release changes, 3D asset rebuilds.
 
 ## Budget rules (from the brief)
@@ -96,7 +96,45 @@ All phone rules live in `css/mobile.css` (Phase B block), with small markup hook
 - The top bar balance chips at 390 can clip the last chip (keys) beside the level ring; that is Mobile A's shell, left for Mobile C's shell/settings pass.
 - Phones wider than 860px in landscape, combat touch controls (B1), Settings, auth/cloud/PWA states and performance presets are still Mobile C. No desktop release proposed.
 
+## Mobile C — delivered (combat touch, battle HUD, wide landscape phones, Settings, performance presets)
+No gameplay, Supabase/auth/cloud/updater or release change. Desktop (>860px, fine pointer) verified unchanged at 1440x900 (3-column HUD, 9 settings cards, no tabs, mouse select/deploy/deselect as before).
+- **B1 closed — combat is playable by touch** (`js/combat/input.js`, `js/screens/battle.js`; still one pointer abstraction, touch is `pointerType` touch/pen):
+  - *Select:* tap one of your Pets (hit radius +14px for touch). *Deselect:* the **x** in the Pet panel (a ground tap no longer deselects on touch because it is now an order).
+  - *Tap-to-move / target:* with a Pet selected and no mode active, a tap on the ground walks it, a tap on an enemy or the enemy Core sets its priority target (same `canMove`/`canTarget` checks and messages). Dragging from the Pet still draws and issues the drag order. Move/Target/Stop buttons stay for the explicit modes.
+  - *Q / E / R:* the Pet panel has three equal one-tap ability buttons with cooldown/charge text; tapping the active one again cancels it.
+  - *Aim gestures (every aim model, and support-card placement):* with an aim or card mode active, **press shows the preview, drag moves it, release over the board commits, release off the board cancels**; a plain tap commits at the tapped spot. Once the finger has moved, the aim point is lifted 44px above it so the preview is not hidden under the finger; chain/target picks follow the lifted point with the wider touch radius. Hand cards are dragged the same way (`touch-action: none` on cards).
+  - *Cancel:* a full-width bar with **Cancel** (no "· Esc") at the bottom of the arena whenever a mode is active; mode wording says "tap" on coarse pointers. Mouse and keyboard paths are unchanged.
+- **Battle HUD, portrait:** two-row top bar (Leave / clock / Dummies+Pause, then both Core bars, which were hidden under 700px); the arena takes the rest; the Pet panel is a bottom overlay (name, HP, Q/E/R, Move/Target/Stop); the bottom HUD is Elixir + Reshuffle, then the 4-card hand as compact vertical cards. The Numbers panel and deck strip are hidden on phones. A dismissible "Landscape gives the arena more room" tip shows on portrait phones (remembered for the session, auto-hides after 9 s); portrait stays fully playable.
+- **Battle HUD, landscape (height <= 500):** arena left, a 188-236px column right with Elixir, a 2x2 hand and Reshuffle; the side rail nav stays.
+- **Wide landscape phones (932x430 etc.):** every `max-width: 860px` rule now also matches `(hover: none) and (pointer: coarse) and (max-height: 500px)` (the compound landscape rules got the same alternative). An iPhone Pro Max in landscape gets the phone shell, side rail, Home, Open, Vault, Inspect, Forge, Deck and the battle layout. Landscape tablets (height > 500) and short desktop windows (fine pointer) are unchanged.
+- **Settings:** a sticky group strip on phones (Display · Comfort · Account · Data) shows one group of cards at a time (Display: Economy, 3D; Comfort: Audio, Motion, Openings; Account: Install & updates, Account; Data: Your data, About). Desktop still shows all nine cards. Account/cloud/PWA buttons are full-width with wrapping text.
+- **Performance presets** (`AV.util.perf`, Display > 3D presentation): **Battery Saver** (Low, 30 fps), **Balanced** (Medium, auto; the long-standing default) and **Quality** (High, 60 fps), with a "Custom" note when quality and frame limit were set separately. **First-run default** (new profiles only, never overriding a choice): software renderer -> Battery Saver; touch phone (coarse pointer, short screen side < 600px) -> Battery Saver unless the device reports 8 GB or more; everything else stays Balanced. iOS does not report `deviceMemory`, so iPhones start on Battery Saver; the player can raise it in Settings.
+- **Top-bar balance clip fixed:** four chips plus the level ring fit 390px and 375px (ledger scroll width equals client width); the place name truncates instead.
+- **Desktop shared-bug pass:** `100vh` -> `100dvh` (under `@supports`) for the sticky Vault filter column and the Forge bench list; the Settings preset/quality buttons redraw so the "on" state is always right; the battle top bar no longer overlaps at 375px. No other desktop defects were found in the screens exercised.
+
+### Tests run (Mobile C)
+- Node: logic 45, phase3 22, phase4 30, combat 99, all passing. `pwa-stamp` re-run, `--check` OK (96 precached files, no new files).
+- Browser (built-in pane, one harness, no historical suites): 390x844 battle (deploy by touch drag, tap-select, tap-to-move, Q aim press-drag-release commits, Move/Target/Stop panel, Q/E/R readouts), Settings groups and all three presets plus Custom, Account/Install tab; 375x667 battle and top bar; 844x390 battle landscape; 932x430 (coarse condition forced on in the page, because the pane only emulates touch under 768px) Home/Open/Vault/Settings/battle; 768x1024 and 1440x900 overflow and desktop regression (mouse select/deploy/deselect). No page-level horizontal overflow and no console errors from the app. Touch was driven with synthetic touch pointer events. Screenshots kept outside Git.
+
+### Known limitations / not done (Mobile C)
+- Touch gestures were verified with synthetic pointer events in the pane, not on a real touch screen (finger lift, multi-touch, palm rejection, iOS rubber-banding, real 44px target measurements).
+- The signed-in cloud panel and the PWA install/update states were reviewed as CSS (full-width buttons, wrapping text) but not exercised signed-in; the dev server has the service worker off.
+- Landscape battle: the Pet panel covers a good part of the small arena; close it with the x to see the field.
+- The first-run Battery Saver default lowers 3D quality for new touch-phone profiles; existing profiles are not touched.
+- Desktop release: the shared frontend changed across three phases, so the desktop EXE needs a patch release to include it. Not proposed or built here (out of scope).
+
+### iPhone checklist (real device, Safari and the installed Home Screen app)
+1. Home Screen install: icon, splash, no browser chrome, safe areas at the notch and Home indicator, top bar shows all four balances, bottom bar not clipped.
+2. Portrait: Home, Open (each container), Vault filter sheet and selection bar, Inspect dock, Forge/Fusion pickers, Deck Add/Swap, Settings group strip and presets, More sheet.
+3. Combat portrait: deploy a Pet by dragging a card (preview lifted above the finger), tap-select it, tap ground to walk, tap an enemy to prioritise, Q/E/R aim by press-drag-release, Cancel, drag off the board to cancel, x to deselect, reshuffle; confirm no page scroll or pinch zoom fights the arena.
+4. Combat landscape (Pro Max 932x430 and a smaller iPhone): phone shell with the side rail, battle column on the right, panel readable, notch and rail insets.
+5. Settings > Display: pick Battery Saver / Balanced / Quality; check frame rate and heat in a 2-minute battle; confirm a brand-new profile starts on Battery Saver.
+6. Rotate during a battle and during a ritual; background and return (auto-pause); keyboard open in Vault search, Deck search and the Organise note (no zoom, sheet stays visible).
+7. Account: sign-in and the signed-in cloud panel at 390 and 932 widths; offline start from the installed app.
+8. 3D stage gestures: one-finger rotate, pinch on zoom stages, Reset view; vertical scroll still works on the Home and Open stages.
+
 ## Progress log
+- 2026-10-23 — Mobile C done: combat touch controls (B1 closed), battle HUD portrait/landscape, wide-landscape phone breakpoint, Settings groups, performance presets with a touch default, balance clip, dvh pass, iPhone checklist. Checkpoint committed to `phase-five`; phase closed pending the real-device check.
 - 2026-10-23 — Mobile B done: Inspect/Organise, Forge, Fusion, Vault views/Compare, Deck editor (tap Add/Swap). Checkpoint committed to `phase-five`.
 - 2026-10-23 — Mobile A done: shell/nav, tokens, Home, Open Hall, Vault. Checkpoint committed to `phase-five`.
 - 2026-10-23 — Audit done (docs, CSS, nav, input, quality settings read; 390×844 overflow and target-size probe across 10 screens). No code changed.

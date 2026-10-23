@@ -8,18 +8,22 @@
  *   dragOrder(e, cell)      a Pet was dragged and released somewhere on the board
  *   dragMove(e, cell)       while dragging a Pet (to draw the order line)
  *   key(name)               'slot1'…'slot4' · 'reshuffle' · 'pause' · 'q' 'e' 'r' · 'move' · 'target' · 'stop' · 'next' · 'confirm'
- * Every aim mode cancels three ways: Esc, right-click, and a visible Cancel button (owned by the screen). */
+ * Every aim mode cancels three ways: Esc, right-click, and a visible Cancel button (owned by the screen).
+ * Touch (pointerType touch/pen) with a mode active: press shows the preview, drag moves it (lifted TOUCH_LIFT px above the finger once the finger has moved, so it is not hidden),
+ * release over the board commits, release off the board cancels. A plain tap commits at the tapped spot. point(x, y) reports the (lifted) screen point so chain/target picks follow it. */
 (function () {
   const AV = (window.AV = window.AV || {}); AV.combat = AV.combat || {};
 
+  const TOUCH_LIFT = 44, isTouch = e => e.pointerType === 'touch' || e.pointerType === 'pen';
   class BattleInput {
     constructor(o) {
-      this.canvas = o.canvas; this.pick = o.pick; this.cb = o.callbacks || {}; this.active = false; this.drag = null; this.pdrag = null; this.last = null; this.off = [];
+      this.canvas = o.canvas; this.pick = o.pick; this.cb = o.callbacks || {}; this.active = false; this.drag = null; this.pdrag = null; this.tdrag = null; this.last = null; this.off = [];
       const on = (el, ev, fn, opt) => { el.addEventListener(ev, fn, opt); this.off.push(() => el.removeEventListener(ev, fn, opt)); };
       on(this.canvas, 'pointermove', e => this.move(e));
       on(this.canvas, 'pointerleave', () => { if (!this.drag && !this.pdrag) this.setHover(null); });
       on(this.canvas, 'pointerdown', e => {
         if (e.button === 0) {
+          if (this.active && isTouch(e)) { this.tdrag = { x0: e.clientX, y0: e.clientY, moved: false, id: e.pointerId }; this.touchAt(e); return; }
           if (this.active) { this.cb.confirm && this.cb.confirm(this.cellAt(e), e); return; }
           const r = this.cb.select && this.cb.select(e, this.cellAt(e)); if (r === 'pet') this.pdrag = { x0: e.clientX, y0: e.clientY, moved: false };
         } else if (e.button === 2) {
@@ -27,9 +31,9 @@
         }
       });
       on(this.canvas, 'contextmenu', e => e.preventDefault());
-      on(window, 'pointermove', e => { if (this.drag) this.dragMove(e); if (this.pdrag) this.petDragMove(e); });
-      on(window, 'pointerup', e => { if (this.drag) this.dragEnd(e); if (this.pdrag) this.petDragEnd(e); });
-      on(window, 'pointercancel', () => { if (this.drag) { this.drag = null; this.cb.cancel && this.cb.cancel(); } if (this.pdrag) { this.pdrag = null; this.cb.dragMove && this.cb.dragMove(null, null); } });
+      on(window, 'pointermove', e => { if (this.tdrag && e.pointerId === this.tdrag.id) this.touchMove(e); if (this.drag) this.dragMove(e); if (this.pdrag) this.petDragMove(e); });
+      on(window, 'pointerup', e => { if (this.tdrag && e.pointerId === this.tdrag.id) this.touchEnd(e); if (this.drag) this.dragEnd(e); if (this.pdrag) this.petDragEnd(e); });
+      on(window, 'pointercancel', () => { if (this.tdrag) { this.tdrag = null; this.setHover(null); } if (this.drag) { this.drag = null; this.cb.cancel && this.cb.cancel(); } if (this.pdrag) { this.pdrag = null; this.cb.dragMove && this.cb.dragMove(null, null); } });
       on(document, 'keydown', e => {
         if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.ctrlKey || e.metaKey || e.altKey) return;
         const k = e.key; let name = null;
@@ -46,14 +50,25 @@
     setActive(on) { this.active = !!on; if (!on) this.setHover(null); this.canvas.style.cursor = on ? 'crosshair' : ''; }
     cellAt(e) { const p = this.pick(e.clientX, e.clientY); return p ? { x: p.x, z: p.z } : null; }
     setHover(c) { const a = this.last, same = (!a && !c) || (a && c && Math.floor(a.x * 2) === Math.floor(c.x * 2) && Math.floor(a.z * 2) === Math.floor(c.z * 2)); this.last = c; if (!same && this.cb.hover) this.cb.hover(c); }
-    move(e) { if (this.active) this.setHover(this.cellAt(e)); }
+    move(e) { if (this.active && !this.tdrag) this.setHover(this.cellAt(e)); }
+    /** The screen point a touch aims at: under the finger until it drags, then lifted above it. */
+    lifted(e, moved) { return { clientX: e.clientX, clientY: moved ? e.clientY - TOUCH_LIFT : e.clientY, pointerType: e.pointerType, button: 0 }; }
+    touchAt(e, moved) { const p = this.lifted(e, moved); if (this.cb.point) this.cb.point(p.clientX, p.clientY); this.setHover(this.cellAt(p)); return p; }
+    touchMove(e) { const d = this.tdrag; if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) > 10) d.moved = true; this.touchAt(e, d.moved); }
+    touchEnd(e) {
+      const d = this.tdrag; this.tdrag = null; const p = this.lifted(e, d.moved);
+      if (d.moved && !this.inside(e)) { this.setHover(null); this.cb.cancel && this.cb.cancel(); return; }
+      if (this.cb.point) this.cb.point(p.clientX, p.clientY);
+      this.cb.confirm && this.cb.confirm(this.cellAt(p), p);
+    }
     inside(e) { const b = this.canvas.getBoundingClientRect(); return e.clientX >= b.left && e.clientX <= b.right && e.clientY >= b.top && e.clientY <= b.bottom; }
     /** Call from pointerdown on a hand card; the card is already selected by the caller. */
     beginDrag(e) { this.drag = { x0: e.clientX, y0: e.clientY, moved: false }; }
-    dragMove(e) { const d = this.drag; if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) > 8) d.moved = true; if (d.moved) this.setHover(this.inside(e) ? this.cellAt(e) : null); }
+    dragMove(e) { const d = this.drag; if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) > 8) d.moved = true; if (d.moved) { const p = isTouch(e) ? this.lifted(e, true) : e; if (this.cb.point && isTouch(e)) this.cb.point(p.clientX, p.clientY); this.setHover(this.inside(e) ? this.cellAt(p) : null); } }
     dragEnd(e) {
       const d = this.drag; this.drag = null; if (!d.moved) return; // a plain click on the card just keeps it selected
-      if (this.inside(e)) this.cb.confirm && this.cb.confirm(this.cellAt(e), e); else this.cb.cancel && this.cb.cancel();
+      const p = isTouch(e) ? this.lifted(e, true) : e;
+      if (this.inside(e)) { if (this.cb.point && isTouch(e)) this.cb.point(p.clientX, p.clientY); this.cb.confirm && this.cb.confirm(this.cellAt(p), p); } else this.cb.cancel && this.cb.cancel();
     }
     petDragMove(e) { const d = this.pdrag; if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) > 10) d.moved = true; if (d.moved && this.cb.dragMove) this.cb.dragMove(e, this.inside(e) ? this.cellAt(e) : null); }
     petDragEnd(e) {

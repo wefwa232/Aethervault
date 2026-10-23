@@ -6,6 +6,8 @@
 
   const FPS = [['auto', 'Auto', 'Per preset: 30 on Low, 60 on Medium/High'], [30, '30', 'Smoothest on battery'], [60, '60', 'Normal target'], ['max', 'Uncapped', 'Display refresh rate']];
   const P = () => AV.pwa || {};
+  const GROUPS = [['play', 'Display'], ['feel', 'Comfort'], ['acct', 'Account'], ['data', 'Data']];
+  let group = 'play'; // phone layout shows one group at a time (CSS); desktop shows all
   function desktopText() {
     const u = AV.desktop.updates, e = U.esc, base = 'You are running the Aethervault desktop app. It plays offline from its own files. ';
     if (u.status === 'checking') return base + 'Checking for updates…';
@@ -48,26 +50,29 @@
       const P = AV.pwa || {};
       const s = AV.state.get(), st = s.settings, unl = s.mode === 'unlimited';
       const glOk = AV.stage && !AV.stage.failed && !(AV.stage.stats().quality === 'off' && st.quality3d !== 'off');
-      const q = st.quality3d || 'medium';
+      const q = st.quality3d || 'medium', preset = AV.util.perf.of(st);
       const slider = (key, label, hint) => `<label class="slider"><span>${label}${hint ? `<small>${hint}</small>` : ''}</span><input type="range" min="0" max="1" step="0.01" value="${st[key]}" data-vol="${key}" aria-label="${label}"><output>${Math.round(st[key] * 100)}%</output></label>`;
       const tog = (key, label, hint) => `<label class="toggle row"><input type="checkbox" data-tog="${key}" ${st[key] ? 'checked' : ''}><span></span><div>${label}${hint ? `<small>${hint}</small>` : ''}</div></label>`;
-      root.innerHTML = `<div class="settings">
+      root.innerHTML = `<div class="settings" data-g="${group}">
         <header class="page-head"><div><span class="label">Archive controls</span><h1>Settings</h1><p class="muted">Aethervault v${AV.VERSION.number} · ${AV.state.storageOk() ? 'Progress saves automatically to this device' : '<b class="bad-txt">Browser storage is unavailable — progress will not persist</b>'}</p></div></header>
+        <nav class="set-tabs" role="tablist" aria-label="Settings groups">${GROUPS.map(([g, l]) => `<button role="tab" class="${group === g ? 'on' : ''}" aria-selected="${group === g}" data-sg="${g}">${l}</button>`).join('')}</nav>
         <div class="set-grid">
-          <section class="s-matte pad"><h3 class="sect">${A.icon('coin')} Economy mode</h3>
+          <section class="s-matte pad" data-g="play"><h3 class="sect">${A.icon('coin')} Economy mode</h3>
             <div class="mode-cards">
               <button class="modec ${!unl ? 'on' : ''}" data-mode="standard"><b>Standard Simulation</b><span>Designed prices and earned resources. Spend, save and decide.</span></button>
               <button class="modec ${unl ? 'on' : ''}" data-mode="unlimited"><b>Unlimited Mode</b><span>Infinite balances, free containers, free upgrades and item duplication.</span></button>
             </div>
             <p class="muted tiny">Switching is instant and keeps your collection and stored balances. Everything is fictional either way.</p></section>
-          <section class="s-matte pad"><h3 class="sect">${A.icon('cube')} 3D presentation</h3>
+          <section class="s-matte pad" data-g="play"><h3 class="sect">${A.icon('cube')} 3D presentation</h3>
+            <div class="field-h">Performance preset</div><div class="presets" role="radiogroup" aria-label="Performance preset">${AV.util.perf.PRESETS.map(p => `<button class="preset ${preset === p.id ? 'on' : ''}" role="radio" aria-checked="${preset === p.id}" data-preset="${p.id}"><b>${p.name}</b><span>${p.hint}</span></button>`).join('')}</div>
+            <p class="tiny dim">${preset === 'custom' ? 'Custom: you have set quality and frame rate separately below.' : 'Presets set 3D quality and the frame limit together; fine control is below.'}</p>
             <div class="qlist" role="radiogroup" aria-label="3D quality">${QUALITY.map(([id, n, d]) => `<button class="qrow ${q === id ? 'on' : ''}" role="radio" aria-checked="${q === id}" data-q3="${id}"><i></i><b>${n}</b><span>${d}</span></button>`).join('')}</div>
             <div class="field-h">Frame rate limit</div><div class="seg" role="group" aria-label="Frame rate limit">${FPS.map(([v, l, d]) => `<button class="${(st.fpsLimit || 'auto') === v ? 'on' : ''}" data-fps="${v}" title="${d}">${l}</button>`).join('')}</div>
             <p class="tiny ${glOk ? 'dim' : 'bad-txt'}">${q === 'off' ? '2D fallback is active.' : (glOk ? 'WebGL renderer ready. Only the active centerpiece renders in real time; collection grids use cached thumbnails.' : 'WebGL is unavailable or was lost — the 2D fallback is being used.')}</p></section>
-          <section class="s-matte pad"><h3 class="sect">${A.icon('play')} Audio</h3>
+          <section class="s-matte pad" data-g="feel"><h3 class="sect">${A.icon('play')} Audio</h3>
             ${slider('master', 'Master')}${slider('music', 'Ambient music')}${slider('sfx', 'Interface sounds')}${slider('opening', 'Openings & reveals', 'Rituals, stingers, impacts')}
             <button class="btn ghost" data-act="test">${A.icon('play')}Test reveal sound</button></section>
-          <section class="s-matte pad"><h3 class="sect">${A.icon('sparkle')} Motion &amp; comfort</h3>
+          <section class="s-matte pad" data-g="feel"><h3 class="sect">${A.icon('sparkle')} Motion &amp; comfort</h3>
             <div class="field-h">Animation speed</div>
             <div class="seg" role="group" aria-label="Animation speed">${[[.75, '0.75×'], [1, '1×'], [1.5, '1.5×'], [2.5, '2.5×'], [0, 'Instant']].map(([v, l]) => `<button class="${st.animSpeed === v ? 'on' : ''}" data-spd="${v}">${l}</button>`).join('')}</div>
             <p class="muted tiny">Instant skips ritual and reveal animations and goes straight to the results.</p>
@@ -78,7 +83,7 @@
             ${tog('fastStartup', 'Fast startup', 'Shortens the startup sequence on launches after the first')}
             <div class="field-h">Text size</div>
             <div class="seg" role="group" aria-label="Text size">${[[.9, 'Small'], [1, 'Normal'], [1.15, 'Large'], [1.3, 'Largest']].map(([v, l]) => `<button class="${st.textSize === v ? 'on' : ''}" data-ts="${v}">${l}</button>`).join('')}</div></section>
-          <section class="s-matte pad"><h3 class="sect">${A.icon('open')} Openings, cards &amp; fusion</h3>
+          <section class="s-matte pad" data-g="feel"><h3 class="sect">${A.icon('open')} Openings, cards &amp; fusion</h3>
             <div class="field-h">Multi-open behaviour <small class="tiny dim">for ×5 and ×10</small></div>
             <div class="seg" role="group" aria-label="Multi-open behaviour">${[['condensed', 'Condensed grid'], ['sequential', 'One by one'], ['instant', 'Straight to results']].map(([v, l]) => `<button class="${(st.multiOpen || 'condensed') === v ? 'on' : ''}" data-opt4="multiOpen" data-v="${v}">${l}</button>`).join('')}</div>
             <div class="field-h">Forge reel speed</div>
@@ -91,16 +96,16 @@
             <div class="seg" role="group" aria-label="Fusion animation">${[['full', 'Full'], ['short', 'Short'], ['off', 'Off']].map(([v, l]) => `<button class="${(st.fusionAnim || 'full') === v ? 'on' : ''}" data-opt4="fusionAnim" data-v="${v}">${l}</button>`).join('')}</div>
             ${tog('binderAnim', 'Binder page turns', 'Animate pages in the card binder')}
             <p class="muted tiny">Reduced motion shortens the reel, replaces the pack tear with a simple reveal, and simplifies holograms and fusion — nothing is hidden.</p></section>
-          <section class="s-matte pad"><h3 class="sect">${A.icon('download')} Install &amp; updates</h3>
+          <section class="s-matte pad" data-g="acct"><h3 class="sect">${A.icon('download')} Install &amp; updates</h3>
             <p class="muted" id="pwaState">${pwaText()}</p>
             <div class="btn-row" id="pwaBtns">${AV.desktop && AV.desktop.isDesktop ? desktopButtons() : ''}${P.installEvent ? `<button class="btn" data-act="pwa-install">${A.icon('download')}Install app</button>` : ''}${P.enabled ? `<button class="btn ghost" data-act="pwa-check">Check for updates</button>${P.updateReady ? '<button class="btn" data-act="pwa-apply">Update now</button>' : ''}` : ''}</div></section>
-          <section class="s-matte pad"><h3 class="sect">${A.icon('lock')} Account</h3><div id="acct">${accountHtml()}</div></section>
-          <section class="s-matte pad"><h3 class="sect">${A.icon('download')} Your data</h3>
+          <section class="s-matte pad" data-g="acct"><h3 class="sect">${A.icon('lock')} Account</h3><div id="acct">${accountHtml()}</div></section>
+          <section class="s-matte pad" data-g="data"><h3 class="sect">${A.icon('download')} Your data</h3>
             <p class="muted">Your save lives in this browser's local storage. Export a backup file any time.</p>
             <div class="btn-row"><button class="btn ghost" data-act="export">${A.icon('download')}Export save</button><button class="btn ghost" data-act="import">${A.icon('upload')}Import save</button><input type="file" id="impFile" accept=".json,application/json" hidden></div>
             <hr><p class="muted">Start over with a brand-new Archive. This permanently deletes your collection and progress.</p>
             <button class="btn danger" data-act="reset">${A.icon('trash')}Reset all progress…</button></section>
-          <section class="s-matte pad about"><h3 class="sect">${A.icon('info')} About</h3>
+          <section class="s-matte pad about" data-g="data"><h3 class="sect">${A.icon('info')} About</h3>
             <p><b>Aethervault</b> is a private, single-player collectible simulator. <b>Simulation only — no real transactions or payment services. The game needs no network; optional Google sign-in and cloud saves are the only online features.</b> The 3D specimens are modelled and lit procedurally in your browser; remaining artwork is drawn procedurally; all sound is synthesised. Names and creatures are invented. Three.js (MIT) and the bundled typefaces (SIL OFL) are included under <code>vendor/</code>.</p></section>
         </div></div>`;
     };
@@ -115,7 +120,9 @@
     root.addEventListener('click', async e => {
       const m = e.target.closest('[data-mode]');
       if (m) { E.setMode(m.dataset.mode); au.play('confirm'); ui.toast(m.dataset.mode === 'unlimited' ? 'Unlimited Mode enabled — ∞ everything' : 'Standard Simulation restored', { kind: 'good', icon: 'check' }); draw(); return; }
-      const q3 = e.target.closest('[data-q3]'); if (q3) { E.setSetting('quality3d', q3.dataset.q3); au.play('confirm'); ui.toast(`3D quality: ${q3.dataset.q3}`, { icon: 'cube', silent: true }); return; }
+      const sg = e.target.closest('[data-sg]'); if (sg) { group = sg.dataset.sg; root.querySelector('.settings').dataset.g = group; root.querySelectorAll('[data-sg]').forEach(b => { const on = b.dataset.sg === group; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); }); const m = document.getElementById('stage') || root.parentElement; if (m && m.scrollTo) m.scrollTo(0, 0); return; }
+      const pr = e.target.closest('[data-preset]'); if (pr) { AV.util.perf.apply(AV.state.get().settings, pr.dataset.preset); E.setSetting('quality3d', AV.state.get().settings.quality3d); au.play('confirm'); ui.toast(`Performance: ${pr.querySelector('b').textContent}`, { icon: 'cube', silent: true }); draw(); return; }
+      const q3 = e.target.closest('[data-q3]'); if (q3) { E.setSetting('quality3d', q3.dataset.q3); au.play('confirm'); ui.toast(`3D quality: ${q3.dataset.q3}`, { icon: 'cube', silent: true }); draw(); return; }
       const fp = e.target.closest('[data-fps]'); if (fp) { const v = fp.dataset.fps; E.setSetting('fpsLimit', v === 'auto' || v === 'max' ? v : +v); draw(); return; }
       const sp = e.target.closest('[data-spd]'); if (sp) { E.setSetting('animSpeed', +sp.dataset.spd); draw(); return; }
       const o4 = e.target.closest('[data-opt4]'); if (o4) { E.setSetting(o4.dataset.opt4, o4.dataset.num ? +o4.dataset.v : o4.dataset.v); draw(); return; }
