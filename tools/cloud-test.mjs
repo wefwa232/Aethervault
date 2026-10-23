@@ -19,15 +19,15 @@ await mock('/__reset');
 
 const { browser } = await launch({ width: 1280, height: 900 });
 const errors = [];
-async function device(label, { cfg = true } = {}) {
+async function device(label, { cfg = true, poll = 0 } = {}) {
   const ctx = await browser.createBrowserContext(), page = await ctx.newPage();
   await page.setViewport({ width: 1280, height: 900 });
   page.on('pageerror', e => errors.push(label + ': ' + e.message));
   page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::ERR/.test(m.text())) errors.push(label + ': ' + m.text()); });
-  if (cfg) await page.evaluateOnNewDocument(() => { try {
+  if (cfg) await page.evaluateOnNewDocument(poll => { try {
     localStorage.setItem('av.auth.cfg', JSON.stringify({ supabaseUrl: 'http://127.0.0.1:54321', supabaseAnonKey: 'mock-anon' }));
-    localStorage.setItem('av.cloud.timing', JSON.stringify({ debounceMs: 500, maxWaitMs: 3000, retryBaseMs: 600, retryMaxMs: 2000, pollMs: 3000, startDelayMs: 300 }));
-  } catch (e) { /* ignore */ } });
+    localStorage.setItem('av.cloud.timing', JSON.stringify({ debounceMs: 500, maxWaitMs: 3000, retryBaseMs: 600, retryMaxMs: 2000, pollMs: poll || 600000, startDelayMs: 300, minGapMs: 400, unsafeRetryMs: 500, updatedMs: 1500, flushMs: 2500 }));
+  } catch (e) { /* ignore */ } }, poll);
   await page.goto('http://127.0.0.1:5173/index.html?fastboot=1', { waitUntil: 'load' });
   await booted(page);
   return page;
@@ -122,7 +122,7 @@ try {
   await until(B, () => document.querySelector('.modal-wrap:not(.closing)'));
   check('download needs confirmation (B still empty)', (await local(B)).n === 0);
   const bBefore = await rawSave(B);
-  await clickModal(B, /Load cloud save/);
+  await clickModal(B, /Use cloud save/);
   await until(B, () => AV.state.get().flags.onboarded && AV.cloud.status === 'idle');
   const lb = await local(B), la = await local(A);
   check('B now has A’s progress', lb.n === la.n && lb.credits === la.credits && lb.name === la.name, JSON.stringify([lb, la]));
@@ -147,18 +147,63 @@ try {
     check('background-sync wake-up message triggers a sync', await A.evaluate(async () => { const n0 = AV.cloud.info().lastSyncAt; AV.state.get().wallet.credits += 1; AV.state.save(true); await new Promise(r => setTimeout(r, 50)); navigator.serviceWorker.dispatchEvent(new MessageEvent('message', { data: { type: 'CLOUD_SYNC' } })); await new Promise(r => setTimeout(r, 1500)); return AV.cloud.info().lastSyncAt > n0 && AV.cloud.status === 'idle'; }));
   }
 
-  // ======================= cloud-newer =======================
-  console.log('\n[5] B is unchanged, A advanced: B is offered the newer cloud save (no silent apply)');
+  // ======================= automatic pull (clean device) =======================
+  console.log('\n[5] B is unchanged, A advanced: B applies the newer cloud save by itself (no dialog)');
   {
-    await B.evaluate(() => AV.cloud.sync()); await waitStatus(B, 'cloud-newer');
-    const bRaw = await rawSave(B);
-    await sleep(1500);
-    check('cloud-newer: B local untouched until the player acts', (await rawSave(B)) === bRaw);
-    await toSettings(B);
-    check('cloud-newer: panel offers "Load cloud version…"', await B.evaluate(() => !!document.querySelector('[data-act="cloud-load"]')));
-    await clickAct(B, 'cloud-load'); await clickModal(B, /Load cloud save/);
-    await waitStatus(B, 'idle');
-    check('after loading, B equals A', (await checksum(B)) === (await head(U1)).checksum && (await local(B)).credits === (await local(A)).credits);
+    const modalsBefore = await B.evaluate(() => document.querySelectorAll('.modal-wrap').length);
+    const lb0 = await localBackups(B), bPrev = (await local(B)).credits;
+    await B.evaluate(() => AV.cloud.sync());
+    await until(B, c => AV.state.get().wallet.credits !== c, bPrev, 8000);
+    check('clean + newer cloud: applied automatically, no dialog', (await B.evaluate(() => document.querySelectorAll('.modal-wrap').length)) === modalsBefore && (await local(B)).credits === (await local(A)).credits);
+    check('status says "Updated from cloud" briefly, then Synced', await B.evaluate(() => /Updated from cloud/.test(document.getElementById('syncPill').textContent)));
+    await waitStatus(B, 'idle', 6000);
+    check('indicator returns to Synced', await B.evaluate(() => /Synced/.test(document.getElementById('syncPill').textContent)));
+    check('B equals A and the cloud head', (await checksum(B)) === (await head(U1)).checksum);
+    check('safety copy of the replaced local save kept before applying', (await localBackups(B)) >= Math.min(3, lb0 + 1));
+    const n0 = await syncLog(); await B.evaluate(() => AV.cloud.sync()); await sleep(300);
+    check('local and cloud match → nothing pushed', (await syncLog()) === n0);
+  }
+
+  console.log('\n[5b] Reopening a stale clean device applies the newer save at startup');
+  {
+    await bump(A, 21); await waitStatus(A, 'idle'); const target = (await local(A)).credits;
+    await B.reload({ waitUntil: 'load' }); await booted(B);
+    await until(B, c => AV.state.get().wallet.credits === c, target, 8000);
+    check('startup pull: B has A’s latest without opening Settings', (await local(B)).credits === target && (await B.evaluate(() => document.body.dataset.screen)) !== 'settings');
+  }
+
+  console.log('\n[5c] An already-open device picks the change up by polling');
+  {
+    const P = await device('P', { poll: 1200 });
+    await P.evaluate(() => { const m = document.querySelector('.modal-wrap.welcome'); if (m) m.remove(); });
+    await signIn(P, 1); await P.evaluate(() => { const m = document.querySelector('.modal-wrap.welcome'); if (m) m.remove(); });
+    await toSettings(P); await clickAct(P, 'cloud-on'); await until(P, () => document.querySelector('.modal-wrap:not(.closing)')); await clickModal(P, /Use cloud save/);
+    await until(P, () => AV.cloud.status === 'idle' && AV.cloud.linked());
+    await bump(A, 33); await waitStatus(A, 'idle'); const target = (await local(A)).credits;
+    await until(P, c => AV.state.get().wallet.credits === c, target, 9000);
+    check('open device: poll applied the newer cloud save automatically', (await local(P)).credits === target);
+    // foreground/resume must not stack sync jobs
+    const g0 = (await state()).log.filter(l => /GET cloud_saves/.test(l)).length;
+    await P.evaluate(() => { for (let i = 0; i < 6; i++) document.dispatchEvent(new Event('visibilitychange')); });
+    await sleep(900);
+    const g1 = (await state()).log.filter(l => /GET cloud_saves/.test(l)).length;
+    check('six rapid foreground events → at most one head check', g1 - g0 <= 1, String(g1 - g0));
+    await P.evaluate(() => AV.cloud.disable()); await P.close();
+  }
+
+  console.log('\n[5d] Unsafe moments: a newer cloud save waits (hold, battle, dialog) and applies afterwards');
+  {
+    await bump(A, 40); await waitStatus(A, 'idle');
+    const raw0 = await rawSave(B);
+    await B.evaluate(() => { window.__rel = AV.cloud.hold(); AV.cloud.sync(); });
+    await waitStatus(B, 'deferred', 6000); await sleep(1300);
+    check('hold (e.g. Fusion commit): cloud save not applied', (await rawSave(B)) === raw0 && (await status(B)) === 'deferred');
+    await B.evaluate(() => { window.__rel(); document.body.dataset.screen = 'battle'; });
+    await sleep(1300);
+    check('active battle: still not applied', (await rawSave(B)) === raw0);
+    await B.evaluate(() => { document.body.dataset.screen = 'home'; });
+    await waitStatus(B, 'idle', 8000);
+    check('after the unsafe state ends, it applies by itself', (await checksum(B)) === (await head(U1)).checksum);
   }
 
   // ======================= conflict: keep cloud =======================
@@ -174,13 +219,21 @@ try {
     check('conflict: A’s local progress intact', (await local(A)).credits === aCredits);
     await sleep(1500); check('conflict: no retry storm while undecided', (await syncLog()) === pushesBefore);
     await toSettings(A);
+    check('conflict: indicator says so; no dialog opened by itself', await A.evaluate(() => /Conflict/.test(document.getElementById('syncPill').textContent) && !document.querySelector('.modal-wrap:not(.closing)')));
     check('conflict: panel offers Resolve…', await A.evaluate(() => !!document.querySelector('[data-act="cloud-resolve"]')));
     const bk0 = (await backups(U1)).length, lb0 = await localBackups(A);
     await clickAct(A, 'cloud-resolve');
     await until(A, () => document.querySelector('.cmp'));
+    const txtNow = await A.evaluate(() => Array.from(document.querySelectorAll('.modal-wrap:not(.closing) [data-m-btn]')).map(b => b.textContent).join('|'));
+    check('conflict dialog offers all four choices', ['Continue locally', 'Preserve both as backups', 'Keep cloud version', 'Keep this device'].every(l => new RegExp(l).test(txtNow)));
     const cmp = await modalText(A);
     check('compare shows both sides with real numbers and the other device', /This device/.test(cmp) && /Cloud/.test(cmp) && new RegExp('Specimens' + (await local(A)).n + (await local(A)).n).test(cmp) && /Credits/.test(cmp) && /Chrome|Browser/.test(cmp), cmp.slice(0, 400));
     check('nothing changed while the dialog is open', (await local(A)).credits === aCredits && (await head(U1)).revision === bHead.revision);
+    const bkPre = (await backups(U1)).length;
+    await clickModal(A, /Preserve both as backups/);
+    await sleep(500);
+    check('preserve both: backups written, nothing replaced, still undecided', (await backups(U1)).length > bkPre && (await local(A)).credits === aCredits && (await status(A)) === 'conflict', String((await backups(U1)).length - bkPre));
+    await until(A, () => document.querySelector('.cmp'));
     await clickModal(A, /Keep cloud version/);
     await waitStatus(A, 'idle');
     check('keep cloud: A adopted B’s version', (await local(A)).credits === bHead.payload.wallet.credits && (await checksum(A)) === bHead.checksum);
@@ -249,41 +302,84 @@ try {
   }
 
   // ======================= corrupt / newer cloud saves =======================
-  console.log('\n[11] Corrupt and newer-schema cloud saves are rejected');
+  console.log('\n[11] Corrupt and newer-schema cloud saves are rejected (clean device, automatic pull)');
   {
-    const aRaw = await rawSave(A);
-    await mock('/__tamper?user=1');                       // payload no longer matches its checksum
-    await A.evaluate(() => AV.state.get() && 0);
-    await B.evaluate(() => AV.cloud.sync()); await waitStatus(B, 'cloud-newer');
-    const bRaw = await rawSave(B);
-    await toSettings(B); await clickAct(B, 'cloud-load'); await clickModal(B, /Load cloud save/); await sleep(800);
+    const aRaw = await rawSave(A), good = await head(U1);
+    await B.evaluate(() => AV.cloud.sync()); await waitStatus(B, 'idle');          // B current
+    await bump(A, 2); await waitStatus(A, 'idle');                                // cloud moves on
+    await mock('/__tamper?user=1');                                               // payload no longer matches its checksum
+    const bRaw = await rawSave(B), s0 = (await state()).log.filter(l => /GET cloud_saves/.test(l)).length;
+    await B.evaluate(() => AV.cloud.sync()); await waitStatus(B, 'error');
     check('tampered cloud copy refused; B local untouched', (await rawSave(B)) === bRaw);
-    check('player is told why', await B.evaluate(() => /integrity|damaged/i.test(document.getElementById('toasts').textContent)));
-    // shape-corrupt head (valid checksum for the garbage, but no wallet) and a newer schema
+    check('player is told why (actionable)', await B.evaluate(() => /integrity|damaged/i.test(AV.cloud.detail) && /Cloud backups|retry/i.test(AV.cloud.detail) && /Sync error/.test(document.getElementById('syncPill').textContent)), await B.evaluate(() => AV.cloud.detail));
+    await sleep(1500);
+    check('no retry loop on the same bad revision (one full download only)', (await state()).log.filter(l => /GET cloud_saves/.test(l)).length - s0 <= 3);
     const hh = await head(U1);
     await mock('/__seed', { method: 'POST', body: JSON.stringify({ user: 1, row: Object.assign({}, hh, { revision: hh.revision + 1, payload: { version: 4, specimens: {} } }) }) });
-    await B.evaluate(() => AV.cloud.sync()); await sleep(800);
-    await toSettings(B);
-    await B.evaluate(() => AV.cloud.keepCloud().catch(e => { window.__err = e.message; })); await sleep(500);
-    check('shape-corrupt cloud copy refused', await B.evaluate(() => /damaged|looks/i.test(window.__err || '')), await B.evaluate(() => window.__err));
+    await B.evaluate(() => AV.cloud.sync()); await sleep(600);
+    check('shape-corrupt cloud copy refused; B local untouched', (await rawSave(B)) === bRaw && (await status(B)) === 'error');
     await mock('/__seed', { method: 'POST', body: JSON.stringify({ user: 1, row: Object.assign({}, hh, { revision: hh.revision + 2, save_version: 99, payload: Object.assign({}, hh.payload, { version: 99 }) }) }) });
     await B.evaluate(() => AV.cloud.sync()); await waitStatus(B, 'blocked');
     check('newer-schema cloud copy blocks sync with an update message', await B.evaluate(() => /newer version/i.test(AV.cloud.detail)), await B.evaluate(() => AV.cloud.detail));
     check('B local still untouched', (await rawSave(B)) === bRaw);
-    await mock('/__seed', { method: 'POST', body: JSON.stringify({ user: 1, row: hh }) });   // put the good head back
+    await mock('/__seed', { method: 'POST', body: JSON.stringify({ user: 1, row: Object.assign({}, good, { revision: hh.revision + 3 }) }) });   // put a good head back
+    await B.evaluate(() => AV.cloud.sync()); await sleep(900);
+    check('a good head again: B recovers and applies it automatically', (await checksum(B)) === good.checksum);
     check('A local untouched by all of this', (await rawSave(A)) === aRaw || true);
+  }
+
+  // ======================= remote deletion =======================
+  console.log('\n[11b] Remote deletion of the cloud copy never deletes local progress');
+  {
+    const raw = await rawSave(B), lb0 = await localBackups(B);
+    await mock('/__delete?user=1');
+    await B.evaluate(() => AV.cloud.sync()); await waitStatus(B, 'conflict');
+    check('cloud missing: local save byte-identical, safety copy kept, conflict flagged', (await rawSave(B)) === raw && (await localBackups(B)) >= Math.min(3, lb0 + 1) && await B.evaluate(() => AV.cloud.info().pending.kind === 'cloud-deleted'));
+    await toSettings(B); await clickAct(B, 'cloud-resolve'); await until(B, () => document.querySelector('.modal-wrap:not(.closing)'));
+    const t = await modalText(B);
+    check('dialog offers Upload this device / Continue locally / Keep cloud saves off', /Upload this device/.test(t) && /Continue locally/.test(t) && /Keep cloud saves off/.test(t));
+    await clickModal(B, /Upload this device/); await waitStatus(B, 'idle');
+    check('upload recreates the head from B’s local save', (await head(U1)).checksum === (await checksum(B)) && (await rawSave(B)) === raw);
   }
 
   // ======================= server outage =======================
   console.log('\n[12] Server outage: local play continues, retry with backoff');
   {
     await B.evaluate(() => AV.cloud.disable()); await B.close();
+    await A.evaluate(() => AV.cloud.sync()); await waitStatus(A, 'idle', 8000);                  // A takes B’s re-upload first
     await mock('/__down?on=1'); const c0 = (await local(A)).credits;
     await bump(A, 9);
     await until(A, () => AV.cloud.status === 'offline', null, 10000);
     check('503 → offline status, local progress kept', (await local(A)).credits === c0 + 9);
     await mock('/__down?on=0'); await waitStatus(A, 'idle', 12000);
     check('outage over → synced automatically', (await head(U1)).payload.wallet.credits === c0 + 9);
+  }
+
+  console.log('\n[12b] Hiding the app while dirty makes one bounded upload attempt');
+  {
+    await A.evaluate(() => { AV.cloud.T.debounceMs = 60000; AV.cloud.T.maxWaitMs = 120000; });
+    const c0 = (await head(U1)).payload.wallet.credits;
+    const toasts0 = await A.evaluate(() => document.getElementById('toasts').children.length);
+    await bump(A, 6); await sleep(700);
+    check('before the debounce elapses nothing is uploaded; status "Saved locally"', (await head(U1)).payload.wallet.credits === c0 && await A.evaluate(() => /Saved locally/.test(document.getElementById('syncPill').textContent)));
+    check('no toast per save', (await A.evaluate(() => document.getElementById('toasts').children.length)) === toasts0);
+    await A.evaluate(() => { Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true }); document.dispatchEvent(new Event('visibilitychange')); });
+    for (let i = 0; i < 40 && (await head(U1)).payload.wallet.credits !== c0 + 6; i++) await sleep(150);
+    check('hidden while dirty → uploaded without waiting for the debounce', (await head(U1)).payload.wallet.credits === c0 + 6);
+    await A.evaluate(() => { delete document.visibilityState; AV.cloud.T.debounceMs = 500; AV.cloud.T.maxWaitMs = 3000; });
+  }
+
+  console.log('\n[12c] Restart (reload) keeps the link and the unsynced change, then syncs by itself');
+  {
+    await mock('/__down?on=1');
+    await bump(A, 8); await until(A, () => AV.cloud.status === 'offline', null, 10000);
+    check('offline pill says Offline · sync pending', await A.evaluate(() => /Offline/.test(document.getElementById('syncPill').textContent)));
+    const lc = (await local(A)).credits, rev = (await head(U1)).revision;
+    await A.reload({ waitUntil: 'load' }); await booted(A);
+    check('after restart: still linked to the same account', await A.evaluate(() => AV.cloud.info().linked && AV.cloud.info().hadLink));
+    await mock('/__down?on=0');
+    for (let i = 0; i < 60 && (await head(U1)).payload.wallet.credits !== lc; i++) await sleep(250);
+    check('after restart: the unsynced change uploaded on its own', (await head(U1)).payload.wallet.credits === lc && (await head(U1)).revision === rev + 1);
   }
 
   // ======================= sign out / sign in / account isolation =======================
@@ -300,11 +396,16 @@ try {
     check('other account: not linked, no auto-upload', await A.evaluate(() => !!document.querySelector('[data-act="cloud-on"]')) && !(await head(U2)));
     await sleep(1500); check('other account: still nothing uploaded', !(await head(U2)) && (await syncLog()) === n0);
     check('other account sees no cloud data of user 1', await A.evaluate(async () => { try { const i = await AV.cloud.inspect(); return i.head === null; } catch (e) { return false; } }));
+    await toSettings(A); await clickAct(A, 'cloud-on'); await until(A, () => document.querySelector('.modal-wrap:not(.closing)')); await clickModal(A, /Upload and turn on/);
+    await waitStatus(A, 'idle'); const u2rev = (await head(U2)).revision;
+    check('other account links explicitly and gets its own head', !!(await head(U2)));
     await toSettings(A); await clickAct(A, 'auth-out'); await sleep(400);
+    check('signed out again: indicator says Sign in to sync', await A.evaluate(() => /Sign in to sync/.test(document.getElementById('syncPill').textContent)));
     await signIn(A, 1);                                   // original account resumes (explicitly linked before)
     await until(A, () => AV.cloud.info().linked, null, 5000);
     await waitStatus(A, 'idle', 12000);
     check('same account again: resumes and pushes the offline edits', (await head(U1)).payload.wallet.credits === (await local(A)).credits);
+    check('the other account’s link and cloud copy were not touched', (await head(U2)).revision === u2rev);
   }
 
   // ======================= delete =======================

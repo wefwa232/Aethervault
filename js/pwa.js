@@ -37,14 +37,20 @@
   function sync() {
     if (!banner) return;
     const b = inBattle();
-    banner.querySelector('#pwaUpdMsg').textContent = b ? 'Finish your battle first — updating reloads the game.' : 'A newer Aethervault is installed. Your progress is saved.';
+    banner.querySelector('#pwaUpdMsg').textContent = b ? 'Finish your battle first — updating reloads the game.' : 'A newer Aethervault is installed. Your progress is saved' + (AV.cloud && AV.cloud.unsynced && AV.cloud.unsynced() ? ' on this device; cloud sync is still pending and will finish after the update.' : '.');
     banner.querySelector('[data-a=go]').disabled = b;
   }
   setInterval(sync, 1000);
 
   P.applyUpdate = function () {
     const w = P.reg && P.reg.waiting; if (!w || inBattle()) return false;
-    applying = true; w.postMessage({ type: 'SKIP_WAITING' }); return true;
+    applying = true;
+    const go = () => w.postMessage({ type: 'SKIP_WAITING' });
+    const C = AV.cloud;
+    if (!C || !C.flush) { go(); return true; }
+    // Save locally, give the cloud one bounded chance, then update whatever happens: unsynced progress stays queued on this device.
+    C.flush(3000).then(r => { if (C.unsynced && C.unsynced() && AV.ui && AV.ui.toast) AV.ui.toast('Cloud sync is pending; your progress is saved on this device and will sync after the update.', { icon: 'info', silent: true, ms: 2500 }); setTimeout(go, C.unsynced && C.unsynced() ? 900 : 0); }, go);
+    return true;
   };
   P.check = async function () { if (!P.reg) return false; try { await P.reg.update(); } catch (e) { return false; } return true; };
   P.install = async function () {

@@ -32,6 +32,7 @@
     if (!ok || U.status !== 'available') return false;
     if (document.body.dataset.screen === 'battle') return false;
     try { if (AV.state && AV.state.save) AV.state.save(true); } catch (e) { /* the save is already on disk; a failed flush must not block */ }
+    try { if (AV.cloud && AV.cloud.flush) await AV.cloud.flush(3000); } catch (e) { /* one bounded cloud attempt; the local save is already safe */ }
     set({ status: 'installing', done: 0, total: 0, error: null });
     try { await AV.desktop.invoke('update_install'); }
     catch (e) { set({ status: 'error', error: String(e) }); return false; }

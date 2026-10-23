@@ -86,6 +86,7 @@ http.createServer((req, res) => {
     if (p === '/__state') return json(200, { heads: Object.fromEntries([...db.heads].map(([k, v]) => [k, Object.assign(meta(v), { payload: v.payload })])), backups: Object.fromEntries([...db.backups].map(([k, v]) => [k, v.map(x => Object.assign({}, x, { payload: undefined }))])), log });
     if (p === '/__reset') { db.heads.clear(); db.backups.clear(); log.length = 0; down = false; return json(200, {}); }
     if (p === '/__seed') { const uid = USERS[b.user || 1]; db.heads.set(uid, Object.assign({ app_build: 'seed', device_name: 'Seed' }, b.row)); return json(200, {}); }
+    if (p === '/__delete') { const uid = USERS[u.searchParams.get('user') || 1]; return json(200, { deleted: db.heads.delete(uid) }); }   // remote deletion of the head (backups stay)
     if (p === '/__tamper') { const r = db.heads.get(USERS[u.searchParams.get('user') || 1]); if (r) { r.payload.wallet.credits = (r.payload.wallet.credits || 0) + 1; } return json(200, { tampered: !!r }); }
     // ---- REST ----
     if (p.startsWith('/rest/v1/')) {

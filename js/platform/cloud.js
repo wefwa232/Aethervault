@@ -13,13 +13,24 @@
   const listeners = new Set();
   const emit = () => listeners.forEach(fn => { try { fn(); } catch (e) { console.error(e); } });
 
-  const T = { debounceMs: 30000, maxWaitMs: 180000, retryBaseMs: 15000, retryMaxMs: 900000, pollMs: 300000, startDelayMs: 4000 };
+  const T = { debounceMs: 3000, maxWaitMs: 15000, retryBaseMs: 15000, retryMaxMs: 900000, pollMs: 60000, startDelayMs: 1500, minGapMs: 5000, unsafeRetryMs: 4000, flushMs: 4000, updatedMs: 4000 };
   if (isLocal) Object.assign(T, store(s => JSON.parse(s.getItem('av.cloud.timing') || 'null')) || {});   // test hook, localhost only
 
   // ---------- persistent per-browser link state (never part of the save, never exported) ----------
-  const blank = () => ({ user: null, enabled: false, base: null, lastSyncAt: 0, lastError: '', needsPreserve: false });
+  const LINKS = 'av.cloud.links';
+  const blank = () => ({ user: null, enabled: false, base: null, label: '', linkedAt: 0, lastSyncAt: 0, lastError: '', needsPreserve: false, badHead: '' });
   let meta = Object.assign(blank(), store(s => JSON.parse(s.getItem(KEY) || 'null')) || {});
   const persist = () => store(s => s.setItem(KEY, JSON.stringify(meta)));
+  /** Links are per account. `meta` is the signed-in account's link; other accounts used on this browser are stashed by user id,
+      so a second account neither inherits nor overwrites the first one's link. */
+  function switchLink() {
+    const u = AV.auth && AV.auth.signedIn() && AV.auth.user(); if (!u || meta.user === u.id) return;
+    const links = store(s => JSON.parse(s.getItem(LINKS) || '{}')) || {};
+    if (meta.user && meta.enabled) links[meta.user] = meta;
+    const next = links[u.id]; delete links[u.id];
+    meta = Object.assign(blank(), next || {});
+    store(s => s.setItem(LINKS, JSON.stringify(links))); persist();
+  }
 
   function guessName() {
     const ua = navigator.userAgent;
@@ -42,7 +53,7 @@
   const setStatus = (s, detail) => { C.status = s; C.detail = detail || ''; emit(); };
 
   const available = () => !!(A() && A().configured && A().supported && A().signedIn() && crypto.subtle);
-  const ready = () => { if (!available() || !meta.enabled) return false; const u = A().user(); return !!(u && meta.user === u.id); };
+  const ready = () => { switchLink(); if (!available() || !meta.enabled) return false; const u = A().user(); return !!(u && meta.user === u.id); };
   C.available = available; C.linked = ready;
 
   // ---------- snapshot, checksum, validation ----------
@@ -152,23 +163,44 @@
   }
 
   // ---------- applying a verified cloud save locally ----------
+  let applying = false;
   function applyLocal(snap) {
     if (document.body.dataset.screen === 'battle') throw fail('battle', 'Finish your battle first; nothing was changed.');
-    AV.state.importJSON(JSON.stringify(snap.obj));
+    applying = true;
+    try { AV.state.importJSON(JSON.stringify(snap.obj)); } finally { applying = false; }
     meta.needsPreserve = false;
     const ui = AV.ui; if (ui) { try { ui.applySettings && ui.applySettings(); ui.renderTopbar && ui.renderTopbar(); ui.refresh && ui.refresh(); } catch (e) { console.warn(e); } }
   }
 
   // ---------- link state ----------
-  let changeSeq = 0, dirtySince = 0, timer = null, retryN = 0, pollTimer = null, inflight = null, lastRun = 0;
+  let changeSeq = 0, dirtySince = 0, timer = null, retryN = 0, pollTimer = null, inflight = null, lastRun = 0, updatedTimer = null, lastKey = null;
   const now = () => Date.now();
-  function adopt(rev, checksum) {
-    meta.user = A().user().id; meta.enabled = true; meta.base = { revision: rev, checksum }; meta.lastSyncAt = now(); meta.lastError = ''; meta.needsPreserve = false;
-    persist(); retryN = 0; C.pending = null; dirtySince = 0;
+  const STOPPED = ['conflict', 'blocked', 'signin'];   // statuses where automatic runs would only repeat the same answer
+  const holds = new Set();
+  /** Callers that are mid-commit (e.g. Fusion) take a hold so a cloud save is never applied underneath them. Returns the release function. */
+  C.hold = () => { const h = {}; holds.add(h); return () => holds.delete(h); };
+  function unsafe() {
+    if (holds.size) return 'busy';
+    if (document.body.dataset.screen === 'battle') return 'battle';
+    if (AV.opening && AV.opening.busy && AV.opening.busy()) return 'opening';
+    if (document.querySelector('.modal-wrap:not(.closing)')) return 'dialog';
+    return '';
   }
+  function adopt(rev, checksum) {
+    const first = !meta.enabled || meta.user !== A().user().id;
+    meta.user = A().user().id; meta.enabled = true; meta.base = { revision: rev, checksum }; meta.lastSyncAt = now(); meta.lastError = ''; meta.needsPreserve = false; meta.badHead = '';
+    meta.label = device().name; if (first || !meta.linkedAt) meta.linkedAt = now();
+    persist(); retryN = 0; C.pending = null; C.deferred = false; dirtySince = 0; startPoll(); lastKey = meta.user;
+  }
+  function startPoll() {
+    if (pollTimer) return;
+    const tick = () => { pollTimer = setTimeout(tick, T.pollMs); if (ready() && document.visibilityState === 'visible' && !inflight && ![...STOPPED, 'offline'].includes(C.status)) run(); };
+    pollTimer = setTimeout(tick, T.pollMs);
+  }
+  function stopPoll() { clearTimeout(pollTimer); pollTimer = null; lastKey = ''; }
   function schedule(ms) { clearTimeout(timer); timer = setTimeout(() => run(), ms); }
   function scheduleDebounced() {
-    if (!ready() || ['conflict', 'blocked', 'cloud-newer', 'signin'].includes(C.status)) return;
+    if (!ready() || STOPPED.includes(C.status) || C.status === 'offline') return;   // offline: the backoff timer / `online` event retries; saves must not hammer the network
     if (!dirtySince) dirtySince = now();
     schedule(Math.max(0, Math.min(T.debounceMs, dirtySince + T.maxWaitMs - now())));
   }
@@ -191,7 +223,7 @@
       const seq = changeSeq, snap = await snapshot(), head = await getHead(), base = meta.base || { revision: 0, checksum: '' };
       if (head && head.save_version > AV.state.SAVE_VERSION) { setStatus('blocked', 'The cloud save is from a newer version of Aethervault. Update the app to keep syncing; this device’s progress is untouched.'); return; }
       if (!head) {
-        if (base.revision > 0) { C.pending = { kind: 'cloud-deleted', head: null }; setStatus('conflict', 'The cloud copy was deleted from another device.'); if (prev !== 'conflict') toast('Cloud save needs a decision — Settings → Account'); return; }
+        if (base.revision > 0) { if (prev !== 'conflict') backupLocal('local', snap.obj); C.pending = { kind: 'cloud-deleted', head: null }; setStatus('conflict', 'The cloud copy was deleted from another device.'); if (prev !== 'conflict') toast('Cloud save needs a decision — Settings → Account'); return; }
         if (snap.pristine) { adopt(0, ''); setStatus('idle'); return; }
         const r = await rpcPush(snap, 0);
         if (r.status === 'ok') { adopt(r.revision, snap.checksum); return finish(seq); }
@@ -200,7 +232,7 @@
       const localChanged = snap.checksum !== base.checksum, cloudChanged = head.revision !== base.revision;
       if (head.checksum === snap.checksum) { adopt(head.revision, head.checksum); setStatus('idle'); return; }
       if (!localChanged && !cloudChanged) { adopt(base.revision, base.checksum); setStatus('idle'); return; }
-      if (!localChanged) { C.pending = { kind: 'cloud-newer', head }; setStatus('cloud-newer', 'A newer save from ' + (head.device_name || 'another device') + ' is in the cloud.'); if (prev !== 'cloud-newer') toast('A newer cloud save is available — Settings → Account'); return; }
+      if (!localChanged) return pull(head, base);
       if (cloudChanged) { C.pending = { kind: 'conflict', head }; setStatus('conflict', 'This device and ' + (head.device_name || 'another device') + ' both changed.'); if (prev !== 'conflict') toast('Cloud save conflict — Settings → Account'); return; }
       // Only this device changed. Guard against silently replacing real progress with an emptied save (e.g. after "Reset all progress").
       if (snap.pristine && base.revision > 0) { C.pending = { kind: 'reset', head }; setStatus('conflict', 'This device’s save is empty but the cloud has progress.'); if (prev !== 'conflict') toast('Cloud save needs a decision — Settings → Account'); return; }
@@ -210,6 +242,26 @@
       return unexpected(r, snap, seq);
     } catch (e) { handleError(e); }
   }
+  /** Clean device, newer cloud head: fetch, verify, keep a safety copy, apply. No dialog; every failure leaves local progress untouched. */
+  async function pull(head, base) {
+    const badKey = head.revision + ':' + head.checksum;
+    if (meta.badHead === badKey) { setStatus('error', meta.lastError || 'The cloud copy failed its integrity check; nothing was changed.'); return; }   // same bad revision: don't loop
+    if (unsafe()) { C.deferred = true; setStatus('deferred', 'A newer cloud save will be applied when you are done here.'); schedule(T.unsafeRetryMs); return; }
+    let cloud;
+    try { cloud = await verified(await getFull()); }
+    catch (e) {
+      if (e.kind === 'corrupt') { meta.badHead = badKey; meta.lastError = e.message + ' Your progress is untouched. Open Cloud backups to inspect older versions, or Sync now to retry.'; persist(); C.pending = { kind: 'corrupt', head }; setStatus('error', meta.lastError); return; }
+      if (e.kind === 'newer') { setStatus('blocked', e.message); return; }
+      throw e;
+    }
+    const again = await snapshot();
+    if (again.checksum !== base.checksum) { schedule(200); return; }   // local changed while downloading: re-evaluate (conflict or push), never overwrite
+    if (unsafe()) { C.deferred = true; setStatus('deferred', 'A newer cloud save will be applied when you are done here.'); schedule(T.unsafeRetryMs); return; }
+    await preserve('local', again, 'local-preserved', false);   // throws (nothing replaced) when no safety copy could be written
+    applyLocal(cloud); adopt(head.revision, head.checksum);
+    setStatus('updated', 'Updated from cloud (' + (head.device_name || 'another device') + ').');
+    clearTimeout(updatedTimer); updatedTimer = setTimeout(() => { if (C.status === 'updated') setStatus('idle'); }, T.updatedMs);
+  }
   function finish(seq) { if (seq !== changeSeq) { setStatus('dirty'); dirtySince = now(); schedule(T.debounceMs); } else setStatus('idle'); }
   function unexpected(r, snap, seq) {
     if (r.status === 'conflict') { schedule(500); return; }   // raced with another device between head check and push: re-evaluate from scratch
@@ -218,6 +270,7 @@
     setStatus('error', meta.lastError);
   }
   function handleError(e) {
+    if (e.kind === 'battle') { C.deferred = true; setStatus('deferred', e.message); return schedule(T.unsafeRetryMs); }
     if (e.kind === 'net' || e.kind === 'retry') return offline(e);
     if (e.kind === 'auth') { meta.lastError = e.message; persist(); return setStatus('signin', e.message); }
     meta.lastError = e.message || 'Sync failed.'; persist(); setStatus('error', meta.lastError);
@@ -285,30 +338,51 @@
   C.deleteCloud = () => exclusive(async () => {
     if (!available()) throw fail('auth', 'Sign in first.');
     await call('POST', 'rpc/av_cloud_delete_all', {});
-    meta = blank(); persist(); C.pending = null; clearTimeout(timer); setStatus('off');
+    meta = blank(); persist(); C.pending = null; clearTimeout(timer); stopPoll(); setStatus('off');
   });
-  C.disable = () => { meta = blank(); persist(); C.pending = null; clearTimeout(timer); setStatus('off'); };
+  C.disable = () => { meta = blank(); persist(); C.pending = null; clearTimeout(timer); stopPoll(); setStatus('off'); };
+  /** Keep both versions as backups (local safety copies and cloud backups) without changing either. Used from the conflict dialogs. */
+  C.preserveBoth = () => exclusive(async () => {
+    if (!available()) throw fail('auth', 'Sign in first.');
+    const snap = await snapshot(), head = await getHead();
+    await preserve('local', snap, 'local-preserved');
+    if (head) await preserveHead(head, snap.checksum);
+  });
+  /** Save locally, then (only if there is something unsynced) one sync attempt that stops waiting after `ms`. Never throws, never blocks longer than `ms`. */
+  C.flush = async function (ms) {
+    try { AV.state.save(true); } catch (e) { /* the local save is already on disk */ }
+    try {
+      if (!ready() || STOPPED.includes(C.status)) return 'skipped';
+      const dirty = (await snapshot()).checksum !== (meta.base || {}).checksum;
+      if (!dirty) return 'clean';
+      return await Promise.race([run().then(() => (C.status === 'idle' ? 'synced' : C.status)), new Promise(r => setTimeout(() => r('timeout'), ms || T.flushMs))]);
+    } catch (e) { return 'error'; }
+  };
+  /** True when the player has progress that is not in the cloud yet (shown before an app update reloads the page). */
+  C.unsynced = () => ready() && ['dirty', 'offline', 'error', 'syncing'].includes(C.status);
   C.info = () => ({ configured: !!(A() && A().configured), supported: !!(A() && A().supported), signedIn: !!(A() && A().signedIn()), linked: ready(), status: C.status, detail: C.detail,
-    lastSyncAt: meta.lastSyncAt, revision: meta.base ? meta.base.revision : 0, device: device(), pending: C.pending, lastError: meta.lastError });
+    lastSyncAt: meta.lastSyncAt, revision: meta.base ? meta.base.revision : 0, device: device(), pending: C.pending, lastError: meta.lastError, hadLink: !!(meta.enabled && meta.user), deferred: !!C.deferred });
 
   // ---------- triggers ----------
   function reconcile() {
-    clearTimeout(timer); clearTimeout(pollTimer);
-    if (!ready()) { C.pending = null; setStatus('off'); return; }
+    const key = ready() ? meta.user : '';
+    if (key && key === lastKey) return;   // token refreshes also notify: same account, same link → nothing to restart
+    clearTimeout(timer); stopPoll(); lastKey = key;
+    if (!key) { C.pending = null; setStatus('off'); return; }
     if (C.status === 'off') setStatus('idle');
-    schedule(T.startDelayMs);
-    const poll = () => { pollTimer = setTimeout(() => { if (ready() && document.visibilityState === 'visible' && !inflight && !['conflict', 'blocked', 'cloud-newer', 'signin'].includes(C.status)) run(); poll(); }, T.pollMs); }; poll();
+    schedule(T.startDelayMs); startPoll();
   }
   if (AV.bus) {
-    AV.bus.on('saved', () => { changeSeq++; if (ready()) { if (C.status === 'idle') setStatus('dirty'); scheduleDebounced(); } });
-    AV.bus.on('reset', () => { if (meta.enabled) { meta.needsPreserve = true; persist(); } });   // import / reset: keep the cloud version before it is replaced
+    AV.bus.on('saved', () => { if (applying) return; changeSeq++; if (ready()) { if (C.status === 'idle' || C.status === 'updated') setStatus('dirty'); scheduleDebounced(); } });
+    AV.bus.on('reset', () => { if (meta.enabled && !applying) { meta.needsPreserve = true; persist(); } });   // import / reset: keep the cloud version before it is replaced
   }
   window.addEventListener('online', () => { if (ready() && !inflight) { retryN = 0; run(); } });
   document.addEventListener('visibilitychange', () => {
     if (!ready()) return;
-    if (document.visibilityState === 'hidden') { if (C.status === 'dirty') run(); }              // best effort while the tab is still alive
-    else if (now() - lastRun > 60000 && !inflight && !['conflict', 'blocked', 'cloud-newer', 'signin'].includes(C.status)) run();
+    if (document.visibilityState === 'hidden') C.flush(T.flushMs);   // flush the local save, then one bounded attempt if anything is unsynced
+    else if (now() - lastRun > T.minGapMs && !inflight && !STOPPED.includes(C.status)) run();   // foreground: check the cloud head promptly
   });
+  window.addEventListener('pagehide', () => { if (ready()) C.flush(T.flushMs); });
   // The service worker holds no tokens. A Background Sync wake-up only asks an open page to run its normal sync.
   if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'CLOUD_SYNC' && ready()) run(); });
   if (A()) A().onChange(reconcile);

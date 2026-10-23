@@ -23,3 +23,14 @@
 .cmp thead th { font-weight: 600; color: var(--brass-hi); } .cmp tbody th { font-weight: 500; color: var(--ivory-2); } .cmp small { opacity: .7; }
 .cloud-bk { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
 .cloud-bk li { display: flex; gap: .8rem; align-items: center; justify-content: space-between; padding: .5rem .6rem; border: 1px solid rgba(236, 227, 207, .14); border-radius: 8px; }
+
+/* Global sync status pill (quiet, bottom-left of the stage; hidden in battle) */
+#syncPill { position: fixed; z-index: 40; left: calc(var(--sa-l) + var(--rail-w, 0px) + 10px); bottom: calc(var(--sa-b) + 4px); display: inline-flex; align-items: center; gap: .4rem; padding: .15rem .5rem; font: inherit; font-size: .68rem; letter-spacing: .02em; color: var(--ivory-2); background: rgba(18, 17, 15, .72); border: 1px solid rgba(236, 227, 207, .16); border-radius: 999px; cursor: pointer; opacity: .78; }
+#syncPill:hover, #syncPill:focus-visible { opacity: 1; }
+#syncPill[hidden] { display: none; }
+#syncPill i { width: .45rem; height: .45rem; border-radius: 50%; background: currentColor; opacity: .7; }
+#syncPill[data-tone="ok"] i { background: #8fc79a; opacity: 1; } #syncPill[data-tone="warn"] { color: #e0c27a; } #syncPill[data-tone="bad"] { color: #e8928a; opacity: 1; border-color: rgba(232, 146, 138, .5); }
+#syncPill[data-key="syncing"] i { animation: syncPulse 1s ease-in-out infinite; }
+@keyframes syncPulse { 50% { opacity: .15; } }
+@media (prefers-reduced-motion: reduce) { #syncPill[data-key="syncing"] i { animation: none; } }
+@media (max-width: 860px) { #syncPill { left: auto; right: calc(var(--sa-r) + 10px); bottom: calc(var(--sa-b) + 66px); } }

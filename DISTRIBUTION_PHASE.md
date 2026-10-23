@@ -80,6 +80,7 @@ Per the phase brief: each subphase committed, pushed, documented, app runnable, 
 
 - 2026-10-23 — Subphase F built: `tauri-plugin-updater` (Rust-only commands), minisign-signed NSIS artifacts, `latest.json` generator, Settings update card, 23/23 EXE checks. Dedicated signing key generated in `~/.tauri/` (owner must back it up). End-to-end install not yet exercised (needs a published newer release). See `UPDATER.md`.
 
+- 2026-10-23 — Cloud Sync UX polish (post-A–G): linked devices now sync automatically — 3 s debounced upload, automatic pull of a newer cloud save when the device is clean (startup, foreground, reconnect, 60 s poll), conflict dialog only for genuine divergence, global status pill, bounded flush before hide / PWA update / desktop update install, per-account links. Mock suite 96/96; no SQL/schema/auth/Rust changes; Realtime deliberately not used. Desktop EXE needs a new release to get it (not published). See `CLOUD_SAVES.md` → *Linked-device automation*.
 - 2026-10-23 — Subphase G built: `.github/workflows/release.yml` (tag/manual only, approval-gated environment `desktop-release`, tag ruleset), `tools/version.mjs`. v0.6.2 released through it; tamper test 8/8. Owner's real 0.6.1 → 0.6.2 in-app update verified (save, sign-in, cloud sync, identity intact). See `RELEASE.md`, `UPDATER.md`.
 
 ## Subphase A status

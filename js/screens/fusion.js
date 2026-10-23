@@ -91,6 +91,10 @@
     draw();
 
     async function commit() {
+      const release = AV.cloud && AV.cloud.hold ? AV.cloud.hold() : () => {};   // a newer cloud save must not be applied mid-fusion
+      try { await commitInner(); } finally { release(); }
+    }
+    async function commitInner() {
       const pv = F.last; if (!pv || !pv.ok) return;
       const inputs = [F.primary, ...F.donors].map(E.get);
       if (!pv.sim) {

@@ -24,13 +24,36 @@
     </tbody></table>`;
   }
 
-  /** Two-sided choice. Resolves 'device' | 'cloud' | null. */
-  function decide({ title, intro, info, device, cloud }) {
-    const buttons = [{ label: 'Not now', kind: 'ghost', value: null }];
-    if (cloud) buttons.push({ label: 'Keep cloud version', kind: 'primary', value: 'cloud' });
-    if (device) buttons.push({ label: 'Keep this device', kind: 'primary', value: 'device' });
+  /** Choice dialog. Resolves 'device' | 'cloud' | 'both' | null (continue locally). `first` = first-link wording. */
+  function decide({ title, intro, info, device, cloud, first }) {
+    const buttons = [{ label: 'Continue locally', kind: 'ghost', value: null }, { label: 'Preserve both as backups', kind: 'ghost', value: 'both' }];
+    if (cloud) buttons.push({ label: first ? 'Use cloud save' : 'Keep cloud version', kind: 'primary', value: 'cloud' });
+    if (device) buttons.push({ label: first ? 'Use this device' : 'Keep this device', kind: 'primary', value: 'device' });
     return AV.ui.modal({ title, wide: true, cls: 'cloud-decide', dismissValue: null,
       html: `<p class="confirm-msg">${intro}</p>${rows(info.local, info.head)}<p class="muted tiny">Whichever you don’t keep is saved first as a backup (a safety copy on this device and a cloud backup), so nothing is lost either way.</p>`, buttons }).promise;
+  }
+
+  /** Shows `decide` until the player picks a side or continues locally; "Preserve both" backs both up and asks again (it changes nothing). */
+  async function choose(o) {
+    for (;;) {
+      const v = await decide(o);
+      if (v !== 'both') return v;
+      await guard(async () => { await AV.cloud.preserveBoth(); toast('Both versions are saved as backups. Nothing was changed.'); });
+    }
+  }
+
+  const STATES = {
+    idle: ['Synced', 'ok'], dirty: ['Saved locally', 'dim'], syncing: ['Syncing…', 'dim'], updated: ['Updated from cloud', 'ok'], offline: ['Offline · sync pending', 'warn'],
+    conflict: ['Conflict — tap to resolve', 'bad'], error: ['Sync error', 'bad'], blocked: ['Update the app to sync', 'bad'], signin: ['Sign in to sync', 'bad'], deferred: ['Cloud update waiting', 'dim'],
+  };
+  /** Compact status shown by the global indicator, or null when cloud saves do not exist in this build. */
+  function statusInfo() {
+    const a = AV.auth, c = AV.cloud; if (!a || !a.configured || !a.supported || !c) return null;
+    const i = c.info();
+    if (!i.signedIn) return i.hadLink ? { key: 'signin', text: 'Sign in to sync', tone: 'dim' } : { key: 'local', text: 'Saved locally', tone: 'dim' };
+    if (!i.linked) return { key: 'off', text: 'Cloud saves off', tone: 'dim' };
+    const st = STATES[i.status] || ['Synced', 'ok'];
+    return { key: i.status, text: st[0], tone: st[1], title: i.detail || '' };
   }
 
   function panelHtml() {
@@ -40,16 +63,16 @@
     if (!i.linked) {
       body.push('<p class="muted">Cloud saves are <b>off</b> on this device. Turn them on to keep this archive in your account and continue on another device. Your save always stays on this device first; nothing is uploaded, downloaded or replaced until you confirm what happens.</p>');
       body.push('<div class="btn-row"><button class="btn" data-act="cloud-on">Turn on cloud saves…</button></div>');
+      body.push('<p class="muted tiny">Turning them on links this device to your account once. After that, progress uploads by itself and newer saves from your other devices arrive by themselves; you only get asked if two devices changed independently.</p>');
     } else {
-      const s = i.status, msg = { idle: 'Up to date.', dirty: 'Changes are waiting to sync.', syncing: 'Syncing…' }[s] || esc(i.detail || '');
-      const tone = s === 'idle' || s === 'dirty' || s === 'syncing' ? 'dim' : 'bad-txt';
-      body.push(`<p class="muted">Cloud saves are <b>on</b>. ${i.device ? `This device: <b>${esc(i.device.name)}</b>.` : ''}</p>`);
+      const s = i.status, msg = { idle: 'Synced. Changes upload automatically and newer saves from your other devices arrive on their own.', dirty: 'Saved on this device; uploading in a moment.', syncing: 'Syncing…', updated: 'Updated from cloud.', deferred: 'A newer cloud save will be applied as soon as you finish what you are doing.' }[s] || esc(i.detail || '');
+      const tone = ['idle', 'dirty', 'syncing', 'updated', 'deferred'].includes(s) ? 'dim' : 'bad-txt';
+      body.push(`<p class="muted">Cloud saves are <b>on</b> and automatic. ${i.device ? `This device: <b>${esc(i.device.name)}</b>.` : ''}</p>`);
       body.push(`<p class="${tone} tiny" role="status" id="cloudStatus" data-status="${esc(s)}">${msg}</p>`);
       body.push(`<p class="muted tiny" id="cloudLast">Last successful sync: ${esc(ago(i.lastSyncAt))}${i.revision ? ` · revision ${i.revision}` : ''}</p>`);
       const b = [];
-      b.push(`<button class="btn" data-act="cloud-sync" ${s === 'syncing' ? 'disabled' : ''}>Sync now</button>`);
+      b.push(`<button class="btn ${s === 'conflict' ? 'ghost' : ''}" data-act="cloud-sync" ${s === 'syncing' ? 'disabled' : ''}>Sync now</button>`);
       if (s === 'conflict') b.push('<button class="btn" data-act="cloud-resolve">Resolve…</button>');
-      if (s === 'cloud-newer') b.push('<button class="btn" data-act="cloud-load">Load cloud version…</button>');
       b.push('<button class="btn ghost" data-act="cloud-compare">Compare…</button><button class="btn ghost" data-act="cloud-backups">Cloud backups…</button>');
       b.push('<button class="btn ghost" data-act="cloud-off">Turn off on this device</button><button class="btn danger" data-act="cloud-delete">Delete cloud data…</button>');
       body.push(`<div class="btn-row">${b.join('')}</div>`);
@@ -61,18 +84,18 @@
     const c = AV.cloud, i = await c.inspect();
     if (i.kind === 'same' || i.kind === 'empty') { await c.linkSame(); toast('Cloud saves are on'); c.sync(); return; }
     if (i.kind === 'upload') {
-      const ok = await AV.ui.confirm({ title: 'Upload this device’s progress?', confirmText: 'Upload and turn on', icon: 'upload',
-        message: 'Your account has no cloud save yet. This uploads the archive on this device. Your local save is not changed.', extra: rows(i.local, null) });
+      const ok = await AV.ui.confirm({ title: 'Upload this device’s progress?', confirmText: 'Upload and turn on', cancelText: 'Continue locally', icon: 'upload',
+        message: 'Your account has no cloud save yet. Turning on cloud saves links this device to your account and uploads the archive on this device. Your local save is not changed.', extra: rows(i.local, null) });
       if (ok) { await c.keepDevice(); toast('Uploaded — cloud saves are on'); }
       return;
     }
     if (i.kind === 'download') {
-      const ok = await AV.ui.confirm({ title: 'Load your cloud save?', confirmText: 'Load cloud save', icon: 'download',
-        message: 'This device has no progress yet, and your account has a cloud save. Loading it replaces this empty archive (a safety copy is kept first).', extra: rows(i.local, i.head) });
+      const ok = await AV.ui.confirm({ title: 'Use your cloud save?', confirmText: 'Use cloud save', cancelText: 'Continue locally', icon: 'download',
+        message: 'This device has no progress yet, and your account has a cloud save. Using it links this device to your account and replaces this empty archive (a safety copy is kept first).', extra: rows(i.local, i.head) });
       if (ok) { await c.keepCloud(); toast('Cloud save loaded'); }
       return;
     }
-    const v = await decide({ title: 'This device and your account both have progress', info: i, device: true, cloud: true,
+    const v = await choose({ title: 'This device and your account both have progress', info: i, device: true, cloud: true, first: true,
       intro: 'The archive on this device is different from the one in your account. Choose which one to keep. Nothing happens until you choose.' });
     if (v === 'device') { await c.keepDevice(); toast('This device’s save is now your cloud save'); }
     else if (v === 'cloud') { await c.keepCloud(); toast('Cloud save loaded on this device'); }
@@ -82,24 +105,19 @@
     const c = AV.cloud, p = c.pending; if (!p) return;
     const i = await c.inspect();
     if (p.kind === 'cloud-deleted') {
-      const ok = await AV.ui.confirm({ title: 'The cloud save was deleted', confirmText: 'Upload this device’s save', icon: 'upload',
-        message: 'The cloud copy was deleted from another device. This device still has your progress. Upload it again, or cancel and decide later (nothing is lost on this device).', extra: rows(i.local, null) });
-      if (ok) { await c.keepDevice(); toast('Uploaded again'); }
+      const v = await AV.ui.modal({ title: 'The cloud copy is missing', wide: true, cls: 'cloud-decide', dismissValue: null,
+        html: `<p class="confirm-msg">The cloud save was deleted from another device or the web. That never deletes progress here: this device still has everything, and a safety copy was just kept.</p>${rows(i.local, null)}`,
+        buttons: [{ label: 'Continue locally', kind: 'ghost', value: null }, { label: 'Keep cloud saves off', kind: 'ghost', value: 'off' }, { label: 'Upload this device', kind: 'primary', value: 'up' }] }).promise;
+      if (v === 'up') { await c.keepDevice(); toast('Uploaded again'); }
+      else if (v === 'off') { c.disable(); toast('Cloud saves are off on this device'); }
       return;
     }
     const reset = p.kind === 'reset';
-    const v = await decide({ title: reset ? 'This device was reset' : 'Two devices changed', info: i, device: true, cloud: true,
+    const v = await choose({ title: reset ? 'This device was reset' : 'Two devices changed', info: i, device: true, cloud: true,
       intro: reset ? 'This device’s archive is empty, but your account still has progress. Restore the cloud copy, or keep the empty archive (which replaces the cloud copy).'
-        : 'Both this device and another device changed the archive since they last synced. Choose which one to keep.' });
+        : 'Both this device and the cloud save contain different changes made since they last matched. Neither has been overwritten. Choose which one to keep, or keep both as backups and decide later.' });
     if (v === 'device') { await c.keepDevice(); toast('This device’s save is now your cloud save'); }
     else if (v === 'cloud') { await c.keepCloud(); toast('Cloud save loaded on this device'); }
-  }
-
-  async function loadNewer() {
-    const c = AV.cloud, i = await c.inspect();
-    const ok = await AV.ui.confirm({ title: 'Load the newer cloud save?', confirmText: 'Load cloud save', icon: 'download',
-      message: 'This replaces the archive on this device with the newer one from your account. A safety copy of this device’s archive is kept first.', extra: rows(i.local, i.head) });
-    if (ok) { await c.keepCloud(); toast('Cloud save loaded'); }
   }
 
   async function compare() {
@@ -131,7 +149,7 @@
   async function act(a) {
     const c = AV.cloud; if (!c) return false;
     const map = {
-      'cloud-on': enable, 'cloud-resolve': resolve, 'cloud-load': loadNewer, 'cloud-compare': compare, 'cloud-backups': backups, 'cloud-delete': del,
+      'cloud-on': enable, 'cloud-resolve': resolve, 'cloud-compare': compare, 'cloud-backups': backups, 'cloud-delete': del,
       'cloud-sync': async () => { await c.sync(); const i = c.info(); if (i.status === 'idle') toast('Synced'); },
       'cloud-off': async () => { const ok = await AV.ui.confirm({ title: 'Turn off cloud saves here?', confirmText: 'Turn off', message: 'This device stops syncing. Your local save and your cloud data are not changed.' }); if (ok) { c.disable(); toast('Cloud saves are off on this device'); } },
     };
@@ -139,5 +157,27 @@
     await guard(map[a]); return true;
   }
 
-  AV.cloudUi = { panelHtml, act };
+  // ---------- global status indicator ----------
+  let pill = null;
+  function drawPill() {
+    const st = statusInfo(), hide = !st || !document.body.dataset.screen || document.body.dataset.screen === 'battle';
+    if (hide) { if (pill) pill.hidden = true; return; }
+    if (!pill) {
+      pill = document.createElement('button'); pill.id = 'syncPill'; pill.type = 'button';
+      pill.addEventListener('click', () => { const i = AV.cloud.info(); if (i.status === 'conflict' && i.linked) guard(resolve); else AV.ui.go('settings'); });
+      document.body.appendChild(pill);
+    }
+    pill.hidden = false; pill.dataset.key = st.key; pill.dataset.tone = st.tone;
+    pill.title = st.title || 'Cloud saves — open Settings';
+    pill.setAttribute('aria-label', 'Save status: ' + st.text);
+    const t = '<i aria-hidden="true"></i>' + esc(st.text);
+    if (pill.innerHTML !== t) pill.innerHTML = t;
+  }
+  if (AV.cloud) AV.cloud.onChange(drawPill);
+  if (AV.auth) AV.auth.onChange(drawPill);
+  new MutationObserver(drawPill).observe(document.body, { attributes: true, attributeFilter: ['data-screen'] });
+  setInterval(drawPill, 5000);   // cheap safety net; also refreshes after a link/unlink done elsewhere
+  drawPill();
+
+  AV.cloudUi = { panelHtml, act, statusInfo };
 })();
