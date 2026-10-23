@@ -68,6 +68,16 @@ Per the phase brief: each subphase committed, pushed, documented, app runnable, 
 
 - 2026-10-23 — Audit done. Pushed `50605cd` to origin. Fixed `MUSIC/`→`music/` case defect. Added `vercel.json`, `.vercelignore`, `.gitignore` entries. Installed Vercel CLI. **Blocked on Vercel login (manual gate).**
 
+- 2026-10-23 — Vercel login done. Project `aethervault` created and linked to `wefwa232/Aethervault`; SSO protection disabled; Git deployments enabled. Production deployed: https://aethervault-six.vercel.app. Verified in the built-in Chromium pane (Chrome extension was offline); details in `VERCEL_DEPLOYMENT.md`. Production Branch could not be set via API (stays `main`) — one dashboard step remains (see `VERCEL_DEPLOYMENT.md`).
+
+## Subphase A status
+
+Deployed and verified, with two open items: (1) set Production Branch to `phase-five` in the dashboard, (2) repeat the screen walk in desktop Chrome.
+
+## Next-session opener (Subphase B)
+
+> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphase A is complete (Vercel: https://aethervault-six.vercel.app). Begin Subphase B only: installable PWA (manifest, icons, versioned service worker, controlled updates, offline relaunch, safe-area handling). Do not start Subphase C.
+
 ## Known risks
 
 - Repo is public, contrary to the brief; any "private repo" assumption (e.g. Vercel Hobby plan restrictions on private/team repos) must be re-checked once the owner decides.
