@@ -80,6 +80,8 @@ Per the phase brief: each subphase committed, pushed, documented, app runnable, 
 
 - 2026-10-23 — Subphase F built: `tauri-plugin-updater` (Rust-only commands), minisign-signed NSIS artifacts, `latest.json` generator, Settings update card, 23/23 EXE checks. Dedicated signing key generated in `~/.tauri/` (owner must back it up). End-to-end install not yet exercised (needs a published newer release). See `UPDATER.md`.
 
+- 2026-10-23 — Subphase G built: `.github/workflows/release.yml` (tag/manual only, approval-gated environment `desktop-release`, tag ruleset), `tools/version.mjs`. v0.6.2 released through it; tamper test 8/8. Pending: owner's real 0.6.1 → 0.6.2 update on the installed app. See `RELEASE.md`, `UPDATER.md`.
+
 ## Subphase A status
 
 Deployed and verified, with one open item: repeat the screen walk in desktop Chrome.

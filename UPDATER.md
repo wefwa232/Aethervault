@@ -46,3 +46,23 @@ node tools/updater-manifest.mjs --notes "What changed"
 - The signature path is exercised by the plugin itself (library code), not by an Aethervault-specific test.
 - Windows installers are still unsigned (SmartScreen warning); the updater signature is separate from Authenticode.
 - The first update needs a build that already contains this updater: the owner's currently installed 0.6.1 does **not**, so it must be reinstalled once from the new 0.6.1+ installer (the profile and save are kept) before it can update itself.
+
+## Tamper test (Subphase G, 2026-10-23)
+
+`tools/updater-tamper-test.mjs` runs a **test-only** EXE (built with `--no-bundle --config` overriding the endpoint to `http://127.0.0.1:9444/latest.json` and `dangerousInsecureTransportProtocol`; it keeps the real public key) against a local server that serves the real v0.6.2 installer in doctored forms. Result: **8 passed, 0 failed**.
+
+| Case | Outcome |
+|---|---|
+| Correctly signed, newer package | offered (control) |
+| Real signature, bytes appended | rejected: "The signature verification failed" |
+| Real signature, one byte flipped | rejected: "The signature verification failed" |
+| Garbage signature | rejected: "Invalid encoding in minisign data" |
+| Valid signature from a different key | rejected: "created with a different key" |
+| Same version / older version | not offered (no downgrade) |
+| After all rejections | app still running; no installer was launched |
+
+The production binary has no insecure-transport override; only the throw-away test build did.
+
+## First real release
+
+v0.6.2 was built, signed and published by the pipeline (run approved by the owner). Assets: installer, `.sig`, `latest.json`; the key was masked (`***`) in the logs.
