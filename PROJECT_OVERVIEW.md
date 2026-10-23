@@ -334,7 +334,7 @@ tests/phase4.test.js       Node: cards, pools, migration + fault injection, fusi
 tests/combat.test.js       Node: combat data, translation, save v4 + fault injection, decks, hand, Elixir, simulation, B0 deck-block, orders, abilities, defeat, support cards, Leviathan (99 checks)
 tools/                     dev-only Puppeteer scripts (validation, screenshots, perf, smoke) — not needed to play
 docs/                      screenshots (before/after/phase2/phase3/phase4), JSON validation + perf reports, legacy v0.1 CSS
-MUSIC/background music/    4 royalty-free MP3 ambient tracks (currently not wired to a real music theme)
+music/background music/    4 royalty-free MP3 ambient tracks (currently not wired to a real music theme)
 ```
 
 ---
@@ -343,7 +343,7 @@ MUSIC/background music/    4 royalty-free MP3 ambient tracks (currently not wire
 
 - Git repo, branch **`phase-five`** (main branch **`main`**), branched from `phase-four-complete`. Combat A is committed on it (see `PHASE_FIVE.md` §9 for hashes and the tag). `phase-four` is untouched.
 - Line endings are normalised to LF (a `.gitattributes` enforces it).
-- Background-music files exist under `MUSIC/` but the game still uses its generative ambient pad (the real-music theme is deferred).
+- Background-music files exist under `music/` but the game still uses its generative ambient pad (the real-music theme is deferred).
 
 ---
 

@@ -1,0 +1,11 @@
+# Not needed at runtime; keeps deployment uploads small.
+# Runtime = index.html, css/, js/, vendor/, music/.
+docs/
+tests/
+tools/
+dev/
+.claude/
+*.md
+*.bat
+serve.mjs
+.gitattributes

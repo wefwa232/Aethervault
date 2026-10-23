@@ -2,3 +2,7 @@ tools/node_modules/
 *.log.tmp
 .DS_Store
 Thumbs.db
+.vercel
+.env
+.env.*
+!.env.example
