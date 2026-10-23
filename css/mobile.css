@@ -41,6 +41,9 @@ body.sheet-lock { overflow: hidden; }
   .modal-wrap.sheet { place-items: end stretch; padding: 0; }
   .modal-wrap.sheet .modal { width: 100%; max-height: min(86dvh, 720px); clip-path: none; border-radius: 16px 16px 0 0; animation: sheetIn calc(.26s * var(--spd)) cubic-bezier(.2, .9, .3, 1) both; }
   .modal-wrap.sheet .modal::before { clip-path: none; border-radius: 15px 15px 0 0; }
+  /* stage.css styles the specimen-sheet `.sheet` (2-col grid, `.sheet > div` flex rows); undo it for the bottom-sheet wrapper and its modal */
+  .modal-wrap.sheet { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: 0; }
+  .modal-wrap.sheet > .modal { align-items: stretch; justify-content: flex-start; gap: 0; padding: 0; border-bottom: 0; }
   .modal-wrap.sheet .modal-head::before { content: ""; position: absolute; left: 50%; top: 6px; width: 38px; height: 4px; margin-left: -19px; border-radius: 2px; background: var(--hair); }
   .modal-wrap.sheet .modal-head { position: relative; padding-top: 1.1rem; } .modal-wrap.sheet .modal-body { padding-bottom: calc(1.1rem + var(--sa-b)); }
   .modal-wrap.sheet.closing .modal { animation: sheetOut calc(.18s * var(--spd)) ease forwards; }

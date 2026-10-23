@@ -134,6 +134,7 @@ No gameplay, Supabase/auth/cloud/updater or release change. Desktop (>860px, fin
 8. 3D stage gestures: one-finger rotate, pinch on zoom stages, Reset view; vertical scroll still works on the Home and Open stages.
 
 ## Progress log
+- 2026-10-23 — Full-app smoke test at 402x874, 874x402, 820x1180 and 1440x900 (see `docs/mobile-ui-handoff.md`): battle HUD no longer hides the enemy Core label (renderer `topInset`), bottom sheets fill their width (scoped reset of the specimen-sheet `.sheet` rules). PWA re-stamped. Remaining items accepted as real-device or later-polish checks.
 - 2026-10-23 — Mobile C done: combat touch controls (B1 closed), battle HUD portrait/landscape, wide-landscape phone breakpoint, Settings groups, performance presets with a touch default, balance clip, dvh pass, iPhone checklist. Checkpoint committed to `phase-five`; phase closed pending the real-device check.
 - 2026-10-23 — Mobile B done: Inspect/Organise, Forge, Fusion, Vault views/Compare, Deck editor (tap Add/Swap). Checkpoint committed to `phase-five`.
 - 2026-10-23 — Mobile A done: shell/nav, tokens, Home, Open Hall, Vault. Checkpoint committed to `phase-five`.

@@ -45,7 +45,9 @@
       this.w = w; this.h = h; this.px = px; const cw = Math.max(2, Math.round(w * px)), ch = Math.max(2, Math.round(h * px));
       this.canvas.width = cw; this.canvas.height = ch; this.canvas.style.width = w + 'px'; this.canvas.style.height = h + 'px';
       if (this.renderer) { const gl = S.glCanvas(); if (cw > gl.width || ch > gl.height) this.renderer.setSize(Math.ceil(Math.max(cw, gl.width) / 64) * 64, Math.ceil(Math.max(ch, gl.height) / 64) * 64, false); }
-      this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); this.frameCamera(); this.dirty = true;
+      const inset = this.opts.topInset ? Math.max(0, Math.min(this.opts.topInset(), h * 0.3)) : 0; // HUD strip the arena must clear
+      this.camera.aspect = w / (h - inset); if (inset) this.camera.setViewOffset(w, h - inset, 0, -inset, w, h); else this.camera.clearViewOffset();
+      this.camera.updateProjectionMatrix(); this.frameCamera(); this.dirty = true;
     }
     /** Fixed camera on the player's side: the whole arena fits the viewport at any aspect. */
     frameCamera() {

@@ -76,7 +76,7 @@
       const cardIds = sim.sides.a.deck, shown = id => (specs()[id].look && AV.progress ? AV.progress.displaySpec(specs()[id]) : specs()[id]);
       await S.ensure([...new Set(cardIds.map(id => shown(id).base))]);
       if (disposed) return;
-      scene = C.render.create($('btField'), { arena: { w: sim.w, h: sim.h }, pitch: 1.0, fov: 28, margin: 1.0, lookShift: .25, board: drawBoard, label: 'Training arena' });
+      scene = C.render.create($('btField'), { arena: { w: sim.w, h: sim.h }, pitch: 1.0, fov: 28, margin: 1.0, lookShift: .25, topInset: () => ($('btField').clientHeight < 640 ? ($('btField').querySelector('.bt-top') || {}).offsetHeight || 0 : 0), board: drawBoard, label: 'Training arena' });
       if (!scene) { say('The 3D renderer is unavailable.', 'bad'); return; }
       field.insertBefore(scene.canvas, over); over.style.zIndex = 2;
       scene.canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;';
