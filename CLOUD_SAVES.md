@@ -1,6 +1,6 @@
 # Cloud saves (Distribution Subphase D)
 
-Local-first, optional, per device and account. **Status: complete.** Database applied and verified on the real Supabase project (52/52 in-database tests); client verified end to end against a mock server that mirrors the same contract (70/70 browser checks). A signed-in, real-account walk on production is listed under *Not verified*.
+Local-first, optional, per device and account. **Status: complete.** Database applied and verified on the real Supabase project (52/52 in-database tests); client verified end to end against a mock server that mirrors the same contract (70/70 browser checks). The owner also completed a real-account walk on production (see *Owner acceptance*).
 
 ## Principles
 
@@ -91,9 +91,13 @@ When a push fails for connectivity, the page registers Background Sync tag `av-c
 - **Browser (`node tools/cloud-test.mjs`, mock server, synthetic saves, 70/70):** local-only user makes no request off the local server; explicit upload (nothing sent until confirm, local byte-identical after); dirty status and 5 rapid saves → 1 push; download on a second profile with safety copy; offline queue and reconnect; Background Sync message; cloud-newer (not auto-applied); conflict → Keep cloud (both-sides preserved, safety copy holds the overwritten values); conflict → Keep this device; reset guard; import preserves the cloud version; restore backup; tampered, shape-corrupt and newer-schema copies refused; 503 outage and recovery; sign-out keeps the save and sends nothing; other account sees nothing and receives nothing; sign back in resumes; wrong delete confirmation deletes nothing, correct one deletes head and backups; no page errors.
 - Existing suites unchanged: 45 / 22 / 30 / 99 pass; `pwa-stamp --check` OK.
 
+## Owner acceptance (2026-10-23)
+
+The owner tested on production with a real Google account: the PC save uploaded, the same account downloaded it on a second device/browser, and a later change synced back. Cloud saves accepted. **The owner's cloud data must not be deleted**, and the schema must not change unless Subphase E exposes a genuine desktop compatibility requirement.
+
 ## Not verified / limitations
 
-- **No real signed-in cloud walk yet.** RLS and RPC behaviour are proven in-database, and the client against a contract-equivalent mock, but a real Google session pushing to the real project from production has not been exercised (it would use the owner's real account). Suggested check: sign in on production, *Turn on cloud saves*, then *Delete cloud data…* if only testing.
+- The real-account walk was done by the owner (above); it was not scripted, so exact steps and timings are unrecorded.
 - **The real service worker `sync` event was not exercised** (the SW is off on localhost by default); the page-side handler was tested by dispatching the message.
 - Chrome is the only browser exercised. Safari/iOS and Firefox are untested.
 - The payload is not client-side encrypted; it is protected by RLS and TLS.

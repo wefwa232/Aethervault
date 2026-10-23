@@ -90,7 +90,7 @@ Complete and tagged `distribution-c-auth`. Verified against the mock and with a 
 
 ## Subphase D status
 
-Complete and tagged `distribution-d-cloud-saves`. Opt-in, local-first, conflict-safe cloud saves. Details, test record and limitations (no real signed-in cloud walk yet; real SW sync event untested) in `CLOUD_SAVES.md`.
+Complete and tagged `distribution-d-cloud-saves`. Opt-in, local-first, conflict-safe cloud saves. Details, test record and limitations (real-account production test accepted by the owner; real SW sync event untested; do not delete the owner's cloud data or alter the schema without a genuine Subphase E need) in `CLOUD_SAVES.md`.
 
 ## Next-session opener
 
