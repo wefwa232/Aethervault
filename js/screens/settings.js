@@ -7,7 +7,8 @@
   const FPS = [['auto', 'Auto', 'Per preset: 30 on Low, 60 on Medium/High'], [30, '30', 'Smoothest on battery'], [60, '60', 'Normal target'], ['max', 'Uncapped', 'Display refresh rate']];
   const P = () => AV.pwa || {};
   function pwaText() {
-    const p = P(); if (!p.supported) return 'Install and offline play are available when Aethervault is opened from a web address (https).';
+    const p = P(); if (AV.desktop && AV.desktop.isDesktop) return 'You are running the Aethervault desktop app. It plays offline from its own files; browser install and web update controls do not apply here.';
+    if (!p.supported) return 'Install and offline play are available when Aethervault is opened from a web address (https).';
     if (!p.enabled) return 'Offline caching is off on this local development server (add ?sw=1 to the address to test it).';
     const mode = p.standalone() ? 'Running as an installed app. ' : (p.ios() ? 'To install: Share → Add to Home Screen. ' : '');
     return mode + (p.updateReady ? 'A new version is ready — your progress is saved.' : (p.ready ? 'Offline-ready. You are on the latest version.' : 'Preparing offline copy…'));

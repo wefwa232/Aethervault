@@ -22,7 +22,8 @@
 
   const A = (AV.auth = {
     configured: !!(C.supabaseUrl && C.supabaseAnonKey),
-    supported: /^https?:$/.test(location.protocol),   // the Tauri shell (tauri://) gets its own flow in Subphase E
+    desktop: !!(AV.desktop && AV.desktop.isDesktop),   // Tauri shell: system-browser sign-in with a loopback redirect
+    supported: /^https?:$/.test(location.protocol) || !!(AV.desktop && AV.desktop.isDesktop),
     session: null, busy: false, error: '', notice: '',
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     user() { const s = A.session; return s && s.user ? { id: s.user.id, email: s.user.email || '', name: (s.user.user_metadata && (s.user.user_metadata.full_name || s.user.user_metadata.name)) || '' } : null; },
@@ -78,10 +79,20 @@
     A.error = ''; A.notice = '';
     const verifier = rand(48);
     const challenge = b64u(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)));
+    // Desktop: Google refuses OAuth inside embedded webviews, so the system browser does the sign-in and a one-shot
+    // listener on 127.0.0.1 (random port) receives the redirect. Pressing the button again restarts the attempt.
+    let redirect = redirectTo();
+    if (A.desktop) {
+      try { redirect = 'http://127.0.0.1:' + (await AV.desktop.invoke('auth_listen')) + '/'; }
+      catch (e) { A.error = 'Could not start sign-in: ' + e; emit(); return; }
+    }
     store(s => s.setItem(VER, JSON.stringify({ v: verifier, t: Date.now() })));
     const u = new URL(C.supabaseUrl + '/auth/v1/authorize');
-    u.search = new URLSearchParams({ provider: 'google', redirect_to: redirectTo(), code_challenge: challenge, code_challenge_method: 's256' });
-    location.assign(u.toString());
+    u.search = new URLSearchParams({ provider: 'google', redirect_to: redirect, code_challenge: challenge, code_challenge_method: 's256' });
+    if (!A.desktop) { location.assign(u.toString()); return; }
+    try { await AV.desktop.invoke('open_external', { url: u.toString() }); A.notice = 'Finish signing in in your browser, then return here.'; }
+    catch (e) { A.error = 'Could not open your browser: ' + e; AV.desktop.invoke('auth_cancel').catch(() => {}); }
+    emit();
   };
 
   A.signOut = async function () {
@@ -100,7 +111,11 @@
     if (!(saved && saved.v)) return;
     const clean = new URL(location.href); ['code', 'error', 'error_code', 'error_description'].forEach(k => clean.searchParams.delete(k));
     history.replaceState(null, '', clean.pathname + clean.search);
-    store(s => s.removeItem(VER));
+    return complete(code, err, saved);
+  }
+
+  async function complete(code, err, saved) {
+    A.notice = ''; store(s => s.removeItem(VER));
     if (err) { A.error = 'Sign-in was cancelled or failed: ' + err; emit(); return; }
     if (Date.now() - saved.t > 10 * 60 * 1000) { A.error = 'That sign-in attempt timed out. Please try again.'; emit(); return; }
     A.busy = true; emit();
@@ -118,5 +133,12 @@
     A.session = stored; schedule();
     if (stored.expires_at - 30 <= Date.now() / 1000) A.refresh();
   } else if (stored) store(s => s.removeItem(KEY));
-  if (A.configured && A.supported) finishRedirect();
+  if (A.configured && A.supported) {
+    finishRedirect();
+    if (A.desktop) AV.desktop.listen('av-auth-callback', query => {
+      const q = new URLSearchParams(query), saved = store(s => JSON.parse(s.getItem(VER) || 'null'));
+      if (!(saved && saved.v)) return;   // not a sign-in we started
+      complete(q.get('code'), q.get('error_description') || q.get('error'), saved);
+    });
+  }
 })();

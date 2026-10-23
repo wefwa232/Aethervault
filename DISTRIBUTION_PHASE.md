@@ -76,6 +76,8 @@ Per the phase brief: each subphase committed, pushed, documented, app runnable, 
 
 - 2026-10-23 — Subphase D complete: cloud-save schema/RLS/RPCs designed, reviewed and applied by the owner (52/52 in-database tests); client built (`js/platform/cloud.js`, `cloud-ui.js`) and verified 70/70 in Chrome against a mock Supabase; live anon-denial probe passes. See `CLOUD_SAVES.md`.
 
+- 2026-10-23 — Subphase E built: Tauri 2 shell in `src-tauri/`, NSIS installer produced, desktop sign-in via system browser + loopback, music Range support, 19/19 EXE checks. See `TAURI.md`. **Open gates:** add Supabase redirect `http://127.0.0.1:*/**`, then a real desktop sign-in test; installing the EXE/SmartScreen is the owner's.
+
 ## Subphase A status
 
 Deployed and verified, with one open item: repeat the screen walk in desktop Chrome.
@@ -92,9 +94,13 @@ Complete and tagged `distribution-c-auth`. Verified against the mock and with a 
 
 Complete and tagged `distribution-d-cloud-saves`. Opt-in, local-first, conflict-safe cloud saves. Details, test record and limitations (real-account production test accepted by the owner; real SW sync event untested; do not delete the owner's cloud data or alter the schema without a genuine Subphase E need) in `CLOUD_SAVES.md`.
 
+## Subphase E status
+
+Built and verified against the EXE; tagged `distribution-e-tauri`. Real desktop Google sign-in and installer run are pending owner gates. Details in `TAURI.md`.
+
 ## Next-session opener
 
-> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphases A, B, C (AUTH.md) and D (CLOUD_SAVES.md) are complete; tag distribution-d-cloud-saves. Begin Subphase E only: the Tauri 2 Windows NSIS EXE. Reuse the shared frontend unchanged; keep desktop code in src-tauri/ and js/platform/. Resolve first the tauri:// sign-in flow noted in AUTH.md (AV.auth.supported is false there, and cloud saves depend on it). Do not begin auto-updates (F), release automation (G), Combat C, or gameplay changes.
+> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphases A–E are complete (TAURI.md; tag distribution-e-tauri). Begin Subphase F only: signed Tauri auto-updates. Keep the identifier app.aethervault.desktop and useHttpsScheme true (they fix the save origin). Reuse the shared frontend; desktop code stays in src-tauri/ and js/platform/. First confirm whether the owner added the Supabase redirect http://127.0.0.1:*/** and ran a real desktop sign-in. Do not begin release automation (G), Combat C, or gameplay changes.
 
 ## Known risks
 

@@ -24,7 +24,7 @@ Google sign-in through Supabase Auth. **Optional**: with no configuration the ga
 - **Offline / flaky network:** refresh failure keeps the session and retries in 5 min. Only a rejected refresh token (400/401/403) signs out, with a notice. Play is never blocked.
 - **Sign out:** clears the session, revokes it server-side (best effort). The local save is never touched.
 - **Redirect URL** sent to Supabase is `origin + pathname`, e.g. `https://aethervault-six.vercel.app/`.
-- **Not supported yet:** `tauri://` windows show "not available in this app window"; Subphase E adds a desktop flow.
+- **Desktop app (Subphase E):** system-browser sign-in with a loopback redirect; see TAURI.md. Needs the Supabase redirect entry `http://127.0.0.1:*/**` (owner gate).
 - **Dev override:** on localhost only, `localStorage['av.auth.cfg'] = '{"supabaseUrl":"…","supabaseAnonKey":"…"}'` replaces the config (ignored on hosted origins).
 
 ## Setup record (manual gate, done)

@@ -6,3 +6,6 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+src-tauri/dist/
+src-tauri/target/
+src-tauri/gen/

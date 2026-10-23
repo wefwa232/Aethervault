@@ -9,7 +9,7 @@
   const store = (fn) => { try { return fn(localStorage); } catch (e) { return null; } };
   const listeners = new Set();
   const P = (AV.pwa = {
-    supported: 'serviceWorker' in navigator && /^https?:$/.test(location.protocol),
+    supported: 'serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !(AV.desktop && AV.desktop.isDesktop),   // the desktop app ships its files inside the EXE
     enabled: false, ready: false, updateReady: false, installEvent: null, reg: null,
     standalone: () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true,
     ios: () => /iphone|ipad|ipod/i.test(navigator.userAgent) && !P.standalone(),
