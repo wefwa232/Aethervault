@@ -4,5 +4,8 @@
    NEVER put a service_role key, database password or OAuth client secret here. */
 (function () {
   const AV = (window.AV = window.AV || {});
-  AV.config = { supabaseUrl: '', supabaseAnonKey: '' };
+  AV.config = {
+    supabaseUrl: 'https://amdcievyizsadmxhozwv.supabase.co',
+    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtZGNpZXZ5aXpzYWRteGhvend2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NTI5ODAsImV4cCI6MjEwODMyODk4MH0.SUa38LG3NrIHhahuUdtoFaUUE4kInJ7lAHKj2gbLPFA',
+  };
 })();
