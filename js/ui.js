@@ -10,12 +10,13 @@
     { id: 'home', label: 'Home', icon: 'home' },
     { id: 'open', label: 'Open', icon: 'open', hero: true },
     { id: 'vault', label: 'Vault', icon: 'vault' },
-    { id: 'pets', label: 'Pets', icon: 'paw' },
-    { id: 'forge', label: 'Forge', icon: 'upgrade' },
-    { id: 'fusion', label: 'Fusion', icon: 'fuse' },
+    { id: 'pets', label: 'Pets', icon: 'paw', sec: true },
+    { id: 'forge', label: 'Forge', icon: 'upgrade', sec: true },
+    { id: 'fusion', label: 'Fusion', icon: 'fuse', sec: true },
     { id: 'combat', label: 'Combat', icon: 'sword' },
-    { id: 'store', label: 'Store', icon: 'store' },
+    { id: 'store', label: 'Store', icon: 'store', sec: true },
   ];
+  const MORE = ['pets', 'forge', 'fusion', 'store', 'settings']; // phone nav: these live behind the More sheet (desktop rail is unchanged)
   const WHERE = { combat: 'Archive Trials', deck: 'Deck Registry', battle: 'Training Arena', home: 'Archive Chamber', open: 'Containment Hall', vault: 'Specimen Catalogue', pets: 'Living Specimen Wing', forge: 'Transformation Chamber', fusion: 'Fusion Chamber', store: 'The Exchange', settings: 'Archive Controls' };
 
   const settings = () => AV.state.get().settings;
@@ -85,10 +86,18 @@
   const NAV_OF = { deck: 'combat', battle: 'combat' }; // sub-screens keep their parent lit in the rail
   function renderNav() {
     const nav = $('#nav'), cur = NAV_OF[current] || current;
-    nav.innerHTML = `<div class="rail-mark" aria-hidden="true">${A.icon('star')}</div>` + NAV.map(n => `<button class="nav-btn ${n.hero ? 'hero' : ''} ${cur === n.id ? 'active' : ''}" data-nav="${n.id}" aria-label="${n.label}" ${cur === n.id ? 'aria-current="page"' : ''}>
+    nav.innerHTML = `<div class="rail-mark" aria-hidden="true">${A.icon('star')}</div>` + NAV.map(n => `<button class="nav-btn ${n.hero ? 'hero' : ''} ${cur === n.id ? 'active' : ''} ${n.sec ? 'nav-sec' : ''}" data-nav="${n.id}" aria-label="${n.label}" ${cur === n.id ? 'aria-current="page"' : ''}>
       <span class="nav-ico">${A.icon(n.icon)}</span><span class="nav-lb">${n.label}</span></button>`).join('') +
-      `<span class="nav-spacer"></span><button class="nav-btn ${current === 'settings' ? 'active' : ''}" data-nav="settings" aria-label="Settings"><span class="nav-ico">${A.icon('settings')}</span><span class="nav-lb">Settings</span></button>`;
+      `<span class="nav-spacer"></span><button class="nav-btn nav-sec ${current === 'settings' ? 'active' : ''}" data-nav="settings" aria-label="Settings"><span class="nav-ico">${A.icon('settings')}</span><span class="nav-lb">Settings</span></button>` +
+      `<button class="nav-btn nav-more ${MORE.includes(cur) ? 'active' : ''}" data-act-more aria-label="More destinations" aria-haspopup="dialog"><span class="nav-ico">${A.icon('layers')}</span><span class="nav-lb">More</span></button>`;
     const w = $('#where'); if (w) w.textContent = WHERE[current] || '';
+  }
+
+  /** Phone navigation: bottom sheet with the secondary destinations. */
+  function moreSheet() {
+    if (hasModal()) return;
+    const cur = NAV_OF[current] || current, items = MORE.map(id => id === 'settings' ? { id, label: 'Settings', icon: 'settings' } : NAV.find(n => n.id === id));
+    modal({ title: 'Archive', cls: 'sheet more-sheet', html: `<nav class="more-grid" aria-label="More destinations">${items.map(n => `<button class="more-tile ${cur === n.id ? 'active' : ''}" data-nav="${n.id}" ${cur === n.id ? 'aria-current="page"' : ''}><span class="nav-ico">${A.icon(n.icon)}</span><b>${n.label}</b><small>${WHERE[n.id]}</small></button>`).join('')}</nav>` });
   }
 
   // ---------- Toasts ----------
@@ -202,6 +211,8 @@
       if (el && el !== hoverEl && !el.disabled) AV.audio.play('hover'); hoverEl = el;
     });
     document.addEventListener('pointerdown', () => AV.audio.init(), { once: false, capture: true });
+    // touch: a long press on a ritual or a 3D stage is a gesture, not a context menu
+    document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('#opening, .stage3d, .rit')) e.preventDefault(); });
     document.addEventListener('click', e => {
       const el = e.target.closest ? e.target.closest('button, [data-act], .plate, .tile, .chip') : null;
       if (el && !el.disabled && !el.hasAttribute('data-nosound')) AV.audio.play(el.matches('.btn.primary, .btn.danger') ? 'soft' : 'click');
@@ -213,7 +224,8 @@
     // Top bar + nav delegation
     document.addEventListener('click', e => {
       const rv = e.target.closest('[data-review-decks]'); if (rv && !(AV.opening && AV.opening.busy())) { AV.audio.play('nav'); reviewDecks(rv.dataset.reviewDecks); return; }
-      const nav = e.target.closest('[data-nav]'); if (nav) { AV.audio.play('nav'); if (AV.opening && AV.opening.busy()) return; go(nav.dataset.nav); return; }
+      if (e.target.closest('[data-act-more]')) { AV.audio.play('nav'); if (!(AV.opening && AV.opening.busy())) moreSheet(); return; }
+      const nav = e.target.closest('[data-nav]'); if (nav) { AV.audio.play('nav'); if (AV.opening && AV.opening.busy()) return; if (nav.closest('.more-sheet')) closeTop(); go(nav.dataset.nav); return; }
       const act = e.target.closest('#topbar [data-act]'); if (!act) return;
       if (act.dataset.act === 'settings') go('settings');
       else if (act.dataset.act === 'cur') go('store');
@@ -256,6 +268,6 @@
   /** Announce level-ups gained by an action. */
   function levelToasts(ups) { (ups || []).forEach((lv, i) => setTimeout(() => { AV.audio.play('levelup'); toast(`Level ${lv} reached — +10 gems, +200 credits`, { kind: 'rare', icon: 'star', ms: 4200, silent: true }); AV.fx.burst(window.innerWidth / 2, 60, { count: 22, colors: ['#d7b46e', '#ece3cf'], speed: 5 }); }, i * 700)); }
 
-  AV.ui = { register, go, refresh, currentScreen, sub, onLeave, renderTopbar, updateWallet, toast, modal, confirm, prompt, closeTop, hasModal, deckBlockNote, reviewDecks,
+  AV.ui = { register, go, refresh, currentScreen, sub, onLeave, renderTopbar, updateWallet, toast, modal, confirm, prompt, closeTop, hasModal, moreSheet, deckBlockNote, reviewDecks,
     rtag, cost, costOnly, serial, pips, card, mini, bar, empty, applySettings, boot, dur, speed, reduced, levelToasts, sweep };
 })();

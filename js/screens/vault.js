@@ -29,6 +29,11 @@
       <section class="shelf">
         <header class="shelf-head"><div><span class="label">Archive · division catalogue</span><h1>The Vault</h1><p class="muted" id="vSub"></p></div>
           <div class="seg view vtabs" role="tablist" aria-label="Vault views">${VIEWS.map(([id, n, ic]) => `<button class="${V.view === id ? 'on' : ''}" data-view="${id}" role="tab" aria-selected="${V.view === id}">${A.icon(ic)}<span>${n}</span></button>`).join('')}</div></header>
+        <div class="v-mbar" id="vMbar" role="search"><label class="search">${A.icon('search')}<input id="vqm" type="search" placeholder="Search the Vault…" value="${esc(V.q)}" aria-label="Search the Vault" enterkeyhint="search"></label>
+          <button class="btn ghost v-fbtn" data-act="vsheet" aria-haspopup="dialog">${A.icon('filter')}<span>Filters</span><b class="mono" id="vFcount" hidden></b></button>
+          <select id="vsortm" aria-label="Sort">${VQ.SORTS.map(([v, l]) => `<option value="${v}" ${V.sort === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+          <button class="btn ghost v-dbtn" data-act="density" aria-label="Change plate size" title="Plate size">${A.icon('grid')}</button>
+          <button class="btn ${V.select ? 'primary' : 'ghost'} v-sbtn" data-act="select" id="vSelBtn">${A.icon('check')}<span>${V.select ? 'Selecting' : 'Select'}</span></button></div>
         <div id="vPresets" class="presets" role="tablist" aria-label="Saved searches"></div>
         <div id="vChips" class="chips-row" aria-live="polite"></div>
         <div id="vBody"></div>
@@ -42,8 +47,8 @@
       const all = idx(), cnt = { all: all.length }; D.CATEGORIES.forEach(c => (cnt[c.id] = 0)); all.forEach(x => cnt[x.cat]++);
       const rc = {}; all.forEach(x => (rc[x.rar] = (rc[x.rar] || 0) + 1));
       const folders = S().org.folders || [], nAdv = VQ.activeCount(V.f) - V.f.cat.size - V.f.rar.size - ['fav', 'locked', 'dupes'].filter(k => V.f[k]).length - (V.f.folder !== 'any' ? 1 : 0);
-      rail.innerHTML = `<h3 class="sect">Search</h3>
-        <label class="search">${A.icon('search')}<input id="vq" type="search" placeholder="Search the Vault…" value="${esc(V.q)}" aria-label="Search the Vault"></label>
+      rail.innerHTML = `<div class="f-sheet-head"><h2>Filters</h2><button class="btn primary small" data-act="vsheet">${A.icon('check')}Show ${results().length}</button></div><h3 class="sect f-search">Search</h3>
+        <label class="search f-search">${A.icon('search')}<input id="vq" type="search" placeholder="Search the Vault…" value="${esc(V.q)}" aria-label="Search the Vault"></label>
         <h3 class="sect">Division</h3>
         <div class="divs" role="group" aria-label="Category">${[['all', 'All divisions', 'layers']].concat(D.CATEGORIES.map(c => [c.id, c.name, catIcon[c.id] || 'grid'])).map(([id, n, ic]) => `<button class="div-row ${id === 'all' ? (!V.f.cat.size ? 'on' : '') : V.f.cat.has(id) ? 'on' : ''}" data-cat="${id}" aria-pressed="${id === 'all' ? !V.f.cat.size : V.f.cat.has(id)}">${A.icon(ic)}<span>${n}</span><b class="mono">${cnt[id] || 0}</b></button>`).join('')}</div>
         <h3 class="sect">Rarity</h3>
@@ -65,7 +70,14 @@
       presetsEl.innerHTML = list.length ? list.map(p => `<span class="ptab ${V.preset === p.id ? 'on' : ''} ${p.fav ? 'fav' : ''}"><button class="ptab-b" data-preset="${p.id}" role="tab" aria-selected="${V.preset === p.id}">${p.fav ? A.icon('star') : ''}<span>${esc(p.name)}</span></button>${V.preset === p.id ? `<button class="ptab-x" data-pact="fav" title="${p.fav ? 'Unpin' : 'Pin to the front'}" aria-label="Favorite this search">${A.icon('star')}</button><button class="ptab-x" data-pact="update" title="Save the current filters into this search" aria-label="Update">${A.icon('check')}</button><button class="ptab-x" data-pact="rename" title="Rename" aria-label="Rename">${A.icon('edit')}</button><button class="ptab-x" data-pact="delete" title="Delete" aria-label="Delete">${A.icon('trash')}</button>` : ''}</span>`).join('') : '';
       presetsEl.hidden = !list.length || !usesFilters();
     }
+    function syncBar() {
+      const n = VQ.activeCount(V.f), fc = root.querySelector('#vFcount'), mq = root.querySelector('#vqm'), ms = root.querySelector('#vsortm'), sb = root.querySelector('#vSelBtn');
+      if (fc) { fc.hidden = !n; fc.textContent = n; } if (mq && document.activeElement !== mq) mq.value = V.q; if (ms) ms.value = V.sort;
+      if (sb) { sb.classList.toggle('primary', V.select); sb.classList.toggle('ghost', !V.select); sb.querySelector('span').textContent = V.select ? 'Selecting' : 'Select'; }
+      root.querySelector('#vMbar').hidden = !usesFilters() || V.view !== 'grid';
+    }
     function drawChips() {
+      syncBar();
       if (!usesFilters()) { chipsEl.innerHTML = ''; return; }
       const fo = V.f.folder !== 'any' ? folderOf(V.f.folder) : null, c = VQ.chips(V.f, { folderName: fo ? fo.name : '' });
       const any = c.length || V.q.trim();
@@ -152,8 +164,8 @@
 
     // ---------------------------------------------------------------- events
     let qt = null;
-    root.addEventListener('input', e => { if (e.target.id === 'vq') { clearTimeout(qt); qt = setTimeout(() => { V.q = e.target.value; V.page = 1; V.preset = null; drawChips(); drawPresets(); if (V.view === 'grid') drawGrid(); else draw(); }, 140); } });
-    root.addEventListener('change', e => { if (e.target.id === 'vsort') { V.sort = e.target.value; redraw(); } });
+    root.addEventListener('input', e => { if (e.target.id === 'vq' || e.target.id === 'vqm') { const o = root.querySelector(e.target.id === 'vq' ? '#vqm' : '#vq'); if (o) o.value = e.target.value; clearTimeout(qt); qt = setTimeout(() => { V.q = e.target.value; V.page = 1; V.preset = null; drawChips(); drawPresets(); if (V.view === 'grid') drawGrid(); else draw(); }, 140); } });
+    root.addEventListener('change', e => { if (e.target.id === 'vsort' || e.target.id === 'vsortm') { V.sort = e.target.value; redraw(); } });
     root.addEventListener('click', async e => {
       const t = e.target;
       const view = t.closest('[data-view]'); if (view) { V.view = view.dataset.view; V.select = false; V.selected.clear(); draw(); return; }
@@ -181,13 +193,15 @@
       switch (a.dataset.act) {
         case 'clear': V.f = VQ.blank(); V.q = ''; V.preset = null; redraw(); break;
         case 'more': V.page++; drawGrid(); break;
+        case 'vsheet': { const cat = root.querySelector('.catalogue'), on = !cat.classList.contains('f-open'); cat.classList.toggle('f-open', on); if (on) { const r = root.querySelector('#vRail'); r.scrollTop = 0; } else drawRail(); break; }
+        case 'density': { const o = ['sm', 'md', 'lg']; V.size = o[(o.indexOf(V.size) + 1) % 3]; drawRail(); drawGrid(); ui.toast('Plates: ' + ({ sm: 'compact', md: 'standard', lg: 'large' })[V.size], { silent: true, ms: 1200 }); break; }
         case 'adv': AV.vaultViews.advanced({ onChange: () => { V.page = 1; V.preset = null; draw(); } }); break;
         case 'savesearch': { const name = await ui.prompt({ title: 'Save this search', label: 'Name the archive tab', value: defaultPresetName(), max: 32 }); if (name && name.trim()) { const p = E.searchSave({ name, f: VQ.serialize(V.f), q: V.q, sort: V.sort, view: V.view }); V.preset = p.id; au.play('confirm'); draw(); } break; }
         case 'newfolder': { const name = await ui.prompt({ title: 'New collection', label: 'A named collection or album. Specimens can belong to several.', value: '', max: 32, placeholder: 'e.g. Night Shelf' }); if (name && name.trim()) { const f = E.folderCreate(name); V.f.folder = f.id; redraw(); } break; }
         case 'renfolder': { const fo = folderOf(V.f.folder); if (!fo) break; const name = await ui.prompt({ title: 'Rename collection', label: 'Collection name', value: fo.name, max: 32 }); if (name && name.trim()) { E.folderRename(fo.id, name); draw(); } break; }
         case 'delfolder': { const fo = folderOf(V.f.folder); if (!fo) break; const ok = await ui.confirm({ title: 'Delete this collection?', message: `The collection <b>${esc(fo.name)}</b> is removed. Its specimens stay in your Vault.`, confirmText: 'Delete collection' }); if (ok) { E.folderDelete(fo.id); V.f.folder = 'any'; redraw(); } break; }
-        case 'select': V.select = !V.select; if (!V.select) V.selected.clear(); drawRail(); drawGrid(); break;
-        case 'selclear': V.select = false; V.selected.clear(); drawRail(); drawGrid(); break;
+        case 'select': V.select = !V.select; if (!V.select) V.selected.clear(); drawRail(); drawGrid(); syncBar(); break;
+        case 'selclear': V.select = false; V.selected.clear(); drawRail(); drawGrid(); syncBar(); break;
         case 'selall': results().forEach(x => V.selected.add(x.id)); drawGrid(); break;
         case 'compare': AV.vaultViews.compare([...V.selected]); break;
         case 'selfolder': await addToFolder([...V.selected]); break;

@@ -75,6 +75,8 @@
           </details>
         </aside></div>`;
       mount();
+      const ar = root.querySelector('.ix-row.active'), lst = root.querySelector('.ix-list'); // phone: the index is a carousel; keep the selection centred
+      if (ar && lst && lst.scrollWidth > lst.clientWidth) lst.scrollLeft = ar.offsetLeft - (lst.clientWidth - ar.offsetWidth) / 2;
     };
     draw();
     ui.onLeave(() => { if (view) { view.dispose(); view = null; } document.body.style.removeProperty('--mote'); });

@@ -82,3 +82,9 @@ Legend: `[x]` built **and tested** · `[~]` built, only partly tested · `[ ]` n
 - (deferred) Expressions / cosmetics categories
 - (deferred) Real music themes (v0.1 has a generative ambient pad)
 - (deferred) Companion location/accessory customisation
+
+## Mobile Phase (see MOBILE_PHASE.md)
+- [x] Mobile A: coarse-pointer tokens, bottom nav + More sheet, Home, Open Hall, Vault filter sheet/chips/selection
+- [ ] Mobile B: Inspect, Forge, Fusion, Cards/Binder/Compare, Deck editor
+- [ ] Mobile C: combat touch controls (blocker B1), Settings/auth/PWA polish, performance presets, landscape breakpoint for wide phones
+- [ ] Physical iPhone validation (not yet done)

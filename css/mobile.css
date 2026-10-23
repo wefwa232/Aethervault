@@ -1,0 +1,153 @@
+/* AETHERVAULT — Mobile Phase A: coarse-pointer sizing, phone app shell (bottom nav + More sheet), bottom sheets, Home, Open Hall and Vault compositions.
+ * Loaded last. Desktop (>860px, fine pointer) is untouched: everything phone-specific lives in the blocks below. */
+
+/* ---------- shared: coarse-pointer sizing (practical targets, not every label) ---------- */
+html { -webkit-text-size-adjust: 100%; }
+.nav-more { display: none; }
+body.sheet-lock { overflow: hidden; }
+@media (pointer: coarse) {
+  .btn { min-height: 44px; } .btn.small { min-height: 40px; }
+  .icon-btn, .m-x { min-width: 44px; min-height: 44px; }
+  select, .search input { min-height: 44px; } .search input, input[type=text], input[type=search], input[type=number], textarea, select { font-size: 16px; }
+  .seg button, .chip, .fchip, .ptab-b, .div-row, .rlad-row, .ks, .fold-row, .ix-row, .tile, .mini { min-height: 44px; }
+  .fchip { display: inline-flex; align-items: center; gap: .35rem; padding-inline: .7rem; }
+  .cur { min-height: 36px; }
+  .plate, .cell { -webkit-tap-highlight-color: transparent; }
+  .modal-foot .btn { flex: 1 1 auto; }
+}
+/* gestures on stages / rituals must not select text or open the callout menu */
+.op, #opening, .rit, .rv-stage, .insp-stage, .cs-view, .hall-view, .ps-view, .stage3d { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.rit-view, .rit-art { touch-action: none; }
+
+/* ---------- phone shell ---------- */
+@media (max-width: 860px) {
+  /* bottom bar: Home · Open (hero) · Vault · Combat · More. Secondary destinations live behind More. */
+  .nav-sec { display: none; } .nav-more { display: grid; }
+  #nav { gap: 0; background: var(--ink-1); }
+  .nav-btn { min-height: 54px; font-size: .64rem; letter-spacing: .08em; }
+  .nav-btn.hero { margin: 5px 4px; }
+  /* top bar: keep balances + level ring; the active place name replaces the wordmark so you always know where you are */
+  .wordmark { display: none; }
+  .tb-left { min-width: 0; } .where { display: block !important; font: 600 .74rem var(--f-label); letter-spacing: .16em; text-transform: uppercase; color: var(--ivory-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #topbar { gap: .4rem; } .tb-right { min-width: 0; } .ledger { display: flex; gap: .25rem; min-width: 0; }
+  .cur { padding: .25rem .4rem; font-size: .74rem; gap: .25rem; }
+  /* toasts span the top, below the bar; banner + pill clear the bottom bar */
+  #toasts { left: calc(var(--sa-l) + .5rem); right: calc(var(--sa-r) + .5rem); width: auto; top: calc(var(--sa-t) + var(--top-h) + 6px); }
+  #pwaUpdate { bottom: calc(var(--sa-b) + 62px + 10px); }
+  #syncPill { bottom: calc(var(--sa-b) + 62px + 6px); right: calc(var(--sa-r) + 8px); }
+  body:has(#pwaUpdate) #syncPill { display: none; }
+
+  /* bottom sheets (modal() with cls 'sheet') */
+  .modal-wrap.sheet { place-items: end stretch; padding: 0; }
+  .modal-wrap.sheet .modal { width: 100%; max-height: min(86dvh, 720px); clip-path: none; border-radius: 16px 16px 0 0; animation: sheetIn calc(.26s * var(--spd)) cubic-bezier(.2, .9, .3, 1) both; }
+  .modal-wrap.sheet .modal::before { clip-path: none; border-radius: 15px 15px 0 0; }
+  .modal-wrap.sheet .modal-head::before { content: ""; position: absolute; left: 50%; top: 6px; width: 38px; height: 4px; margin-left: -19px; border-radius: 2px; background: var(--hair); }
+  .modal-wrap.sheet .modal-head { position: relative; padding-top: 1.1rem; } .modal-wrap.sheet .modal-body { padding-bottom: calc(1.1rem + var(--sa-b)); }
+  .modal-wrap.sheet.closing .modal { animation: sheetOut calc(.18s * var(--spd)) ease forwards; }
+  @keyframes sheetIn { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } } @keyframes sheetOut { to { transform: translateY(40px); opacity: 0; } }
+  .more-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+  .more-tile { display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: .6rem; align-items: center; padding: .7rem .75rem; text-align: left; background: var(--ink-2); border: 1px solid var(--hair); color: var(--ivory); min-height: 64px; }
+  .more-tile .nav-ico { grid-row: 1 / 3; color: var(--brass-hi); } .more-tile b { font: 600 1rem var(--f-head); } .more-tile small { color: var(--ivory-3); font-size: .7rem; letter-spacing: .04em; }
+  .more-tile.active { border-color: var(--brass-hi); background: linear-gradient(180deg, #2a2418, var(--ink-2)); }
+  .more-tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  /* every modal must fit the visual viewport and scroll inside */
+  .modal { max-height: calc(100dvh - 1rem); } .modal-foot { padding-bottom: calc(.85rem + var(--sa-b)); }
+}
+
+/* ---------- Vault (phone): search + sort + Filters button always on screen, filters in a bottom sheet ---------- */
+.v-mbar, .f-sheet-head { display: none; }
+@media (max-width: 860px) {
+  .catalogue { display: block; }
+  .shelf { padding: .7rem .7rem 1rem; }
+  .shelf-head { margin-bottom: .5rem; } .shelf-head h1 { font-size: 2rem; } .shelf-head .label { display: none; }
+  .vtabs { display: flex; overflow-x: auto; flex-wrap: nowrap; max-width: 100%; scrollbar-width: none; -webkit-overflow-scrolling: touch; } .vtabs::-webkit-scrollbar { display: none; } .vtabs button { flex: none; }
+  .v-mbar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: .45rem; position: sticky; top: 0; z-index: 8; padding: .5rem 0 .5rem; margin: 0 0 .3rem; background: linear-gradient(180deg, var(--ink-0) 70%, transparent); }
+  .v-mbar[hidden] { display: none; }
+  .v-mbar .search { grid-column: 1 / -1; }
+  .v-mbar .v-fbtn { gap: .4rem; padding-inline: .8rem; } .v-fbtn b { background: var(--brass-hi); color: var(--ink-0); padding: 0 .35rem; font-size: .72rem; }
+  .v-mbar select { min-width: 0; width: 100%; } .v-dbtn { padding-inline: .7rem; } .v-sbtn { padding-inline: .8rem; }
+  .chips-row { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: .3rem; } .chips-row::-webkit-scrollbar { display: none; } .chips-row .fchip { flex: none; }
+  .presets { display: flex; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; } .presets::-webkit-scrollbar { display: none; }
+  /* the old rail becomes the sheet */
+  .catalogue .filters { position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: auto; max-height: 88dvh; z-index: 70; padding: 0 1rem calc(1.2rem + var(--sa-b)); border: 1px solid var(--hair); border-radius: 16px 16px 0 0; background: var(--ink-1); overflow-y: auto; overscroll-behavior: contain; transform: translateY(104%); visibility: hidden; transition: transform .26s cubic-bezier(.2, .9, .3, 1), visibility 0s .26s; }
+  .catalogue.f-open .filters { transform: none; visibility: visible; transition: transform .26s cubic-bezier(.2, .9, .3, 1); }
+  .catalogue.f-open::before { content: ""; position: fixed; inset: 0; z-index: 69; background: rgba(6, 5, 4, .78); }
+  .f-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; position: sticky; top: 0; z-index: 2; padding: 1rem 0 .7rem; margin-bottom: .2rem; background: var(--ink-1); border-bottom: 1px solid var(--hair-2); } .f-sheet-head h2 { font-size: 1.5rem; }
+  .f-search, .filters .selects { display: none; }
+  .catalogue .filters .sect:first-of-type { margin-top: .6rem; }
+  .divs, .rlad { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: .6rem; } .div-row:first-child { grid-column: 1 / -1; }
+  .plategrid.md { --cw: 156px; } .plategrid.lg { --cw: 220px; } .plategrid.sm { --cw: 104px; } .plategrid { gap: 8px; } .grid-tray { padding: 8px; }
+  /* selection: one scrolling action row pinned above the bottom bar; Dismantle sits last, apart, and still confirms */
+  #vSel .selbar { position: fixed; left: 0; right: 0; bottom: calc(var(--sa-b) + 62px); z-index: 9; margin: 0; padding: .5rem .6rem; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; gap: .45rem; border-width: 1px 0 0; scrollbar-width: none; }
+  #vSel .selbar::-webkit-scrollbar { display: none; } #vSel .selbar > * { flex: none; } #vSel .selbar .danger { margin-left: .5rem; }
+  .screen-vault { padding-bottom: 72px; }
+}
+
+/* ---------- Home (phone): the companion owns the stage; the nameplate becomes a slim bar beneath it ---------- */
+@media (max-width: 860px) {
+  .home { display: block; min-height: 0; }
+  .hall { height: clamp(500px, calc(100dvh - var(--top-h) - 62px - var(--sa-y) - 56px), 720px); border-right: 0; border-bottom: 1px solid var(--hair); }
+  .hall-view { top: 2%; bottom: 176px; } .hall-arch { bottom: 170px; height: 86%; width: 88%; }
+  .hall-plate { left: 10px; right: 10px; bottom: 106px; width: auto; padding: .55rem .8rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: .6rem; row-gap: .1rem; align-items: center; }
+  .hall-plate > * { grid-column: 1; } .hall-plate > .label { display: none; } .hall-plate h1 { font-size: 1.5rem; } .hall-plate .hp-act { grid-column: 2; grid-row: 1 / 4; } .hall-plate .muted { font-size: .8rem; }
+  .hall-plate .hp-act .btn { white-space: nowrap; } .hp-facts { display: none; }
+  .hall-strip { height: 98px; padding: .5rem .6rem .6rem 1rem; gap: .6rem; } .hall-strip > .label { font-size: .6rem; }
+  .bubble { top: 5%; max-width: 80%; }
+  .ledger-col { padding: 12px; gap: 12px; overflow: visible; }
+}
+}
+
+/* ---------- shared 3D stage controls on phones ---------- */
+@media (max-width: 860px) {
+  .cs-reset { display: inline-flex; left: 12px; bottom: 12px; }
+  .stage3d.is-interactive { cursor: grab; } .stage3d.is-drag { cursor: grabbing; }
+}
+
+/* a finished screen-enter must not leave a transform behind: it would become the containing block of fixed sheets/bars */
+@media (max-width: 860px) { .screen-enter { animation-fill-mode: backwards; } }
+@media (max-width: 860px) { body:has(.catalogue.f-open) #syncPill, body:has(#vSel .selbar) #syncPill { display: none; } }
+
+/* ---------- Open Hall (phone): container carousel, exhibit stage, one big Open control ---------- */
+@media (max-width: 860px) {
+  .hallway { display: block; min-height: 0; height: auto; }
+  .ix { padding: .5rem .7rem .6rem; overflow: visible; } .ix .sect { display: none; }
+  .ix-list { display: flex; gap: 6px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; padding: 2px 0; } .ix-list::-webkit-scrollbar { display: none; }
+  .ix-row { flex: none; width: auto; min-width: 150px; border: 1px solid var(--hair); background: var(--ink-1); scroll-snap-align: center; } .ix-row.active { border-color: var(--brass-hi); } .ix-row.active::before { display: none; }
+  .plinth-stage { height: calc(100dvh - var(--top-h) - 62px - var(--sa-y) - 108px); min-height: 440px; max-height: 640px; }
+  .ps-title { padding: 8px 14px 0; gap: .15rem; } .ps-title h2 { font-size: 1.9rem; }
+  .ps-title p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: .82rem; }
+  .ps-facts .chip-s:not(.good) { display: none; } .ps-facts { margin-top: .1rem; }
+  .ps-view { top: 120px; bottom: 138px; }
+  .ps-controls { left: 8px; right: 8px; bottom: 8px; transform: none; width: auto; max-width: none; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .5rem .8rem; align-items: center; }
+  .ps-controls .btn.major, .ps-controls .btn.quiet { grid-column: 1 / -1; width: 100%; }
+  .ps-total { justify-content: flex-end; }
+  .odds-rail { border-width: 1px 0 0; }
+}
+
+/* ---------- opening rituals, reveals and summaries: respect the notch/home indicator, keep controls reachable ---------- */
+@media (max-width: 860px) {
+  .op-top { top: var(--sa-t); padding-left: calc(1rem + var(--sa-l)); padding-right: calc(1rem + var(--sa-r)); }
+  .op-body { padding: var(--sa-t) var(--sa-r) var(--sa-b) var(--sa-l); }
+  .rit { padding-bottom: 1.4rem; } .rit-prompt { font-size: 1.15rem; } .rit-prompt small { font-size: .78rem; }
+  .sum { padding-bottom: 1rem; } .sum-actions { width: 100%; } .sum-actions .btn { flex: 1 1 auto; }
+  .rv-actions .btn { flex: 1 1 auto; }
+}
+
+/* ---------- phone landscape (height ≤ 500): the bottom bar would eat a quarter of the screen, so navigation returns to a slim side rail ---------- */
+@media (max-width: 860px) and (max-height: 500px) {
+  :root { --rail-w: 62px; --top-h: 44px; }
+  #app { grid-template-columns: var(--rail-w) minmax(0, 1fr); grid-template-rows: var(--top-h) minmax(0, 1fr); grid-template-areas: "rail top" "rail main"; }
+  #nav { flex-direction: column; justify-content: flex-start; overflow-y: auto; border-top: 0; border-right: 1px solid var(--hair); padding: .2rem 0; scrollbar-width: none; }
+  .nav-btn { flex: none; min-height: 52px; padding: .3rem 0; } .nav-ico { height: 24px; } .nav-btn.hero { margin: 3px 4px; }
+  .nav-btn.active::before { left: 0; right: auto; top: 12%; bottom: 12%; width: 3px; height: auto; }
+  #syncPill { bottom: calc(var(--sa-b) + 6px); } #pwaUpdate { bottom: calc(var(--sa-b) + 8px); }
+  #vSel .selbar { bottom: var(--sa-b); left: calc(var(--rail-w) + var(--sa-l)); }
+  .ix { padding: .25rem .5rem; } .ix-row { min-width: 118px; padding: .3rem .5rem; } .ix-t small { display: none; } .ix-row .ix-n { display: none; } .ix-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .plinth-stage { height: calc(100dvh - var(--top-h) - 60px); min-height: 280px; max-height: none; } .ps-view { top: 0; bottom: 0; right: 42%; } .ps-title { position: absolute; left: 62%; top: 8px; right: 12px; } .ps-controls { left: auto; right: 8px; width: 40%; bottom: 8px; }
+  .hallway { display: block; }
+  .home { display: grid; grid-template-columns: minmax(0, 1fr) 290px; height: 100%; min-height: 0; }
+  .hall { height: 100%; min-height: 0; border-right: 1px solid var(--hair); border-bottom: 0; } .hall-view { top: 0; bottom: 124px; } .hall-arch { bottom: 118px; }
+  .hall-plate { bottom: 66px; padding: .4rem .7rem; } .hall-plate h1 { font-size: 1.25rem; } .hall-strip { height: 62px; padding: .3rem .6rem; } .acc { width: 48px; height: 48px; } .acc-row { min-height: 52px; }
+  .ledger-col { overflow-y: auto; height: 100%; }
+  .plategrid.md { --cw: 150px; } .catalogue .filters { max-width: 480px; left: auto; right: 0; max-height: 100dvh; border-radius: 0; }
+}
