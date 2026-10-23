@@ -1,0 +1,108 @@
+# Desktop release pipeline (Distribution Subphase G). See RELEASE.md.
+# Runs ONLY for an intentional version tag (vX.Y.Z) or a manual dispatch. Ordinary branch pushes never run it.
+# The website deploys separately (Vercel, from phase-five) and is not touched here.
+name: Desktop release
+
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: 'Release notes shown in the in-app update card'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-release
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify version and tests (no secrets)
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Release source must come from phase-five
+        run: |
+          set -euo pipefail
+          git fetch origin phase-five
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            git merge-base --is-ancestor "$GITHUB_SHA" origin/phase-five || { echo "::error::Tag commit is not on phase-five"; exit 1; }
+          elif [ "$GITHUB_REF" != "refs/heads/phase-five" ]; then
+            echo "::error::Manual releases must be dispatched from phase-five"; exit 1
+          fi
+      - id: v
+        name: One canonical version
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then node tools/version.mjs check --tag "$GITHUB_REF_NAME"; else node tools/version.mjs check; fi
+          echo "version=$(node -p "require('./src-tauri/tauri.conf.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Must be newer than the latest published release
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          set -euo pipefail
+          V=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          if gh release view "v$V" >/dev/null 2>&1; then echo "::error::Release v$V already exists"; exit 1; fi
+          LATEST=$(gh release list --exclude-drafts --limit 1 --json tagName --jq '.[0].tagName // empty' | sed 's/^v//')
+          if [ -n "$LATEST" ]; then
+            node -e "const p=s=>s.split('.').map(Number),a=p('$V'),b=p('$LATEST');for(let i=0;i<3;i++){if(a[i]>b[i])process.exit(0);if(a[i]<b[i])break}console.error('::error::$V is not newer than $LATEST');process.exit(1)"
+          fi
+      - run: node tools/pwa-stamp.mjs --check
+      - run: |
+          for t in logic phase3 phase4 combat; do node tests/$t.test.js | tail -n 2; done
+
+  build:
+    name: Build, sign and publish
+    needs: verify
+    runs-on: windows-latest
+    # Secrets live in this environment only; it requires reviewer approval and is limited to phase-five and v* tags.
+    environment: desktop-release
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.verify.outputs.version }}
+      NOTES: ${{ inputs.notes }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: 'src-tauri -> target' }
+      - run: npm ci --prefix tools
+      - name: Build signed installer
+        shell: bash
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          [ -n "$TAURI_SIGNING_PRIVATE_KEY" ] || { echo "::error::TAURI_SIGNING_PRIVATE_KEY is not set"; exit 1; }
+          npx --prefix tools tauri build > build.log 2>&1 || { tail -n 40 build.log; exit 1; }
+          tail -n 8 build.log
+      - name: Updater manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=src-tauri/target/release/bundle/nsis
+          test -f "$D/Aethervault_${VERSION}_x64-setup.exe" && test -f "$D/Aethervault_${VERSION}_x64-setup.exe.sig"
+          node tools/updater-manifest.mjs --notes "${NOTES:-Aethervault $VERSION}"
+      - name: Publish release
+        shell: bash
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          set -euo pipefail
+          D=src-tauri/target/release/bundle/nsis
+          # Draft first so latest.json only becomes "latest" once every asset is attached.
+          gh release create "v$VERSION" --draft --target "$GITHUB_SHA" --title "Aethervault $VERSION" --notes "${NOTES:-Aethervault $VERSION}" \
+            "$D/Aethervault_${VERSION}_x64-setup.exe" "$D/Aethervault_${VERSION}_x64-setup.exe.sig" "$D/latest.json"
+          gh release edit "v$VERSION" --draft=false --latest
