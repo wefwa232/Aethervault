@@ -12,7 +12,17 @@
     const mode = p.standalone() ? 'Running as an installed app. ' : (p.ios() ? 'To install: Share → Add to Home Screen. ' : '');
     return mode + (p.updateReady ? 'A new version is ready — your progress is saved.' : (p.ready ? 'Offline-ready. You are on the latest version.' : 'Preparing offline copy…'));
   }
+  function accountHtml() {
+    const au = AV.auth, e = U.esc;
+    if (!au || !au.configured) return '<p class="muted">Sign-in is optional and is not set up in this build. Your progress is saved on this device and the game works fully without an account.</p>';
+    if (!au.supported) return '<p class="muted">Sign-in is not available in this app window yet. Your progress is saved on this device.</p>';
+    const u = au.user(), msg = au.error ? `<p class="bad-txt tiny" role="alert">${e(au.error)}</p>` : (au.notice ? `<p class="dim tiny" role="status">${e(au.notice)}</p>` : '');
+    if (au.busy) return '<p class="muted" role="status">Completing sign-in…</p>';
+    if (au.signedIn()) return `<p class="muted">Signed in as <b>${e((u && (u.email || u.name)) || 'your Google account')}</b>.</p><p class="muted tiny">Cloud saves are not enabled yet; your progress is still stored only on this device.</p>${msg}<div class="btn-row"><button class="btn ghost" data-act="auth-out">Sign out</button></div>`;
+    return `<p class="muted">Optional. Sign in with Google to link this archive to an account. You can play without one, and signing out never touches your local save.</p>${msg}<div class="btn-row"><button class="btn" data-act="auth-in">Sign in with Google</button></div>`;
+  }
   function render(root) {
+    const off = AV.auth && AV.auth.onChange(() => { if (!root.isConnected) { off && off(); return; } const el = root.querySelector('#acct'); if (el) el.innerHTML = accountHtml(); });
     const draw = () => {
       const P = AV.pwa || {};
       const s = AV.state.get(), st = s.settings, unl = s.mode === 'unlimited';
@@ -63,13 +73,14 @@
           <section class="s-matte pad"><h3 class="sect">${A.icon('download')} Install &amp; updates</h3>
             <p class="muted" id="pwaState">${pwaText()}</p>
             <div class="btn-row">${P.installEvent ? `<button class="btn" data-act="pwa-install">${A.icon('download')}Install app</button>` : ''}${P.enabled ? `<button class="btn ghost" data-act="pwa-check">Check for updates</button>${P.updateReady ? '<button class="btn" data-act="pwa-apply">Update now</button>' : ''}` : ''}</div></section>
+          <section class="s-matte pad"><h3 class="sect">${A.icon('lock')} Account</h3><div id="acct">${accountHtml()}</div></section>
           <section class="s-matte pad"><h3 class="sect">${A.icon('download')} Your data</h3>
             <p class="muted">Your save lives in this browser's local storage. Export a backup file any time.</p>
             <div class="btn-row"><button class="btn ghost" data-act="export">${A.icon('download')}Export save</button><button class="btn ghost" data-act="import">${A.icon('upload')}Import save</button><input type="file" id="impFile" accept=".json,application/json" hidden></div>
             <hr><p class="muted">Start over with a brand-new Archive. This permanently deletes your collection and progress.</p>
             <button class="btn danger" data-act="reset">${A.icon('trash')}Reset all progress…</button></section>
           <section class="s-matte pad about"><h3 class="sect">${A.icon('info')} About</h3>
-            <p><b>Aethervault</b> is a private, single-player collectible simulator. <b>Simulation only — no real transactions, payment services or network access.</b> The 3D specimens are modelled and lit procedurally in your browser; remaining artwork is drawn procedurally; all sound is synthesised. Names and creatures are invented. Three.js (MIT) and the bundled typefaces (SIL OFL) are included under <code>vendor/</code>.</p></section>
+            <p><b>Aethervault</b> is a private, single-player collectible simulator. <b>Simulation only — no real transactions or payment services. The game needs no network; optional Google sign-in is the only online feature.</b> The 3D specimens are modelled and lit procedurally in your browser; remaining artwork is drawn procedurally; all sound is synthesised. Names and creatures are invented. Three.js (MIT) and the bundled typefaces (SIL OFL) are included under <code>vendor/</code>.</p></section>
         </div></div>`;
     };
     draw();
@@ -92,6 +103,8 @@
       if (a.dataset.act === 'test') au.sting(5);
       else if (a.dataset.act === 'pwa-install') await AV.pwa.install();
       else if (a.dataset.act === 'pwa-check') { const ok = await AV.pwa.check(); ui.toast(ok ? (AV.pwa.updateReady ? 'A new version is ready' : 'Checked — you are up to date') : 'Could not check for updates (offline?)', { icon: 'info', silent: true }); draw(); }
+      else if (a.dataset.act === 'auth-in') AV.auth.signIn();
+      else if (a.dataset.act === 'auth-out') { await AV.auth.signOut(); ui.toast('Signed out — your local save is untouched', { icon: 'info', silent: true }); }
       else if (a.dataset.act === 'pwa-apply') { if (!AV.pwa.applyUpdate()) ui.toast('Finish your battle first', { kind: 'bad', icon: 'info' }); }
       else if (a.dataset.act === 'export') {
         const blob = new Blob([AV.state.exportJSON()], { type: 'application/json' }), url = URL.createObjectURL(blob), link = document.createElement('a');

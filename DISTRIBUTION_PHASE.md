@@ -72,6 +72,8 @@ Per the phase brief: each subphase committed, pushed, documented, app runnable, 
 
 - 2026-10-23 — Subphase B built: manifest, icons, hash-versioned service worker (`sw.js` stamped by `tools/pwa-stamp.mjs`), controlled updates, offline relaunch, safe-area insets, Settings → Install & updates. Locally verified; see `PWA.md`.
 
+- 2026-10-23 — Subphase C code built: optional Supabase Auth (Google, PKCE, no SDK), Settings → Account, mock server for tests. Verified against the mock; **blocked on the manual gate** (Supabase project + Google OAuth client). See `AUTH.md`.
+
 ## Subphase A status
 
 Deployed and verified, with one open item: repeat the screen walk in desktop Chrome.
@@ -80,9 +82,13 @@ Deployed and verified, with one open item: repeat the screen walk in desktop Chr
 
 Built and verified locally; production verification and device install checks recorded in `PWA.md`.
 
-## Next-session opener (Subphase C)
+## Subphase C status
 
-> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphases A (Vercel) and B (PWA, see PWA.md) are complete. Begin Subphase C only: optional Supabase Auth with Google sign-in. Manual gates apply (Supabase project, Google OAuth client). Do not start Subphase D.
+Code complete, verified against `tools/mock-gotrue.mjs`. Needs the owner gate in `AUTH.md`, then a real-account test, before tagging `distribution-c-auth`.
+
+## Next-session opener
+
+> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphases A (Vercel) and B (PWA, see PWA.md) are complete. Subphase C code is done (AUTH.md). I have created the Supabase project and Google client; the URL and anon key are: <paste>. Fill js/platform/config.js, run the real-account test, tag distribution-c-auth. Then Subphase D only.
 
 ## Known risks
 
