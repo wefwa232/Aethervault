@@ -44,6 +44,8 @@ After the first online visit, the app launches with no network (verified by stop
 
 ## Tested (2026-10-23)
 
+Production (https://aethervault-six.vercel.app, after deploy of `f76b52d`): worker active and controlling, 90 files precached, manifest + 3 icons served with correct types.
+
 Chromium (built-in pane), localhost with `?sw=1`: registers, 90 files precached, controls page; offline relaunch with server stopped; update flow (new worker waits, old version keeps serving, "Update now" swaps and reloads, old cache removed); `?sw=0` cleanup; simulated 44/34/47/47 px insets move `#app` accordingly; 4 existing test suites pass (99/45/22/30).
 
 ## Not verified / limitations
