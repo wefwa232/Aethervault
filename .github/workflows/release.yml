@@ -87,6 +87,8 @@ jobs:
         run: |
           set -euo pipefail
           [ -n "$TAURI_SIGNING_PRIVATE_KEY" ] || { echo "::error::TAURI_SIGNING_PRIVATE_KEY is not set"; exit 1; }
+          # The key has no password, so the secret is optional: an absent secret must not reach Tauri as an empty/fake value.
+          [ -n "${TAURI_SIGNING_PRIVATE_KEY_PASSWORD:-}" ] || unset TAURI_SIGNING_PRIVATE_KEY_PASSWORD
           npx --prefix tools tauri build > build.log 2>&1 || { tail -n 40 build.log; exit 1; }
           tail -n 8 build.log
       - name: Updater manifest

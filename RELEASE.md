@@ -25,4 +25,4 @@ then approve the run in GitHub (Actions → the run → *Review deployments*). P
 
 ## Secrets
 
-Environment `desktop-release` secrets: `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. The workflow never prints them (they are masked by GitHub and only given to the build step, whose output is shown only on failure via `tail`). Setup steps are given in chat; the key is never handled by Claude.
+Environment `desktop-release` secrets: `TAURI_SIGNING_PRIVATE_KEY` (required) and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (optional; the current key has no password, so the secret is absent and the workflow unsets the variable). The workflow never prints them (they are masked by GitHub and only given to the build step, whose output is shown only on failure via `tail`). Setup steps are given in chat; the key is never handled by Claude.

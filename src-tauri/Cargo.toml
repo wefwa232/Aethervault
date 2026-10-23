@@ -1,6 +1,6 @@
 [package]
 name = "aethervault"
-version = "0.6.1"
+version = "0.6.2"
 description = "Aethervault desktop shell"
 edition = "2021"
 
