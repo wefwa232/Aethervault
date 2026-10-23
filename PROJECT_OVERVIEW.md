@@ -396,4 +396,4 @@ Last runs (end of Combat B): Node logic 45/45, phase3 22/22, phase4 30/30, comba
 </content>
 
 ## Mobile Phase (in progress)
-Mobile A is done: `css/mobile.css` adds a coarse-pointer sizing layer, a phone bottom bar (Home · Open · Vault · Combat · More) with a More bottom sheet, phone Home/Open Hall compositions and a Vault toolbar with a filter bottom sheet. Mobile B (Inspect/Forge/Fusion/Cards/Deck) and C (combat touch, settings, performance presets) remain; see `MOBILE_PHASE.md`.
+Mobile A is done: `css/mobile.css` adds a coarse-pointer sizing layer, a phone bottom bar (Home · Open · Vault · Combat · More) with a More bottom sheet, phone Home/Open Hall compositions and a Vault toolbar with a filter bottom sheet. Mobile B (done) adds phone layouts for Inspect + Organise (full-bleed sheet, floating close, docked Forge/Fuse/Favorite/Lock actions), Forge and Fusion (chamber first, specimen picker as a bottom sheet), the Binder/Families/Duplicates/Timeline/History/Sets/Compare views and the Deck editor (compact slots, Add/Swap picker sheet, status dock). Mobile C (combat touch, settings, performance presets) remains; see `MOBILE_PHASE.md`.

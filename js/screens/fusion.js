@@ -12,13 +12,13 @@
   function render(root, params) {
     if (params && params.primary && E.get(params.primary)) { F.primary = params.primary; F.donors = []; }
     F.donors = F.donors.filter(id => E.get(id)); if (F.primary && !E.get(F.primary)) F.primary = null;
-    root.innerHTML = `<div class="fz">
-      <aside class="fz-pick s-matte sq" aria-label="Choose specimens"><h3 class="sect">${A.icon('fuse')} Specimens</h3>
+    root.innerHTML = `<div class="fz"><div class="fz-back" data-pickclose></div>
+      <aside class="fz-pick s-matte sq" aria-label="Choose specimens"><div class="fz-pick-head"><h3 class="sect">${A.icon('fuse')} Specimens</h3><button class="btn small" data-pickclose>Done</button></div>
         <label class="search">${A.icon('search')}<input id="fzq" type="search" placeholder="name, serial…" value="${esc(F.q)}" aria-label="Search specimens"></label>
         <div class="seg small fz-cats" role="group" aria-label="Division">${[['all', 'All']].concat(D.CATEGORIES.map(c => [c.id, c.name])).map(([id, n]) => `<button class="${F.cat === id ? 'on' : ''}" data-fcat="${id}">${n}</button>`).join('')}</div>
         <p class="tiny dim fz-step"></p><div class="fz-list" role="listbox" aria-label="Specimens"></div></aside>
       <section class="fz-chamber s-stage" aria-label="Fusion chamber">
-        <header class="fz-head"><span class="label">Archive · fusion chamber</span><h1>Fusion</h1></header>
+        <header class="fz-head"><span class="label">Archive · fusion chamber</span><h1>Fusion</h1><button class="btn small fz-choose" data-pickopen>${A.icon('grid')}Choose specimens</button></header>
         <div class="fz-slots"></div>
         <div class="fz-core"><div class="fz-view"></div><div class="fz-flat"></div><div class="fz-anim" aria-hidden="true"></div></div>
       </section>
@@ -45,7 +45,7 @@
       }).join('') + (l.length > shown.length ? `<p class="tiny dim">${l.length - shown.length} more — refine the search.</p>` : '') + (!l.length ? `<p class="muted">Nothing here yet.</p>` : '');
     }
     function slotHTML(s, label, idx) {
-      if (!s) return `<div class="fz-slot empty"><span class="label">${label}</span><p>${idx === 0 ? 'Choose a primary' : 'Add a specimen'}</p></div>`;
+      if (!s) return `<div class="fz-slot empty" data-pickopen><span class="label">${label}</span><p>${idx === 0 ? 'Choose a primary' : 'Add a specimen'}</p></div>`;
       const R = SP.rarityOf(s); return `<div class="fz-slot r-${R.id}" data-slot="${idx}"><span class="label">${label}</span><span class="fz-sart">${A.render(s)}</span><b>${esc(SP.displayName(s))}</b><small class="mono">${ui.serial(s.serial)}</small><button class="icon-btn small" data-unslot="${s.id}" aria-label="Remove">${A.icon('close')}</button></div>`;
     }
     function drawSlots() {
@@ -124,6 +124,8 @@
     root.addEventListener('input', e => { if (e.target.id === 'fzq') { clearTimeout(root._t); root._t = setTimeout(() => { F.q = e.target.value; drawList(); }, 120); } });
     root.addEventListener('change', e => { if (e.target.dataset.act === 'consume') { F.consume = e.target.checked; drawPlan(); } });
     root.addEventListener('click', async e => {
+      if (e.target.closest('[data-pickopen]')) { root.querySelector('.fz').classList.add('pick-open'); return; }
+      if (e.target.closest('[data-pickclose]')) { root.querySelector('.fz').classList.remove('pick-open'); return; }
       const c = e.target.closest('[data-fcat]'); if (c) { F.cat = c.dataset.fcat; root.querySelectorAll('[data-fcat]').forEach(b => b.classList.toggle('on', b === c)); drawList(); return; }
       const un = e.target.closest('[data-unslot]'); if (un) { const id = un.dataset.unslot; if (id === F.primary) { F.primary = null; F.donors = []; } else F.donors = F.donors.filter(x => x !== id); draw(); return; }
       const row = e.target.closest('[data-fid]');

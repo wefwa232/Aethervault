@@ -13,7 +13,7 @@ css/places.css          per-screen backdrops (CSS only) + Home
 css/open.css vault.css pages.css stage.css    per-screen layout; cinematic stages (rituals, reveals, inspect, evolution)
 css/progress.css        Phase Three: stat rows, transformation tree, appearance selector, ledger, Forge console
 css/p4.css              Phase Four: cards, fusion, Vault views, rituals, roulette, Organise
-css/mobile.css          Mobile Phase A: coarse-pointer sizing, phone bottom nav + More sheet, bottom sheets, phone Home/Open/Vault (loaded last; desktop untouched)
+css/mobile.css          Mobile Phases A+B: coarse-pointer sizing, phone bottom nav + More sheet, bottom sheets, phone Home/Open/Vault, Inspect/Forge/Fusion/Vault views/Deck editor (loaded last; desktop untouched)
 js/util.js              PRNG (mulberry32), weighted pick, formatting, DOM helpers, escape
 js/data.js              CONTENT REGISTRIES: rarities, variants, conditions, patterns, items, evolutions, containers, store…
 js/state.js             save schema, defaults (incl. settings.quality3d), load/save/migrate, event bus (AV.bus)

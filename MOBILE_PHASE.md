@@ -1,6 +1,6 @@
 # MOBILE PHASE — Mobile Experience and Responsive UI
 
-Status: **Mobile A complete (checkpoint); Mobile B and C not started.** Branch `phase-five`, base commit `704b499`, app version 0.6.3, working tree clean at start.
+Status: **Mobile A and B complete (checkpoints); Mobile C not started.** Branch `phase-five`, base commit `704b499`, app version 0.6.3. Mobile A checkpoint `a80855b`.
 Out of scope: Combat C, ranked AI/ELO, new content/systems, Supabase/auth/cloud/updater/release changes, 3D asset rebuilds.
 
 ## Budget rules (from the brief)
@@ -75,6 +75,28 @@ Open Hall rituals, Binder/Compare/Organise, Inspect, Forge chamber, Fusion chamb
 - Hover-only card quick actions remain hidden on phones (favorite/lock available in Inspect and via Select).
 - Desktop release: the shared frontend changed, so a patch release would be needed to ship it in the EXE; not proposed yet (see completion report at the end of the phase).
 
+## Mobile B — delivered (Inspect, Organise, Forge, Fusion, Vault views, Deck editor)
+All phone rules live in `css/mobile.css` (Phase B block), with small markup hooks in four screens. Desktop is unchanged (verified at 1440x900: bench/picker/rail stay inline, none of the phone-only buttons or docks render).
+- **Inspect + Organise:** the modal is full-bleed (it was 16px too wide at 390 because the wrap padding was kept); the stage is `clamp(280px, 44dvh, 460px)` with a **floating Close** over the stage (`.io-close`, new in `inspect.js`; the sheet's own close scrolled away), prev/next arrows, position, Reset view and the card/hologram switch kept. **Forge, Fuse, Favorite, Lock, Companion, Duplicate and Dismantle are one docked, horizontally scrolling row** pinned to the bottom (Forge and Fuse first, Dismantle last and still confirming; the protected state still reads). Tags, note (16px so iOS does not zoom) and collections are 44px controls; stat rows, Compare-with, "Show next upgrade", looks and ledger are touch-sized. Phone landscape: stage left, scrolling sheet right.
+- **Forge:** chamber first (stage `clamp(300px, 46dvh, 480px)`, title, stage lamps, Reset view). The **specimen picker is a bottom sheet** opened by a **Change** button (new `bench-open` state in `forge.js`; picking closes it, search and division chips live inside it). The Upgrade button is **sticky** above the bottom bar while the upgrade card scrolls; evolution levers, branches and previews keep their existing flows, buttons go full-width.
+- **Fusion:** header with **Choose specimens**, slots become a 3-up wrap (primary, secondary, optional second donor; the plus glyph is hidden), the picker is a bottom sheet that also opens by tapping an empty slot (`pick-open` in `fusion.js`; roles and compatibility reasons untouched), the preview/result panel stacks beneath the chamber and **Fuse is sticky**.
+- **Vault views:** Binder set tabs scroll sideways in one row, the page grid stays 3-up with tighter gutters, Fast list drops Class/Best-copy columns. **Duplicates keeps art, serial, variant, condition, potential and value** (stage/form/print columns hidden on phones, group actions full-width). Families, Timeline, History and Sets get tighter cards and 44px rows. **Compare is full-screen with sideways-scrolling specimen columns under a pinned label column.**
+- **Deck editor:** deck tabs scroll sideways; the 10 slots are compact rows (art, name, role, Elixir cost, **Swap**, remove; DPS/kit detail stays one tap away in the numbers modal). **Add** opens the collection as a bottom sheet (search, role chips, Add buttons, "not combat-ready" list). **Swap** opens the same sheet titled "Replace <name>" and the next Add replaces that slot in place, so a full 10/10 deck can be changed without removing first (new `swapId`/`pickOpen` state in `deck.js`; desktop rows and Add behaviour unchanged). A **docked bar** shows `n/10`, "Ready · saved", Add and Done. There is no explicit Save: every edit was always written immediately (`E.deckUpdate`), so the dock says so instead of adding a button.
+- Also: a stray `}` was removed from the Home block of Mobile A's CSS, and `body:has(.deck-dock)` hides the sync pill so it does not cover Done.
+
+### Tests run (Mobile B)
+- Node: logic 45, phase3 22, phase4 30, combat 99, all passing. `pwa-stamp` re-run and `--check` OK (96 precached files).
+- Browser (built-in pane, one harness, no historical suites): 390x844 Inspect (Organise tag/note/favorite/prev-next via the dock), Forge (picker sheet, evolution levers, sticky Upgrade), Fusion (slots, picker, duplicate fuse preview), every Vault view plus Compare, Deck (slots, Add sheet, Swap replace-in-place at index 2 with the other nine entries unchanged). One matrix pass of Forge/Fusion/Deck/Duplicates/Binder/Inspect at 375x667, 844x390, 768x1024 and 1440x900: no page-level horizontal overflow, no console errors from the app. Final smoke: Inspect, favorite/tag/note/next, Forge, picker, Fusion slot, Home at 390x844. Screenshots kept outside Git.
+
+### Known limitations / not done (Mobile B)
+- The built-in pane does not emulate `pointer: coarse`, so the 44px coarse layer was verified by CSS reading and the phone layouts, not by measuring on a touch device. Some small buttons (Reset view, Change, Choose specimens) measure 30-39px in the pane and become 40-44px with a real touch pointer. Needs the iPhone check.
+- Hover-only tooltips remain (the stat "why" is tap-to-expand already; card quick actions are still only on Select/Inspect).
+- Deck rows hide DPS/kit chips on phones; the numbers modal is the way to see them. Cards have no stand-alone view (they appear in Specimens, Binder, Codex and Inspect), so nothing extra was built for them.
+- Compare with four specimens scrolls sideways by design; 360px-wide phones were not measured.
+- The top bar balance chips at 390 can clip the last chip (keys) beside the level ring; that is Mobile A's shell, left for Mobile C's shell/settings pass.
+- Phones wider than 860px in landscape, combat touch controls (B1), Settings, auth/cloud/PWA states and performance presets are still Mobile C. No desktop release proposed.
+
 ## Progress log
+- 2026-10-23 — Mobile B done: Inspect/Organise, Forge, Fusion, Vault views/Compare, Deck editor (tap Add/Swap). Checkpoint committed to `phase-five`.
 - 2026-10-23 — Mobile A done: shell/nav, tokens, Home, Open Hall, Vault. Checkpoint committed to `phase-five`.
 - 2026-10-23 — Audit done (docs, CSS, nav, input, quality settings read; 390×844 overflow and target-size probe across 10 screens). No code changed.

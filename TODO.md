@@ -85,6 +85,6 @@ Legend: `[x]` built **and tested** · `[~]` built, only partly tested · `[ ]` n
 
 ## Mobile Phase (see MOBILE_PHASE.md)
 - [x] Mobile A: coarse-pointer tokens, bottom nav + More sheet, Home, Open Hall, Vault filter sheet/chips/selection
-- [ ] Mobile B: Inspect, Forge, Fusion, Cards/Binder/Compare, Deck editor
+- [x] Mobile B: Inspect + Organise, Forge, Fusion, Binder/Families/Duplicates/Timeline/History/Sets/Compare, Deck editor (tap Add/Swap)
 - [ ] Mobile C: combat touch controls (blocker B1), Settings/auth/PWA polish, performance presets, landscape breakpoint for wide phones
 - [ ] Physical iPhone validation (not yet done)

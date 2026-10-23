@@ -100,6 +100,7 @@
 
   function render(root, params) {
     if (params && params.select && E.get(params.select)) { selId = params.select; preview = null; }
+    let benchOpen = false; // phone: the specimen picker is a bottom sheet
     const draw = () => {
       if (view) { view.dispose(); view = null; }
       const list = candidates();
@@ -118,14 +119,14 @@
             <p class="muted tiny con-note">Upgrades are permanent and refund 50% of invested essence if the specimen is later dismantled.${unl ? ' <b class="hot">Unlimited Mode: upgrades and transformations are free.</b>' : ''}</p>${prot}</div>
           <div class="con-evo con-scroll">${transformCard(s, unl)}<div class="con-h" style="margin-top:.8rem"><span class="label">Recent progression</span></div>${SU.ledger(s, 3)}</div></div>`;
       }
-      root.innerHTML = `<div class="chamber">
-        <aside class="bench s-matte sq"><h3 class="sect">Specimens</h3>
+      root.innerHTML = `<div class="chamber ${benchOpen ? 'bench-open' : ''}"><div class="bench-back" data-benchclose></div>
+        <aside class="bench s-matte sq"><div class="bench-head"><h3 class="sect">Specimens</h3><button class="btn small" data-benchclose>Done</button></div>
           <label class="search small">${A.icon('search')}<input id="fq" type="search" placeholder="Search…" value="${esc(q)}" aria-label="Search specimens"></label>
           <div class="chips tight">${[['all', 'All']].concat(D.CATEGORIES.map(c => [c.id, c.name])).map(([id, n]) => `<button class="chipk ${cat === id ? 'on' : ''}" data-cat="${id}">${n}</button>`).join('')}</div>
           <div class="mini-list tall" id="fList">${shown.length ? shown.map(x => ui.mini(x, { selected: x.id === selId })).join('') : '<p class="muted">No specimens match.</p>'}</div>
           ${list.length > shown.length ? `<p class="muted tiny">Showing ${shown.length} of ${list.length} — search to narrow.</p>` : ''}</aside>
         <section class="lab">
-          ${s ? `<div class="chamber-stage s-stage r-${SP.rarityOf(s).id}"><div class="cs-view" id="csView"></div>${head}<button class="btn quiet small cs-reset" data-act="reset">${A.icon('drag')}Reset view</button></div>${console_}`
+          ${s ? `<div class="chamber-stage s-stage r-${SP.rarityOf(s).id}"><div class="cs-view" id="csView"></div>${head}<button class="btn quiet small cs-reset" data-act="reset">${A.icon('drag')}Reset view</button><button class="btn small fg-change" data-benchopen>${A.icon('grid')}Change</button></div>${console_}`
             : `<div class="chamber-stage s-stage">${ui.empty('upgrade', 'Nothing to forge', 'Open some containers and bring a specimen here to enhance it.', `<button class="btn primary" data-go="open">${A.icon('open')}Open a container</button>`)}</div>`}
         </section></div>`;
       if (s) {
@@ -148,8 +149,10 @@
     root.addEventListener('input', e => { if (e.target.id === 'fq') { clearTimeout(qt); qt = setTimeout(() => { q = e.target.value; const sel = root.querySelector('#fList'); const list = candidates().slice(0, 120); sel.innerHTML = list.length ? list.map(x => ui.mini(x, { selected: x.id === selId })).join('') : '<p class="muted">No specimens match.</p>'; }, 120); } });
     root.addEventListener('click', async e => {
       const go = e.target.closest('[data-go]'); if (go) { ui.go(go.dataset.go); return; }
+      const bo = e.target.closest('[data-benchopen]'); if (bo) { benchOpen = true; root.querySelector('.chamber').classList.add('bench-open'); return; }
+      if (e.target.closest('[data-benchclose]')) { benchOpen = false; root.querySelector('.chamber').classList.remove('bench-open'); return; }
       const c = e.target.closest('[data-cat]'); if (c) { cat = c.dataset.cat; draw(); return; }
-      const m = e.target.closest('.mini'); if (m) { selId = m.dataset.id; preview = null; draw(); return; }
+      const m = e.target.closest('.mini'); if (m) { selId = m.dataset.id; preview = null; benchOpen = false; draw(); return; }
       const pe = e.target.closest('[data-prevevo]'); if (pe) { preview = preview && preview.to === pe.dataset.prevevo ? null : { kind: 'evo', to: pe.dataset.prevevo }; draw(); return; }
       const pf = e.target.closest('[data-prevform]'); if (pf) { preview = preview && preview.form === pf.dataset.prevform ? null : { kind: 'form', form: pf.dataset.prevform }; draw(); return; }
       const evo = e.target.closest('[data-evo]');

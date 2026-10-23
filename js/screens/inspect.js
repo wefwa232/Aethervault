@@ -40,6 +40,7 @@
       box.className = 'insp r-' + R.id; box.style.setProperty('--rc', R.color);
       stageEl.classList.toggle('s-lumen', rare);
       over.innerHTML = `
+        <button class="icon-btn io-close" data-m-close aria-label="Close">${A.icon('close')}</button>
         <div class="io-badges">${s.favorite ? `<span class="flag fav">${A.icon('heart')}</span>` : ''}${s.locked ? `<span class="flag lk">${A.icon('lock')}</span>` : ''}${isComp ? `<span class="flag cmp">${A.icon('paw')}</span>` : ''}</div>
         ${ids ? `<button class="nav-arrow l" data-nav="-1" ${idx <= 0 ? 'disabled' : ''} aria-label="Previous">${A.icon('back')}</button><button class="nav-arrow r" data-nav="1" ${idx >= ids.length - 1 ? 'disabled' : ''} aria-label="Next">${A.icon('back')}</button><span class="io-pos mono">${U.pad(idx + 1, 2)} / ${U.pad(ids.length, 2)}</span>` : ''}
         ${prev ? `<div class="io-preview s-label"><span class="label">Preview</span><b>${esc(prevName())}</b><span class="muted">not applied</span><button class="btn quiet small" data-act="unprev">Stop</button></div>` : ''}

@@ -4,7 +4,7 @@
   const AV = (window.AV = window.AV || {});
   const U = AV.util, E = AV.engine, SP = AV.specimen, A = AV.art, ui = AV.ui, au = AV.audio, C = AV.combat;
   const esc = U.esc;
-  let selId = null, text = '', role = 'all', more = { ok: 40, no: 12 };
+  let selId = null, text = '', role = 'all', more = { ok: 40, no: 12 }, pickOpen = false, swapId = null; // phone: the collection picker is a sheet; swapId = a slot being replaced
 
   const S = () => AV.state.get(), cb = () => S().combat;
   const roleName = r => (C.defs.ROLES[r] || {}).name || r;
@@ -36,6 +36,7 @@
     if (params && params.id && c.decks.some(k => k.id === params.id)) selId = params.id;
     if (!c.decks.some(k => k.id === selId)) selId = c.activeDeck || (c.decks[0] && c.decks[0].id) || null;
 
+    pickOpen = false; swapId = null;
     const draw = () => {
       const s = S(), deck = c.decks.find(k => k.id === selId), V = deck ? C.deck.validate(s, deck.entries) : null, want = C.tuning.hand.deck;
       const inDeck = new Set(deck ? deck.entries.map(e => e.id) : []);
@@ -50,7 +51,7 @@
           <div class="ds-txt"><b>${esc(SP.displayName(r.spec))}</b><small>${r.def ? esc(roleName(r.def.role)) : esc(SP.itemOf(r.spec).cat)}${r.spec.level ? ' · ' + esc(SP.stageName(r.spec)) : ''}</small>
           ${r.ok ? `<small class="mono" ${f.hp ? `title="range ${f.range} · speed ${f.speed}"` : ''}>${esc(gist(r.def, f))}</small>${r.def && r.def.cat === 'pet' ? kitChip(r.spec.base) : ''}` : `<small class="why">${esc(r.reason)}</small>`}</div>
           ${r.def ? `<span class="cb-cost" title="Elixir cost">${r.cost}</span>` : ''}
-          <button class="icon-btn ds-x" data-rm="${r.id}" aria-label="Remove from deck">${A.icon('close')}</button></div>`;
+          <button class="btn small ghost ds-sw" data-swap="${r.id}" aria-label="Replace ${esc(SP.displayName(r.spec))} in deck">Swap</button><button class="icon-btn ds-x" data-rm="${r.id}" aria-label="Remove from deck">${A.icon('close')}</button></div>`;
       };
       const slots = Array.from({ length: want }, (_, i) => slot(i)).join('');
       const roles = V ? ROLE_ORDER.filter(r => V.roles[r]).map(r => `<span class="rolepip role-${r}">${esc(roleName(r))} <b>${V.roles[r]}</b></span>`).join('') : '';
@@ -61,11 +62,12 @@
       const elig = all.filter(x => x.v.ok && match(x)).map(x => ({ x, t: C.translate(x.sp) })).sort((a, b) => (b.t.hp ? b.t.hp * b.t.dps : 0) - (a.t.hp ? a.t.hp * a.t.dps : 0) || (a.x.sp.id < b.x.sp.id ? -1 : 1));
       const notReady = all.filter(x => !x.v.ok && x.v.code !== 'card' && match(x) && role === 'all').sort((a, b) => (a.sp.base < b.sp.base ? -1 : 1));
       const cards = all.filter(x => x.v.code === 'card').length;
-      const row = ({ x, t }) => { const R = SP.rarityOf(x.sp), used = inDeck.has(x.sp.id), full = !!deck && deck.entries.length >= want;
+      const row = ({ x, t }) => { const R = SP.rarityOf(x.sp), used = inDeck.has(x.sp.id), full = !!deck && deck.entries.length >= want && !swapId;
         return `<div class="prow r-${R.id}" data-num="${x.sp.id}"><span class="pr-art">${A.render(x.sp)}</span><span class="pr-txt"><b>${esc(SP.displayName(x.sp))}</b><small>${esc(roleName(x.d.role))}${x.sp.level ? ' · ' + esc(SP.stageName(x.sp)) : ''} · <span class="mono">${esc(gist(x.d, t))}</span> ${x.d.cat === 'pet' ? kitChip(x.sp.base) : ''}</small></span>
           <span class="cb-cost" title="Elixir cost">${x.d.cost}</span><button class="btn small ${used ? 'ghost' : 'primary'}" data-add="${x.sp.id}" ${!deck || used || full ? 'disabled' : ''}>${used ? 'In deck' : full ? 'Deck full' : 'Add'}</button></div>`; };
       const nrow = x => { const R = SP.rarityOf(x.sp); return `<div class="prow dim r-${R.id}"><span class="pr-art">${A.render(x.sp)}</span><span class="pr-txt"><b>${esc(SP.displayName(x.sp))}</b><small>${esc(x.v.reason)}</small></span><button class="btn small ghost" disabled>Not ready</button></div>`; };
-      root.innerHTML = `<div class="deck">
+      const swapSp = swapId ? s.specimens[swapId] : null, count = V ? V.usable : 0;
+      root.innerHTML = `<div class="deck ${pickOpen ? 'pick-open' : ''}"><div class="dk-back" data-pickclose></div>
         <header class="page-head"><div><span class="label">Combat</span><h1>Deck editor</h1><p class="muted">Exactly ${want} specimens, any mixture. Only combat-ready specimens can be added; the rest are listed so you can see what is coming.</p></div>
           <div class="head-actions"><button class="btn ghost" data-act="back">${A.icon('back')}Combat</button></div></header>
         <div class="deck-tabs" role="tablist" aria-label="Decks">${tabs}${c.decks.length < 20 ? `<button class="dtab add" data-act="new">${A.icon('plus')}New deck</button>` : ''}</div>
@@ -79,12 +81,13 @@
               <div class="rolepips">${roles}</div>${V.issues.length ? `<ul class="issues">${V.issues.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : ''}</div>
             <div class="deck-presets"><span class="label">Presets <small>built from your collection</small></span>${presets.length ? presets.map(p => `<button class="preset" data-preset="${p.id}" title="${esc(p.blurb)}"><b>${esc(p.name)}</b><small>${p.ids.length}/${want} · ${esc(p.blurb)}</small></button>`).join('') : '<p class="muted tiny">You have no combat-ready specimens yet. Pets such as Nimbit or Emberkit can be found in the Hatchling Egg.</p>'}</div>
           </section>
-          <section class="s-matte pad deck-pick"><div class="pick-bar"><input class="deck-search" id="dkSearch" type="search" placeholder="Search your collection…" value="${esc(text)}" aria-label="Search collection">
+          <section class="s-matte pad deck-pick"><div class="pick-head"><b>${swapSp ? `Replace ${esc(SP.displayName(swapSp))}` : 'Add specimens'} <small class="mono">${count}/${want}</small></b><button class="btn small" data-pickclose>Done</button></div><div class="pick-bar"><input class="deck-search" id="dkSearch" type="search" placeholder="Search your collection…" value="${esc(text)}" aria-label="Search collection">
             <div class="seg" role="group" aria-label="Role">${['all'].concat(ROLE_ORDER).map(r => `<button class="${role === r ? 'on' : ''}" data-role="${r}">${r === 'all' ? 'All' : esc(roleName(r))}</button>`).join('')}</div></div>
             <div class="plist">${elig.length ? elig.slice(0, more.ok).map(row).join('') + (elig.length > more.ok ? `<button class="btn small ghost" data-more="ok">Show ${Math.min(40, elig.length - more.ok)} more (${elig.length - more.ok} left)</button>` : '') : `<p class="muted pad-s">${all.some(x => x.v.ok) ? 'Nothing matches.' : 'No combat-ready specimens in your collection.'}</p>`}</div>
             ${notReady.length ? `<details class="nr"><summary>Not yet combat-ready <b>${notReady.length}</b></summary><div class="plist">${notReady.slice(0, more.no).map(nrow).join('')}${notReady.length > more.no ? `<button class="btn small ghost" data-more="no">Show more (${notReady.length - more.no} left)</button>` : ''}</div></details>` : ''}
             ${cards ? `<p class="tiny dim">${cards} collectible card${cards === 1 ? '' : 's'} stay outside combat.</p>` : ''}</section></div>`
           : `<div class="panel pad deck-none">${ui.empty('sword', 'No decks yet', 'Create a deck to choose which specimens you take into battle.', `<button class="btn primary" data-act="new">${A.icon('plus')}New deck</button>${presets.length ? `<button class="btn ghost" data-act="starter">${A.icon('sparkle')}Build the recommended starter</button>` : ''}`)}</div>`}
+      ${deck ? `<div class="deck-dock"><span class="dd-n"><b class="${V.valid ? 'ok' : ''}">${count}/${want}</b><small>${V.valid ? 'Ready · saved' : 'Saved automatically'}</small></span><button class="btn" data-pickopen>${A.icon('plus')}Add</button><button class="btn primary" data-act="back">Done</button></div>` : ''}
       </div>`;
     };
 
@@ -94,7 +97,11 @@
       const t = e.target, deck = c.decks.find(k => k.id === selId);
       const tab = t.closest('[data-tab]'); if (tab) { selId = tab.dataset.tab; more = { ok: 40, no: 12 }; draw(); return; }
       const rm = t.closest('[data-rm]'); if (rm && deck) { E.deckUpdate(deck.id, { ids: deck.entries.filter(x => x.id !== rm.dataset.rm).map(x => x.id) }); au.play('lockset'); rerender(); return; }
-      const add = t.closest('[data-add]'); if (add && deck) { if (deck.entries.length < C.tuning.hand.deck && !deck.entries.some(x => x.id === add.dataset.add)) { E.deckUpdate(deck.id, { ids: deck.entries.map(x => x.id).concat(add.dataset.add) }); au.play('fav'); rerender(); } return; }
+      if (t.closest('[data-pickopen]')) { pickOpen = true; swapId = null; root.querySelector('.deck').classList.add('pick-open'); return; }
+      if (t.closest('[data-pickclose]')) { pickOpen = false; swapId = null; draw(); return; }
+      const sw = t.closest('[data-swap]'); if (sw && deck) { swapId = sw.dataset.swap; pickOpen = true; draw(); return; }
+      const add = t.closest('[data-add]'); if (add && deck && swapId && deck.entries.some(x => x.id === swapId) && !deck.entries.some(x => x.id === add.dataset.add)) { E.deckUpdate(deck.id, { ids: deck.entries.map(x => (x.id === swapId ? add.dataset.add : x.id)) }); au.play('fav'); swapId = null; pickOpen = false; draw(); return; }
+      if (add && deck) { if (deck.entries.length < C.tuning.hand.deck && !deck.entries.some(x => x.id === add.dataset.add)) { E.deckUpdate(deck.id, { ids: deck.entries.map(x => x.id).concat(add.dataset.add) }); au.play('fav'); rerender(); } return; }
       const rl = t.closest('[data-role]'); if (rl) { role = rl.dataset.role; more.ok = 40; draw(); return; }
       const mo = t.closest('[data-more]'); if (mo) { more[mo.dataset.more] += 40; rerender(); return; }
       const pr = t.closest('[data-preset]'); if (pr && deck) { const p = C.deck.presets(S()).find(x => x.id === pr.dataset.preset); if (p) { E.deckUpdate(deck.id, { ids: p.ids, preset: p.id }); au.play('seal'); ui.toast(`${p.name} applied (${p.ids.length} specimens)`, { kind: 'good', icon: 'check' }); rerender(); } return; }
