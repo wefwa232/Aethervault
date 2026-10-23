@@ -32,3 +32,7 @@ Environment `desktop-release` secrets: `TAURI_SIGNING_PRIVATE_KEY` (required) an
 Subphase G complete. v0.6.2 was the first release cut by this pipeline (tag-triggered, approved in the `desktop-release` environment). The owner then updated a real installed 0.6.1 to 0.6.2 in-app with saves, sign-in and cloud sync intact; see UPDATER.md. Tamper test: 8/8. Ordinary pushes do not start the workflow (confirmed). Vercel production deployment from `phase-five` is unchanged.
 
 Standing rules: never delete or move a published `v*` tag (the ruleset blocks it); never regenerate the updater key; keep identifier `app.aethervault.desktop` and `useHttpsScheme: true`.
+
+## v0.6.3 (accepted 2026-10-23)
+
+Second release cut by the pipeline: automatic linked cloud saves (commit `d28ddeb`, tag `v0.6.3`). Run `39993610546`: verify job passed, `desktop-release` approved by the owner, build/sign/publish succeeded; published as Latest (not draft). Assets: `Aethervault_0.6.3_x64-setup.exe` (31,948,763 bytes), `.sig`, `latest.json` (version 0.6.3, signature equals the `.sig`). Independent check: the installer's signature verifies with the repo's public key and fails with one flipped byte; no key material or masked values in the run log. Owner's real 0.6.2 → 0.6.3 in-app update succeeded (save, sign-in, cloud saves, sync, identity and single-instance behaviour intact). The key, identifier, HTTPS scheme, save schema, environment protection and workflow were not changed. The tag is final and must not be moved.

@@ -70,3 +70,7 @@ v0.6.2 was built, signed and published by the pipeline (run approved by the owne
 ## Owner acceptance: real update (2026-10-23)
 
 The owner updated the installed app from **0.6.1 to 0.6.2** through Settings → Install & updates (check, install, restart) using the release published by the pipeline. Confirmed afterwards: Settings shows v0.6.2; local save and collection intact; currencies unchanged; Google sign-in still active; cloud sync works without a conflict; combat opens; install location, shortcut and storage unchanged (same identity); a single app instance. **The real updater path is verified end to end.** The earlier "not yet verified" limits (no real download/install exercised; first update needing a reinstall) are closed.
+
+## 0.6.2 → 0.6.3 (accepted 2026-10-23)
+
+The owner updated the installed app from **0.6.2 to 0.6.3** through Settings → Install & updates (check, install, restart) against the published release. Settings showed v0.6.3; save, specimens and currencies intact; Google sign-in and cloud saves still on; a change went Saved locally → Syncing → Synced; the web/PWA client received it automatically with no conflict dialog; app identity and single-instance unchanged. The tamper test (`tools/updater-tamper-test.mjs`, hard-coded to 0.6.2 file names) was not re-run for 0.6.3; the updater's Rust code was unchanged, and the 0.6.3 installer's signature was checked directly against the public key. Details in `RELEASE.md`.
