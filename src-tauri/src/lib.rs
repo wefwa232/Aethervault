@@ -10,6 +10,7 @@ use std::time::{Duration, Instant};
 
 use tauri::{AppHandle, Emitter, Manager, State};
 use tauri_plugin_opener::OpenerExt;
+use tauri_plugin_updater::{Update, UpdaterExt};
 
 const CALLBACK_EVENT: &str = "av-auth-callback";
 const LISTEN_FOR: Duration = Duration::from_secs(10 * 60);
@@ -18,6 +19,9 @@ const DONE_PAGE: &str = "<!doctype html><meta charset=utf-8><title>Aethervault</
 <style>body{font:16px system-ui;background:#0b0a12;color:#e8e4f4;display:grid;place-items:center;height:100vh;margin:0}\
 div{text-align:center;max-width:26rem;padding:1rem}h1{font-size:1.2rem}</style>\
 <div><h1>You can return to Aethervault</h1><p>Sign-in finished. This tab can be closed.</p></div>";
+
+#[derive(Default)]
+struct PendingUpdate(tokio::sync::Mutex<Option<Update>>);
 
 #[derive(Default)]
 struct AuthListener(Mutex<Option<Arc<AtomicBool>>>);
@@ -110,6 +114,42 @@ fn open_external(app: AppHandle, url: String) -> Result<(), String> {
     app.opener().open_url(url, None::<&str>).map_err(|e| e.to_string())
 }
 
+#[derive(serde::Serialize)]
+struct UpdateInfo {
+    version: String,
+    notes: Option<String>,
+}
+
+/// Asks the update endpoint (tauri.conf.json plugins.updater) whether a newer signed build exists. Only a strictly
+/// newer version qualifies, so this can never downgrade. The page gets just the version and notes.
+#[tauri::command]
+async fn update_check(app: AppHandle, state: State<'_, PendingUpdate>) -> Result<Option<UpdateInfo>, String> {
+    let found = app.updater().map_err(|e| e.to_string())?.check().await.map_err(|e| e.to_string())?;
+    let info = found.as_ref().map(|u| UpdateInfo { version: u.version.clone(), notes: u.body.clone() });
+    *state.0.lock().await = found;
+    Ok(info)
+}
+
+/// Downloads the update found by `update_check`, verifies its minisign signature against the public key baked into
+/// the app, runs the installer and restarts. Progress goes to the page as `av-update-progress` ({done,total}).
+#[tauri::command]
+async fn update_install(app: AppHandle, state: State<'_, PendingUpdate>) -> Result<(), String> {
+    let update = state.0.lock().await.take().ok_or("No update has been checked for")?;
+    let mut done: u64 = 0;
+    let handle = app.clone();
+    update
+        .download_and_install(
+            move |chunk, total| {
+                done += chunk as u64;
+                let _ = handle.emit("av-update-progress", serde_json::json!({ "done": done, "total": total }));
+            },
+            || {},
+        )
+        .await
+        .map_err(|e| e.to_string())?;
+    app.restart()
+}
+
 /// Embedded assets are served without HTTP Range support, which leaves <audio> unable to seek or loop the music.
 /// Answers `Range: bytes=a-b` requests from the in-memory body (206 + Content-Range) and advertises ranges for media.
 fn serve_ranges(req: &tauri::http::Request<Vec<u8>>, resp: &mut tauri::http::Response<std::borrow::Cow<'static, [u8]>>) {
@@ -155,7 +195,9 @@ pub fn run() {
             }
         }))
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(AuthListener::default())
+        .manage(PendingUpdate::default())
         .setup(|app| {
             // The window is declared in tauri.conf.json (create: false) and built here only to attach serve_ranges.
             let cfg = app.config().app.windows[0].clone();
@@ -164,7 +206,7 @@ pub fn run() {
                 .build()?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![auth_listen, auth_cancel, open_external])
+        .invoke_handler(tauri::generate_handler![auth_listen, auth_cancel, open_external, update_check, update_install])
         .run(tauri::generate_context!())
         .expect("error while running Aethervault");
 }

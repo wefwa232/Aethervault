@@ -28,15 +28,36 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "targets": [
+      "nsis"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
     "publisher": "Aethervault",
     "shortDescription": "Aethervault",
     "windows": {
       "nsis": {
         "installMode": "currentUser",
         "displayLanguageSelector": false,
-        "languages": ["English"]
+        "languages": [
+          "English"
+        ]
+      }
+    },
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE1N0JERUFBNTYwMTE1NUIKUldSYkZRRldxdDU3cGFVR2tob0xORDZBUUNteS9iY3c1M2JULzYrK3BiT0htSmhMT3ZIMnpLTkwK",
+      "endpoints": [
+        "https://github.com/wefwa232/Aethervault/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
       }
     }
   }

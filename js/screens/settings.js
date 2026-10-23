@@ -6,8 +6,21 @@
 
   const FPS = [['auto', 'Auto', 'Per preset: 30 on Low, 60 on Medium/High'], [30, '30', 'Smoothest on battery'], [60, '60', 'Normal target'], ['max', 'Uncapped', 'Display refresh rate']];
   const P = () => AV.pwa || {};
+  function desktopText() {
+    const u = AV.desktop.updates, e = U.esc, base = 'You are running the Aethervault desktop app. It plays offline from its own files. ';
+    if (u.status === 'checking') return base + 'Checking for updates…';
+    if (u.status === 'installing') return base + (u.total ? `Downloading ${e(u.version)}… ${Math.min(100, Math.round(100 * u.done / u.total))}%` : `Downloading ${e(u.version)}…`) + ' The app restarts when it is installed.';
+    if (u.status === 'available') return base + `Version ${e(u.version)} is available. Your progress is saved on this device and is kept.`;
+    if (u.status === 'none') return base + 'You are on the latest version.';
+    if (u.status === 'error') return base + 'Could not check for updates (offline, or no release is published yet).';
+    return base + 'Updates are signed and installed only when you choose.';
+  }
+  function desktopButtons() {
+    const u = AV.desktop.updates, busy = u.status === 'checking' || u.status === 'installing';
+    return `<button class="btn ghost" data-act="dk-check" ${busy ? 'disabled' : ''}>Check for updates</button>${u.status === 'available' ? '<button class="btn" data-act="dk-install">Install &amp; restart</button>' : ''}`;
+  }
   function pwaText() {
-    const p = P(); if (AV.desktop && AV.desktop.isDesktop) return 'You are running the Aethervault desktop app. It plays offline from its own files; browser install and web update controls do not apply here.';
+    const p = P(); if (AV.desktop && AV.desktop.isDesktop) return desktopText();
     if (!p.supported) return 'Install and offline play are available when Aethervault is opened from a web address (https).';
     if (!p.enabled) return 'Offline caching is off on this local development server (add ?sw=1 to the address to test it).';
     const mode = p.standalone() ? 'Running as an installed app. ' : (p.ios() ? 'To install: Share → Add to Home Screen. ' : '');
@@ -25,6 +38,12 @@
   function render(root) {
     const redraw = () => { if (!root.isConnected) { off && off(); off2 && off2(); return; } const el = root.querySelector('#acct'); if (el) el.innerHTML = accountHtml(); };
     const off = AV.auth && AV.auth.onChange(redraw), off2 = AV.cloud && AV.cloud.onChange(redraw);
+    // Desktop update state changes only touch the Install & updates card, so the rest of the page keeps its scroll and focus.
+    const off3 = AV.desktop && AV.desktop.isDesktop && AV.desktop.updates.onChange(() => {
+      if (!root.isConnected) { off3 && off3(); return; }
+      const t = root.querySelector('#pwaState'), b = root.querySelector('#pwaBtns');
+      if (t) t.textContent = desktopText(); if (b) b.innerHTML = desktopButtons();
+    });
     const draw = () => {
       const P = AV.pwa || {};
       const s = AV.state.get(), st = s.settings, unl = s.mode === 'unlimited';
@@ -74,7 +93,7 @@
             <p class="muted tiny">Reduced motion shortens the reel, replaces the pack tear with a simple reveal, and simplifies holograms and fusion — nothing is hidden.</p></section>
           <section class="s-matte pad"><h3 class="sect">${A.icon('download')} Install &amp; updates</h3>
             <p class="muted" id="pwaState">${pwaText()}</p>
-            <div class="btn-row">${P.installEvent ? `<button class="btn" data-act="pwa-install">${A.icon('download')}Install app</button>` : ''}${P.enabled ? `<button class="btn ghost" data-act="pwa-check">Check for updates</button>${P.updateReady ? '<button class="btn" data-act="pwa-apply">Update now</button>' : ''}` : ''}</div></section>
+            <div class="btn-row" id="pwaBtns">${AV.desktop && AV.desktop.isDesktop ? desktopButtons() : ''}${P.installEvent ? `<button class="btn" data-act="pwa-install">${A.icon('download')}Install app</button>` : ''}${P.enabled ? `<button class="btn ghost" data-act="pwa-check">Check for updates</button>${P.updateReady ? '<button class="btn" data-act="pwa-apply">Update now</button>' : ''}` : ''}</div></section>
           <section class="s-matte pad"><h3 class="sect">${A.icon('lock')} Account</h3><div id="acct">${accountHtml()}</div></section>
           <section class="s-matte pad"><h3 class="sect">${A.icon('download')} Your data</h3>
             <p class="muted">Your save lives in this browser's local storage. Export a backup file any time.</p>
@@ -104,6 +123,8 @@
       const a = e.target.closest('[data-act]'); if (!a) return;
       if (a.dataset.act.startsWith('cloud-')) { await AV.cloudUi.act(a.dataset.act); redraw(); return; }
       if (a.dataset.act === 'test') au.sting(5);
+      else if (a.dataset.act === 'dk-check') { AV.desktop.updates.check(); }
+      else if (a.dataset.act === 'dk-install') { if (!(await AV.desktop.updates.install()) && AV.desktop.updates.status === 'available') ui.toast('Finish your battle first', { kind: 'bad', icon: 'info' }); }
       else if (a.dataset.act === 'pwa-install') await AV.pwa.install();
       else if (a.dataset.act === 'pwa-check') { const ok = await AV.pwa.check(); ui.toast(ok ? (AV.pwa.updateReady ? 'A new version is ready' : 'Checked — you are up to date') : 'Could not check for updates (offline?)', { icon: 'info', silent: true }); draw(); }
       else if (a.dataset.act === 'auth-in') AV.auth.signIn();

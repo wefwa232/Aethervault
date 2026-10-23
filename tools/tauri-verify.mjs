@@ -135,6 +135,25 @@ browser.disconnect(); kill(proc); await sleep(3000);
 start(); ({ browser, page } = await attach()); await sleep(2000);
 const after = await page.evaluate(() => ({ p: localStorage.getItem('av.test.persist'), s: localStorage.getItem('aethervault.save.v1') }));
 check('storage survives restart', after.p === 'kept' && after.s === saveBefore);
+// Updater (Subphase F): the page can ask, never install without a prior check, and failure is clean. No release is
+// published yet in a fresh repo, so the real endpoint answers 404 and the check must end in 'error' (or 'none').
+const upd = await page.evaluate(async () => {
+  const U = AV.desktop.updates, out = { start: U.status };
+  out.noCheckInstall = await U.install();
+  out.after = U.status;
+  await Promise.race([U.check(), new Promise(r => setTimeout(r, 30000))]);
+  out.checked = U.status; out.err = U.error;
+  await new Promise(r => setTimeout(r, 3000)); AV.ui.go('settings'); await new Promise(r => setTimeout(r, 1000));
+  out.text = (document.getElementById('pwaState') || {}).textContent;
+  out.btn = !!document.querySelector('[data-act=dk-check]'); out.screen = document.body.dataset.screen;
+  return out;
+});
+console.log(upd);
+check('updates start idle; install without a check is refused', upd.start === 'idle' && upd.noCheckInstall === false && upd.after === 'idle');
+check('check ends in none or a clean error (no throw)', upd.checked === 'none' || upd.checked === 'error', upd);
+check('Settings shows the desktop update card', /desktop app/.test(upd.text || '') && upd.btn, upd.text);
+const rawInstall = await page.evaluate(() => AV.desktop.invoke('update_install').then(() => 'resolved', e => String(e)));
+check('update_install with nothing pending is rejected by the shell', /No update has been checked for/.test(rawInstall), rawInstall);
 const real = errors.filter(e => !/Failed to load resource|favicon/.test(e));
 check('no page errors', real.length === 0, real.slice(0, 5));
 browser.disconnect(); kill(proc); await sleep(1500);

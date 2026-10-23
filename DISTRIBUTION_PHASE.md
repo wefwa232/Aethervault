@@ -78,6 +78,8 @@ Per the phase brief: each subphase committed, pushed, documented, app runnable, 
 
 - 2026-10-23 — Subphase E built: Tauri 2 shell in `src-tauri/`, NSIS installer produced, desktop sign-in via system browser + loopback, music Range support, 19/19 EXE checks. See `TAURI.md`. Owner closed the gates (redirect added, installed and tested the real app).
 
+- 2026-10-23 — Subphase F built: `tauri-plugin-updater` (Rust-only commands), minisign-signed NSIS artifacts, `latest.json` generator, Settings update card, 23/23 EXE checks. Dedicated signing key generated in `~/.tauri/` (owner must back it up). End-to-end install not yet exercised (needs a published newer release). See `UPDATER.md`.
+
 ## Subphase A status
 
 Deployed and verified, with one open item: repeat the screen walk in desktop Chrome.
@@ -98,9 +100,13 @@ Complete and tagged `distribution-d-cloud-saves`. Opt-in, local-first, conflict-
 
 Complete, tagged `distribution-e-tauri`, and accepted by the owner after a real installed-app test (system-browser Google sign-in, cloud saves, persistence, 3D/combat). Details in `TAURI.md`.
 
+## Subphase F status
+
+Built and verified up to the check path; tag `distribution-f-updater`. Awaiting owner: private key backup, one reinstall from the new installer, and a real 0.6.1 → newer update test when a release exists. Details in `UPDATER.md`.
+
 ## Next-session opener
 
-> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphases A–E are complete (TAURI.md; tag distribution-e-tauri). Begin Subphase F only: signed Tauri auto-updates. Keep the identifier app.aethervault.desktop and useHttpsScheme true (they fix the save origin). Reuse the shared frontend; desktop code stays in src-tauri/ and js/platform/. Wait for the owner to explicitly start it. Do not begin release automation (G), Combat C, or gameplay changes.
+> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphases A–F are built (UPDATER.md; tag distribution-f-updater); confirm with the owner that the signing key is backed up and whether the real update test passed. Begin Subphase G only: unified release pipeline (tags / manual dispatch only; GitHub secrets TAURI_SIGNING_PRIVATE_KEY and _PASSWORD are a manual gate). Keep the identifier app.aethervault.desktop and useHttpsScheme true. Wait for the owner to explicitly start it. Do not begin Combat C or gameplay changes.
 
 ## Known risks
 

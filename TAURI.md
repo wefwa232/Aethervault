@@ -55,7 +55,7 @@ Until then, desktop sign-in will complete in the browser but Supabase falls back
 
 - **`identifier` = `app.aethervault.desktop`** and **`useHttpsScheme: true`** fix the WebView2 profile folder (`%LOCALAPPDATA%\app.aethervault.desktop`) and the origin `https://tauri.localhost`. The save lives in that origin's `localStorage`; changing either orphans every player's save. Future updates (Subphase F) keep both.
 - **Single instance:** two copies would share one profile and could overwrite the save, so a second launch just focuses the first window.
-- **Service worker off in desktop:** the files are inside the EXE; the PWA update banner would be wrong here. Subphase F will provide desktop updates.
+- **Service worker off in desktop:** the files are inside the EXE; the PWA update banner would be wrong here. Desktop updates are in UPDATER.md (Subphase F).
 - **CSP** in `tauri.conf.json` allows only the app itself plus `https://*.supabase.co` for connections (`'unsafe-inline'`/`'unsafe-eval'` remain because the game uses inline handlers and Three.js).
 - **Music** (28 MB) is embedded in the EXE, so the desktop app plays music offline.
 
