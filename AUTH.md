@@ -4,7 +4,7 @@ Google sign-in through Supabase Auth. **Optional**: with no configuration the ga
 
 ## Status
 
-- **Code complete and verified against a mock server.** Not yet verified against a real Supabase project / Google client: that needs the manual gate below.
+- **Complete.** Verified against a mock server and, on 2026-10-23, with a real Google sign-in on production (https://aethervault-six.vercel.app): signed in and the account email was shown. Supabase project ref `amdcievyizsadmxhozwv`; its public URL and anon key are in `js/platform/config.js`.
 - Until the owner fills `js/platform/config.js`, Settings → Account says sign-in is not set up in this build.
 
 ## Files
@@ -26,7 +26,7 @@ Google sign-in through Supabase Auth. **Optional**: with no configuration the ga
 - **Not supported yet:** `tauri://` windows show "not available in this app window"; Subphase E adds a desktop flow.
 - **Dev override:** on localhost only, `localStorage['av.auth.cfg'] = '{"supabaseUrl":"…","supabaseAnonKey":"…"}'` replaces the config (ignored on hosted origins).
 
-## MANUAL GATE — owner steps (about 10 minutes)
+## Setup record (manual gate, done)
 
 1. **Supabase:** create a project at supabase.com (free plan). Note the Project URL and the `anon` public key (Settings → API).
 2. **Google Cloud Console:** APIs & Services → Credentials → Create OAuth client ID → *Web application*.
