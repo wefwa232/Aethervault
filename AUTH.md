@@ -5,7 +5,8 @@ Google sign-in through Supabase Auth. **Optional**: with no configuration the ga
 ## Status
 
 - **Complete.** Verified against a mock server and, on 2026-10-23, with a real Google sign-in on production (https://aethervault-six.vercel.app): signed in and the account email was shown. Supabase project ref `amdcievyizsadmxhozwv`; its public URL and anon key are in `js/platform/config.js`.
-- Until the owner fills `js/platform/config.js`, Settings → Account says sign-in is not set up in this build.
+- If `js/platform/config.js` is ever emptied, Settings → Account falls back to "sign-in is not set up in this build" and the game stays fully local.
+- Follow-up for the owner: the Google client secret was pasted into a chat during setup; reset it in Google Cloud and re-enter it in Supabase.
 
 ## Files
 
