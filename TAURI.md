@@ -1,6 +1,6 @@
 # Aethervault desktop app (Distribution Subphase E)
 
-A Tauri 2 shell that hosts the **same shared frontend** as the website and PWA, delivered as a Windows NSIS installer. No gameplay changes. Auto-updates (F) and release automation (G) are not part of this subphase.
+A Tauri 2 shell that hosts the **same shared frontend** as the website and PWA, delivered as a Windows NSIS installer. No gameplay changes. Auto-updates and releases came later: see UPDATER.md and RELEASE.md.
 
 ## Layout
 

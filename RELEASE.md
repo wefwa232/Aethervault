@@ -26,3 +26,9 @@ then approve the run in GitHub (Actions → the run → *Review deployments*). P
 ## Secrets
 
 Environment `desktop-release` secrets: `TAURI_SIGNING_PRIVATE_KEY` (required) and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (optional; the current key has no password, so the secret is absent and the workflow unsets the variable). The workflow never prints them (they are masked by GitHub and only given to the build step, whose output is shown only on failure via `tail`). Setup steps are given in chat; the key is never handled by Claude.
+
+## Status
+
+Subphase G complete. v0.6.2 was the first release cut by this pipeline (tag-triggered, approved in the `desktop-release` environment). The owner then updated a real installed 0.6.1 to 0.6.2 in-app with saves, sign-in and cloud sync intact; see UPDATER.md. Tamper test: 8/8. Ordinary pushes do not start the workflow (confirmed). Vercel production deployment from `phase-five` is unchanged.
+
+Standing rules: never delete or move a published `v*` tag (the ruleset blocks it); never regenerate the updater key; keep identifier `app.aethervault.desktop` and `useHttpsScheme: true`.

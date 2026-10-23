@@ -40,7 +40,7 @@ node tools/updater-manifest.mjs --notes "What changed"
 - `node tools/tauri-verify.mjs` against the release EXE: **23 passed, 0 failed** (19 from E plus: updates start idle, install without a prior check is refused by the page and by the shell, a check against the real endpoint with no release ends in a clean `error` without throwing, the Settings card renders with its button).
 - `cargo test`: 2 passed. `pwa-stamp --check` OK. Signed build produced `Aethervault_0.6.1_x64-setup.exe` and a `.sig`; a sample `latest.json` generated.
 
-## Not yet verified (honest limits)
+## Limits (historical note: the first two items were closed by the acceptance above)
 
 - **No real update has been downloaded, verified and installed.** That needs a published release newer than the installed app, and running the installer would replace the owner's real installation. The first end-to-end check is: publish v0.6.2 as a release, open the installed 0.6.1, press *Check for updates* → *Install & restart*. Until then only the check path (404 handled cleanly) and the signing/manifest tooling are proven.
 - The signature path is exercised by the plugin itself (library code), not by an Aethervault-specific test.
@@ -66,3 +66,7 @@ The production binary has no insecure-transport override; only the throw-away te
 ## First real release
 
 v0.6.2 was built, signed and published by the pipeline (run approved by the owner). Assets: installer, `.sig`, `latest.json`; the key was masked (`***`) in the logs.
+
+## Owner acceptance: real update (2026-10-23)
+
+The owner updated the installed app from **0.6.1 to 0.6.2** through Settings → Install & updates (check, install, restart) using the release published by the pipeline. Confirmed afterwards: Settings shows v0.6.2; local save and collection intact; currencies unchanged; Google sign-in still active; cloud sync works without a conflict; combat opens; install location, shortcut and storage unchanged (same identity); a single app instance. **The real updater path is verified end to end.** The earlier "not yet verified" limits (no real download/install exercised; first update needing a reinstall) are closed.

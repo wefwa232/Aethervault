@@ -80,7 +80,7 @@ Per the phase brief: each subphase committed, pushed, documented, app runnable, 
 
 - 2026-10-23 — Subphase F built: `tauri-plugin-updater` (Rust-only commands), minisign-signed NSIS artifacts, `latest.json` generator, Settings update card, 23/23 EXE checks. Dedicated signing key generated in `~/.tauri/` (owner must back it up). End-to-end install not yet exercised (needs a published newer release). See `UPDATER.md`.
 
-- 2026-10-23 — Subphase G built: `.github/workflows/release.yml` (tag/manual only, approval-gated environment `desktop-release`, tag ruleset), `tools/version.mjs`. v0.6.2 released through it; tamper test 8/8. Pending: owner's real 0.6.1 → 0.6.2 update on the installed app. See `RELEASE.md`, `UPDATER.md`.
+- 2026-10-23 — Subphase G built: `.github/workflows/release.yml` (tag/manual only, approval-gated environment `desktop-release`, tag ruleset), `tools/version.mjs`. v0.6.2 released through it; tamper test 8/8. Owner's real 0.6.1 → 0.6.2 in-app update verified (save, sign-in, cloud sync, identity intact). See `RELEASE.md`, `UPDATER.md`.
 
 ## Subphase A status
 
@@ -104,11 +104,19 @@ Complete, tagged `distribution-e-tauri`, and accepted by the owner after a real 
 
 ## Subphase F status
 
-Built and verified up to the check path; tag `distribution-f-updater`. Awaiting owner: private key backup, one reinstall from the new installer, and a real 0.6.1 → newer update test when a release exists. Details in `UPDATER.md`.
+Complete, tag `distribution-f-updater`. Key backed up by the owner; the real 0.6.1 → 0.6.2 update was verified under Subphase G. Details in `UPDATER.md`.
+
+## Subphase G status
+
+Complete, tagged `distribution-g-release`. Tag/manual-only release workflow with an approval-gated environment, canonical version tool, v0.6.2 released through it, tamper test 8/8, and the real in-app update accepted by the owner. Details in `RELEASE.md` and `UPDATER.md`.
+
+## Distribution Phase: COMPLETE
+
+Subphases A–G are done and accepted: Vercel site, PWA, optional Google sign-in, local-first cloud saves, Tauri Windows app, signed auto-updates, and the release pipeline. Remaining owner-side items are optional: Authenticode code signing (SmartScreen warning), and the open Known risks below.
 
 ## Next-session opener
 
-> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphases A–F are built (UPDATER.md; tag distribution-f-updater); confirm with the owner that the signing key is backed up and whether the real update test passed. Begin Subphase G only: unified release pipeline (tags / manual dispatch only; GitHub secrets TAURI_SIGNING_PRIVATE_KEY and _PASSWORD are a manual gate). Keep the identifier app.aethervault.desktop and useHttpsScheme true. Wait for the owner to explicitly start it. Do not begin Combat C or gameplay changes.
+> Distribution Phase is finished (DISTRIBUTION_PHASE.md, tag distribution-g-release). Do not change the distribution setup without a reason. The next gameplay phase is Combat C, to be started only when the owner asks. Releases: bump with `node tools/version.mjs set X.Y.Z`, tag `vX.Y.Z`, owner approves the desktop-release deployment (RELEASE.md).
 
 ## Known risks
 
