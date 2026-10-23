@@ -18,11 +18,12 @@
     if (!au.supported) return '<p class="muted">Sign-in is not available in this app window yet. Your progress is saved on this device.</p>';
     const u = au.user(), msg = au.error ? `<p class="bad-txt tiny" role="alert">${e(au.error)}</p>` : (au.notice ? `<p class="dim tiny" role="status">${e(au.notice)}</p>` : '');
     if (au.busy) return '<p class="muted" role="status">Completing sign-in…</p>';
-    if (au.signedIn()) return `<p class="muted">Signed in as <b>${e((u && (u.email || u.name)) || 'your Google account')}</b>.</p><p class="muted tiny">Cloud saves are not enabled yet; your progress is still stored only on this device.</p>${msg}<div class="btn-row"><button class="btn ghost" data-act="auth-out">Sign out</button></div>`;
+    if (au.signedIn()) return `<p class="muted">Signed in as <b>${e((u && (u.email || u.name)) || 'your Google account')}</b>.</p>${msg}<div class="btn-row"><button class="btn ghost" data-act="auth-out">Sign out</button></div>${(AV.cloudUi && AV.cloudUi.panelHtml()) || ''}`;
     return `<p class="muted">Optional. Sign in with Google to link this archive to an account. You can play without one, and signing out never touches your local save.</p>${msg}<div class="btn-row"><button class="btn" data-act="auth-in">Sign in with Google</button></div>`;
   }
   function render(root) {
-    const off = AV.auth && AV.auth.onChange(() => { if (!root.isConnected) { off && off(); return; } const el = root.querySelector('#acct'); if (el) el.innerHTML = accountHtml(); });
+    const redraw = () => { if (!root.isConnected) { off && off(); off2 && off2(); return; } const el = root.querySelector('#acct'); if (el) el.innerHTML = accountHtml(); };
+    const off = AV.auth && AV.auth.onChange(redraw), off2 = AV.cloud && AV.cloud.onChange(redraw);
     const draw = () => {
       const P = AV.pwa || {};
       const s = AV.state.get(), st = s.settings, unl = s.mode === 'unlimited';
@@ -80,7 +81,7 @@
             <hr><p class="muted">Start over with a brand-new Archive. This permanently deletes your collection and progress.</p>
             <button class="btn danger" data-act="reset">${A.icon('trash')}Reset all progress…</button></section>
           <section class="s-matte pad about"><h3 class="sect">${A.icon('info')} About</h3>
-            <p><b>Aethervault</b> is a private, single-player collectible simulator. <b>Simulation only — no real transactions or payment services. The game needs no network; optional Google sign-in is the only online feature.</b> The 3D specimens are modelled and lit procedurally in your browser; remaining artwork is drawn procedurally; all sound is synthesised. Names and creatures are invented. Three.js (MIT) and the bundled typefaces (SIL OFL) are included under <code>vendor/</code>.</p></section>
+            <p><b>Aethervault</b> is a private, single-player collectible simulator. <b>Simulation only — no real transactions or payment services. The game needs no network; optional Google sign-in and cloud saves are the only online features.</b> The 3D specimens are modelled and lit procedurally in your browser; remaining artwork is drawn procedurally; all sound is synthesised. Names and creatures are invented. Three.js (MIT) and the bundled typefaces (SIL OFL) are included under <code>vendor/</code>.</p></section>
         </div></div>`;
     };
     draw();
@@ -100,6 +101,7 @@
       const o4 = e.target.closest('[data-opt4]'); if (o4) { E.setSetting(o4.dataset.opt4, o4.dataset.num ? +o4.dataset.v : o4.dataset.v); draw(); return; }
       const ts = e.target.closest('[data-ts]'); if (ts) { E.setSetting('textSize', +ts.dataset.ts); draw(); return; }
       const a = e.target.closest('[data-act]'); if (!a) return;
+      if (a.dataset.act.startsWith('cloud-')) { await AV.cloudUi.act(a.dataset.act); redraw(); return; }
       if (a.dataset.act === 'test') au.sting(5);
       else if (a.dataset.act === 'pwa-install') await AV.pwa.install();
       else if (a.dataset.act === 'pwa-check') { const ok = await AV.pwa.check(); ui.toast(ok ? (AV.pwa.updateReady ? 'A new version is ready' : 'Checked — you are up to date') : 'Could not check for updates (offline?)', { icon: 'info', silent: true }); draw(); }

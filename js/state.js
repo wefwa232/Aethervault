@@ -152,7 +152,7 @@
 
   function writeNow() {
     if (!S) return;
-    try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); storageOk = true; }
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); storageOk = true; bus.emit('saved'); }
     catch (e) { storageOk = false; console.warn('Save failed', e); }
   }
   function save(immediate) {

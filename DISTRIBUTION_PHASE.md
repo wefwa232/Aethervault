@@ -45,7 +45,7 @@ Platform-specific code stays isolated (`src-tauri/`, `js/platform/`), browser/PW
 | A | Vercel static deployment | `distribution-a-vercel` |
 | B | Installable PWA, controlled updates | `distribution-b-pwa` |
 | C | Supabase Auth (Google), optional | `distribution-c-auth` |
-| D | Local-first cloud saves, RLS, conflicts, backups | `distribution-d-cloud` |
+| D | Local-first cloud saves, RLS, conflicts, backups | `distribution-d-cloud-saves` |
 | E | Tauri 2 Windows NSIS EXE | `distribution-e-tauri` |
 | F | Signed Tauri auto-updates | `distribution-f-updater` |
 | G | Unified release pipeline (tags / manual dispatch only) | `distribution-g-release` |
@@ -74,6 +74,8 @@ Per the phase brief: each subphase committed, pushed, documented, app runnable, 
 
 - 2026-10-23 — Subphase C complete: real Google sign-in verified on production, tagged `distribution-c-auth`. Code built: optional Supabase Auth (Google, PKCE, no SDK), Settings → Account, mock server for tests. Verified against the mock; **blocked on the manual gate** (Supabase project + Google OAuth client). See `AUTH.md`.
 
+- 2026-10-23 — Subphase D complete: cloud-save schema/RLS/RPCs designed, reviewed and applied by the owner (52/52 in-database tests); client built (`js/platform/cloud.js`, `cloud-ui.js`) and verified 70/70 in Chrome against a mock Supabase; live anon-denial probe passes. See `CLOUD_SAVES.md`.
+
 ## Subphase A status
 
 Deployed and verified, with one open item: repeat the screen walk in desktop Chrome.
@@ -86,9 +88,13 @@ Built and verified locally; production verification and device install checks re
 
 Complete and tagged `distribution-c-auth`. Verified against the mock and with a real Google sign-in on production. Details in `AUTH.md`.
 
+## Subphase D status
+
+Complete and tagged `distribution-d-cloud-saves`. Opt-in, local-first, conflict-safe cloud saves. Details, test record and limitations (no real signed-in cloud walk yet; real SW sync event untested) in `CLOUD_SAVES.md`.
+
 ## Next-session opener
 
-> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphases A, B and C (AUTH.md) are complete. Begin Subphase D only: local-first cloud saves with RLS, conflict handling and backups, using the existing Supabase project.
+> Continue Aethervault Distribution Phase from DISTRIBUTION_PHASE.md. Subphases A, B, C (AUTH.md) and D (CLOUD_SAVES.md) are complete; tag distribution-d-cloud-saves. Begin Subphase E only: the Tauri 2 Windows NSIS EXE. Reuse the shared frontend unchanged; keep desktop code in src-tauri/ and js/platform/. Resolve first the tauri:// sign-in flow noted in AUTH.md (AV.auth.supported is false there, and cloud saves depend on it). Do not begin auto-updates (F), release automation (G), Combat C, or gameplay changes.
 
 ## Known risks
 

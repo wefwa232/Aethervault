@@ -16,3 +16,10 @@
 #pwaUpdate > div { flex: 1; min-width: 0; display: grid; } #pwaUpdate b { font-family: var(--f-head, inherit); letter-spacing: .04em; } #pwaUpdate span { font-size: .82rem; color: var(--ivory-2); }
 #pwaUpdate .btn { flex: none; } #pwaUpdate .btn:disabled { opacity: .45; cursor: not-allowed; }
 @media (max-width: 480px) { #pwaUpdate { flex-wrap: wrap; } #pwaUpdate > div { flex-basis: 100%; } }
+
+/* Cloud saves (Distribution D): compare table and backup list */
+.cmp { width: 100%; border-collapse: collapse; margin: .6rem 0; font-size: .9rem; }
+.cmp th, .cmp td { text-align: left; padding: .35rem .5rem; border-bottom: 1px solid rgba(236, 227, 207, .12); vertical-align: top; }
+.cmp thead th { font-weight: 600; color: var(--brass-hi); } .cmp tbody th { font-weight: 500; color: var(--ivory-2); } .cmp small { opacity: .7; }
+.cloud-bk { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.cloud-bk li { display: flex; gap: .8rem; align-items: center; justify-content: space-between; padding: .5rem .6rem; border: 1px solid rgba(236, 227, 207, .14); border-radius: 8px; }

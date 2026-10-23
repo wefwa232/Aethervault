@@ -27,6 +27,7 @@
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     user() { const s = A.session; return s && s.user ? { id: s.user.id, email: s.user.email || '', name: (s.user.user_metadata && (s.user.user_metadata.full_name || s.user.user_metadata.name)) || '' } : null; },
     signedIn() { return !!A.session; },
+    cfg: C,   // resolved Supabase URL + public anon key, read by js/platform/cloud.js
   });
 
   const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');

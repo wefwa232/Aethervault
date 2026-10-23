@@ -1,6 +1,6 @@
 # Optional sign-in (Distribution Subphase C)
 
-Google sign-in through Supabase Auth. **Optional**: with no configuration the game is exactly as before and makes no network calls. Signing in only establishes an identity; cloud saves are Subphase D.
+Google sign-in through Supabase Auth. **Optional**: with no configuration the game is exactly as before and makes no network calls. Signing in only establishes an identity; cloud saves (Subphase D, opt-in per device) are described in CLOUD_SAVES.md.
 
 ## Status
 

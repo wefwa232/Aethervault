@@ -9,3 +9,4 @@ dev/
 *.bat
 serve.mjs
 .gitattributes
+supabase/
