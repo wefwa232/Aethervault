@@ -11,7 +11,7 @@ Aethervault is deployed as a plain static site. No framework, no build step, no 
 | Root directory | repository root |
 | Deployment protection | disabled (Vercel Authentication off) so the site is publicly reachable |
 | Git integration | connected, `createDeployments: enabled` |
-| Production branch | `phase-five` — see **Production branch status** below |
+| Production branch | `phase-five` (set in dashboard; verified 2026-10-23) |
 
 ## What is deployed
 
@@ -55,7 +55,7 @@ Redeploy manually: `vercel deploy --prod`. Pushes to the production branch deplo
 
 ### Production branch status
 
-The Vercel project was created with Production Branch `main`; the API calls tried (project PATCH, link POST) refused to change it. **Set it once in the dashboard:** Project `aethervault` → Settings → Environments → Production → Branch Tracking → `phase-five`. Until then, pushes to `phase-five` produce *preview* deployments, and production is updated only by `vercel deploy --prod`.
+The project was created with Production Branch `main`; the API refused to change it, so the owner set it to `phase-five` in the dashboard (Settings → Environments → Production → Branch Tracking). Confirmed through the API. Before the change, a push to `phase-five` produced a Preview deployment; after it, a push deploys to Production (see the 2026-10-23 verification in `DISTRIBUTION_PHASE.md`).
 
 ## Limitations
 

@@ -68,11 +68,11 @@ Per the phase brief: each subphase committed, pushed, documented, app runnable, 
 
 - 2026-10-23 — Audit done. Pushed `50605cd` to origin. Fixed `MUSIC/`→`music/` case defect. Added `vercel.json`, `.vercelignore`, `.gitignore` entries. Installed Vercel CLI. **Blocked on Vercel login (manual gate).**
 
-- 2026-10-23 — Vercel login done. Project `aethervault` created and linked to `wefwa232/Aethervault`; SSO protection disabled; Git deployments enabled. Production deployed: https://aethervault-six.vercel.app. Verified in the built-in Chromium pane (Chrome extension was offline); details in `VERCEL_DEPLOYMENT.md`. Production Branch could not be set via API (stays `main`) — one dashboard step remains (see `VERCEL_DEPLOYMENT.md`).
+- 2026-10-23 — Vercel login done. Project `aethervault` created and linked to `wefwa232/Aethervault`; SSO protection disabled; Git deployments enabled. Production deployed: https://aethervault-six.vercel.app. Verified in the built-in Chromium pane (Chrome extension was offline); details in `VERCEL_DEPLOYMENT.md`. Production Branch could not be set via API; the owner set it to `phase-five` in the dashboard and it was confirmed via API. A push to `phase-five` now deploys to Production.
 
 ## Subphase A status
 
-Deployed and verified, with two open items: (1) set Production Branch to `phase-five` in the dashboard, (2) repeat the screen walk in desktop Chrome.
+Deployed and verified, with one open item: repeat the screen walk in desktop Chrome.
 
 ## Next-session opener (Subphase B)
 
